@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Scroll Debug Test</title>
+    <style>
+        body {
+            font-family: monospace;
+            background: #0a0a0a;
+            color: #00ff00;
+            margin: 0;
+            padding: 20px;
+        }
+        
+        .debug-container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .debug-section {
+            margin: 20px 0;
+            padding: 15px;
+            border: 1px solid #00ff00;
+            background: rgba(0, 255, 0, 0.1);
+        }
+        
+        .debug-button {
+            background: #0a0a0a;
+            color: #00ff00;
+            border: 1px solid #00ff00;
+            padding: 10px 20px;
+            margin: 5px;
+            cursor: pointer;
+            font-family: monospace;
+        }
+        
+        .debug-button:hover {
+            background: rgba(0, 255, 0, 0.1);
+        }
+        
+        .debug-output {
+            background: #1a1a1a;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #333;
+            max-height: 300px;
+            overflow-y: auto;
+            font-family: monospace;
+            font-size: 12px;
+        }
+        
+        .debug-log {
+            margin: 5px 0;
+            padding: 5px;
+            border-left: 3px solid #00ff00;
+            background: rgba(0, 255, 0, 0.05);
+        }
+    </style>
+</head>
+<body>
+    <div class="debug-container">
+        <h1>🔍 Mission Screen Scroll Debug Tool</h1>
+        
+        <div class="debug-section">
+            <h2>Container Detection Tests</h2>
+            <button class="debug-button" onclick="testContainerDetection()">Test Container Detection</button>
+            <button class="debug-button" onclick="testScrollableContent()">Test Scrollable Content</button>
+            <button class="debug-button" onclick="testMissionElements()">Test Mission Elements</button>
+        </div>
+        
+        <div class="debug-section">
+            <h2>Scroll Function Tests</h2>
+            <button class="debug-button" onclick="testScrollTo1()">Test Scroll to Personal Communication</button>
+            <button class="debug-button" onclick="testScrollTo2()">Test Scroll to Mission Choices</button>
+            <button class="debug-button" onclick="testScrollDuringTyping()">Test Scroll During Typing</button>
+        </div>
+        
+        <div class="debug-section">
+            <h2>Integration Tests</h2>
+            <button class="debug-button" onclick="runFullMissionFlow()">Run Full Mission Flow</button>
+            <button class="debug-button" onclick="clearDebugOutput()">Clear Output</button>
+            <button class="debug-button" onclick="openMainApp()">Open Main App</button>
+        </div>
+        
+        <div class="debug-section">
+            <h2>Debug Output</h2>
+            <div id="debug-output" class="debug-output"></div>
+        </div>
+    </div>
+
+    <script>
+        let debugOutput = document.getElementById('debug-output');
+        
+        function log(message) {
+            const logEntry = document.createElement('div');
+            logEntry.className = 'debug-log';
+            logEntry.textContent = `[${new Date().toLocaleTimeString()}] ${message}`;
+            debugOutput.appendChild(logEntry);
+            debugOutput.scrollTop = debugOutput.scrollHeight;
+        }
+        
+        function clearDebugOutput() {
+            debugOutput.innerHTML = '';
+        }
+        
+        function openMainApp() {
+            window.open('/index.html', '_blank');
+        }
+        
+        function testContainerDetection() {
+            log('🔍 Testing container detection...');
+            
+            // Open main app in iframe for testing
+            const iframe = document.createElement('iframe');
+            iframe.src = '/index.html';
+            iframe.style.display = 'none';
+            document.body.appendChild(iframe);
+            
+            iframe.onload = function() {
+                try {
+                    const iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
+                    const missionScreen = iframeDoc.getElementById('mission-screen');
+                    
+                    if (missionScreen) {
+                        log('✅ Found mission screen element');
+                        
+                        const scrollableContent = missionScreen.querySelector('.scrollable-content');
+                        if (scrollableContent) {
+                            log('✅ Found .scrollable-content element');
+                            
+                            const computedStyle = iframe.contentWindow.getComputedStyle(scrollableContent);
+                            log(`📊 Scrollable content overflow-y: ${computedStyle.overflowY}`);
+                            log(`📊 Scrollable content height: ${scrollableContent.offsetHeight}px`);
+                            log(`📊 Scrollable content scroll height: ${scrollableContent.scrollHeight}px`);
+                            
+                            const missionScreenStyle = iframe.contentWindow.getComputedStyle(missionScreen);
+                            log(`📊 Mission screen position: ${missionScreenStyle.position}`);
+                            log(`📊 Mission screen classes: ${missionScreen.className}`);
+                            
+                        } else {
+                            log('❌ .scrollable-content not found');
+                        }
+                    } else {
+                        log('❌ Mission screen not found');
+                    }
+                } catch (error) {
+                    log(`❌ Error: ${error.message}`);
+                }
+                
+                document.body.removeChild(iframe);
+            };
+        }
+        
+        function testScrollableContent() {
+            log('🔍 Testing scrollable content properties...');
+            
+            // Test will be implemented after container detection works
+            log('📝 This test will verify scrollable content can actually scroll');
+        }
+        
+        function testMissionElements() {
+            log('🔍 Testing mission elements...');
+            
+            // Test will find all mission elements and their positions
+            log('📝 This test will verify mission elements exist and are positioned correctly');
+        }
+        
+        function testScrollTo1() {
+            log('🔍 Testing scroll to personal communication...');
+            log('📝 This test will simulate the 1st scroll point');
+        }
+        
+        function testScrollTo2() {
+            log('🔍 Testing scroll to mission choices...');
+            log('📝 This test will simulate the 3rd scroll point');
+        }
+        
+        function testScrollDuringTyping() {
+            log('🔍 Testing scroll during typing...');
+            log('📝 This test will simulate the 2nd scroll point during typing');
+        }
+        
+        function runFullMissionFlow() {
+            log('🔍 Running full mission flow...');
+            log('📝 This test will run all 3 scroll points in sequence');
+        }
+        
+        // Initialize
+        log('🚀 Scroll Debug Tool initialized');
+        log('💡 Click "Test Container Detection" to start debugging');
+    </script>
+</body>
+</html>

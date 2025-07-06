@@ -1,0 +1,24 @@
+/* ==========================================================================
+   Utilities: Spacing & Layout
+   ========================================================================== */
+
+@layer utilities {
+    /* Container Queries for future use */
+    @supports (container-type: inline-size) {
+        .terminal-container {
+            container-type: inline-size;
+            container-name: terminal;
+        }
+        
+        @container terminal (min-width: 600px) {
+            .terminal-title {
+                --text-scale: 1.2;
+            }
+        }
+    }
+
+    /* Debug Mode (remove in production) */
+    .debug * {
+        outline: 1px solid rgba(255, 0, 0, 0.3);
+    }
+}

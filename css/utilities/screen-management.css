@@ -1,0 +1,143 @@
+/* ==========================================================================
+   Utilities: Screen Management System
+   ========================================================================== */
+
+@layer utilities {
+    /* Screen Isolation Container */
+    .screen-isolator {
+        position: relative;
+        width: 100%;
+        height: 100vh;
+        height: 100dvh;
+        overflow: hidden;
+        isolation: isolate;
+    }
+
+    /* Screen Base Class for Consistent Positioning */
+    .screen-base {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        overflow-y: auto;
+        overflow-x: hidden;
+        isolation: isolate;
+    }
+
+    /* Screen State Management */
+    .screen-active {
+        z-index: 10;
+        visibility: visible;
+        opacity: 1;
+    }
+
+    .screen-hidden {
+        z-index: 1;
+        visibility: hidden;
+        opacity: 0;
+        pointer-events: none;
+    }
+
+    /* Screen Reset Utilities */
+    .screen-reset {
+        transform: none;
+        transition: none;
+        animation: none;
+    }
+
+    .screen-reset * {
+        transform: none;
+        transition: none;
+        animation: none;
+    }
+
+    /* Layout Stabilization */
+    .screen-stable {
+        will-change: auto;
+        contain: layout style;
+    }
+
+    /* Transition Cleanup */
+    .screen-transition-out {
+        opacity: 0;
+        transform: translateY(-10px);
+        transition: all 0.3s ease-out;
+        pointer-events: none;
+    }
+
+    .screen-transition-in {
+        opacity: 1;
+        transform: translateY(0);
+        transition: all 0.3s ease-in;
+        pointer-events: auto;
+    }
+
+    /* Prevent Layout Bleeding */
+    .screen-isolated {
+        contain: layout style paint;
+        isolation: isolate;
+    }
+
+    /* Mobile-Specific Screen Management */
+    @media (max-width: 768px) {
+        .screen-base {
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .screen-isolator {
+            height: 100vh;
+            height: 100dvh;
+        }
+    }
+
+    /* Desktop-Specific Screen Management */
+    @media (min-width: 769px) {
+        .screen-base {
+            overflow-y: auto;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+        }
+
+        .screen-base::-webkit-scrollbar {
+            display: none;
+        }
+    }
+}
+
+/* Screen Management Animations */
+@keyframes screenFadeIn {
+    from { 
+        opacity: 0; 
+        transform: translateY(10px);
+    }
+    to { 
+        opacity: 1; 
+        transform: translateY(0);
+    }
+}
+
+@keyframes screenFadeOut {
+    from { 
+        opacity: 1; 
+        transform: translateY(0);
+    }
+    to { 
+        opacity: 0; 
+        transform: translateY(-10px);
+    }
+}
+
+/* Accessibility Considerations */
+@media (prefers-reduced-motion: reduce) {
+    .screen-transition-out,
+    .screen-transition-in {
+        transition: opacity 0.1s ease;
+        transform: none;
+    }
+    
+    .screen-base {
+        animation: none;
+    }
+}

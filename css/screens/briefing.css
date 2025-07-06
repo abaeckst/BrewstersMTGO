@@ -1,0 +1,262 @@
+/* ==========================================================================
+   Screens: Briefing Screen Styles
+   ========================================================================== */
+
+@layer screens {
+    /* Briefing Screen Layout */
+    #briefing-screen {
+        background: linear-gradient(135deg, #001100 0%, #002200 100%);
+        padding: var(--space-lg);
+    }
+
+    .briefing-screen .screen-header {
+        text-align: center;
+        margin-bottom: var(--space-xl);
+    }
+
+    .classification-banner {
+        background: linear-gradient(45deg, #ff0000, #ff3333);
+        color: white;
+        padding: var(--space-xs) var(--space-md);
+        margin-bottom: var(--space-md);
+        text-align: center;
+        font-weight: bold;
+        letter-spacing: 2px;
+        text-shadow: 0 0 10px rgba(255, 0, 0, 0.5);
+        animation: classificationPulse 2s ease-in-out infinite;
+    }
+
+    .briefing-title {
+        font-size: var(--text-2xl);
+        color: var(--color-primary);
+        text-shadow: var(--glow-primary);
+        margin: var(--space-lg) 0;
+    }
+
+    /* Agent Dossier */
+    .agent-dossier {
+        background: rgba(0, 255, 0, 0.1);
+        border: 2px solid var(--color-primary);
+        border-radius: 8px;
+        padding: var(--space-lg);
+        margin-bottom: var(--space-xl);
+        box-shadow: var(--shadow-terminal);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .agent-dossier::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        left: -50%;
+        width: 200%;
+        height: 200%;
+        background: linear-gradient(45deg, transparent, rgba(0, 255, 0, 0.1), transparent);
+        animation: dossierScan 4s linear infinite;
+        pointer-events: none;
+    }
+
+    .dossier-header {
+        display: flex;
+        align-items: center;
+        gap: var(--space-lg);
+        margin-bottom: var(--space-lg);
+    }
+
+    .agent-photo-placeholder {
+        width: 80px;
+        height: 80px;
+        border: 2px solid var(--color-primary);
+        border-radius: 4px;
+        position: relative;
+        overflow: hidden;
+        flex-shrink: 0;
+    }
+
+    .photo-static {
+        width: 100%;
+        height: 100%;
+        background: repeating-linear-gradient(
+            0deg,
+            transparent,
+            transparent 2px,
+            var(--color-primary) 2px,
+            var(--color-primary) 4px
+        );
+        opacity: 0.3;
+        animation: staticNoise 0.15s infinite;
+    }
+
+    .dossier-details {
+        display: grid;
+        gap: var(--space-sm);
+        flex: 1;
+    }
+
+    .detail-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: var(--space-xs) 0;
+        border-bottom: 1px solid rgba(0, 255, 0, 0.3);
+    }
+
+    .detail-label {
+        font-weight: bold;
+        color: var(--color-secondary);
+        font-size: var(--text-sm);
+    }
+
+    .detail-value {
+        color: var(--color-primary);
+        font-family: 'Courier New', monospace;
+        font-size: var(--text-sm);
+        text-align: right;
+    }
+
+    /* Mission Details */
+    .mission-details {
+        background: rgba(0, 0, 0, 0.5);
+        border: 1px solid var(--color-secondary);
+        border-radius: 4px;
+        padding: var(--space-lg);
+        margin-bottom: var(--space-xl);
+    }
+
+    .mission-details h3 {
+        color: var(--color-primary);
+        margin-bottom: var(--space-lg);
+        text-shadow: var(--glow-primary);
+    }
+
+    .parameter-grid {
+        display: grid;
+        gap: var(--space-md);
+    }
+
+    .parameter-item {
+        display: flex;
+        flex-direction: column;
+        gap: var(--space-xs);
+        padding: var(--space-sm);
+        background: rgba(0, 255, 0, 0.05);
+        border-left: 3px solid var(--color-secondary);
+        border-radius: 2px;
+    }
+
+    .param-label {
+        font-size: var(--text-sm);
+        color: var(--color-secondary);
+        font-weight: bold;
+        letter-spacing: 1px;
+    }
+
+    .param-value {
+        font-size: var(--text-base);
+        color: var(--color-primary);
+        font-family: 'Courier New', monospace;
+    }
+
+    /* Briefing Actions */
+    .briefing-actions {
+        display: flex;
+        gap: var(--space-lg);
+        justify-content: center;
+        flex-wrap: wrap;
+        margin-top: var(--space-lg);
+    }
+
+    .action-button.primary {
+        background: linear-gradient(45deg, #006600, #00aa00);
+        border: 2px solid var(--color-primary);
+        color: var(--color-primary);
+    }
+
+    .action-button.secondary {
+        background: linear-gradient(45deg, #660000, #aa0000);
+        border: 2px solid #ff6666;
+        color: #ff6666;
+    }
+
+    .action-button {
+        min-width: 200px;
+        padding: var(--space-lg);
+        display: flex;
+        flex-direction: column;
+        gap: var(--space-xs);
+        text-align: center;
+        cursor: pointer;
+        transition: all var(--transition-base) ease;
+        border-radius: 4px;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .action-button::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+        transition: left var(--transition-base) ease;
+    }
+
+    .action-button:hover::before {
+        left: 100%;
+    }
+
+    .action-button:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 20px rgba(0, 255, 0, 0.4);
+    }
+
+    .action-button.secondary:hover {
+        box-shadow: 0 4px 20px rgba(255, 102, 102, 0.4);
+    }
+
+    .button-text {
+        font-size: var(--text-base);
+        font-weight: bold;
+        letter-spacing: 1px;
+    }
+
+    .button-subtitle {
+        font-size: var(--text-sm);
+        opacity: 0.8;
+        font-style: italic;
+    }
+
+    .confirmation-prompt {
+        margin-bottom: var(--space-lg);
+        text-align: center;
+    }
+
+    .confirmation-prompt p {
+        font-size: var(--text-lg);
+        color: var(--color-primary);
+        text-shadow: var(--glow-primary);
+    }
+}
+
+/* Briefing Animations */
+@keyframes classificationPulse {
+    0%, 100% { 
+        box-shadow: 0 0 10px rgba(255, 0, 0, 0.5);
+    }
+    50% { 
+        box-shadow: 0 0 20px rgba(255, 0, 0, 0.8);
+    }
+}
+
+@keyframes dossierScan {
+    0% { transform: translateX(-100%) translateY(-100%) rotate(45deg); }
+    100% { transform: translateX(100%) translateY(100%) rotate(45deg); }
+}
+
+@keyframes staticNoise {
+    0% { transform: translateY(0); }
+    100% { transform: translateY(-4px); }
+}

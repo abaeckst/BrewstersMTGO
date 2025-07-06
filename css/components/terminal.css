@@ -1,0 +1,158 @@
+/* ==========================================================================
+   Components: Terminal UI & Layout
+   ========================================================================== */
+
+@layer components {
+    /* Global Security Banner - Persistent contextual element */
+    .security-banner {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        z-index: 1000;
+        background: rgba(0, 0, 0, 0.9);
+        border-bottom: 1px solid var(--color-danger);
+        padding: var(--space-xs) var(--space-sm);
+        text-align: center;
+        backdrop-filter: blur(4px);
+        opacity: 0;
+        transform: translateY(-100%);
+        transition: all 1.0s ease-out;
+    }
+
+    .security-banner.revealed {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+    .security-notice {
+        color: var(--color-danger);
+        font-weight: bold;
+        text-shadow: 0 0 8px var(--color-danger);
+        letter-spacing: 0.1em;
+    }
+
+    /* App Container */
+    .app-container {
+        position: relative;
+        min-height: 100vh;
+        min-height: 100dvh;
+        background: var(--color-background);
+        color: var(--color-primary);
+        overflow-x: hidden; /* Prevent horizontal scroll, allow vertical */
+        padding-top: 0; /* Remove default padding - will be added when banner is shown */
+    }
+    
+    /* Add padding when security banner is revealed */
+    .app-container.banner-active {
+        padding-top: 40px;
+    }
+
+    /* Screen Layout Pattern */
+    .screen {
+        display: grid;
+        grid-template-rows: auto 1fr auto;
+        min-height: 100vh;
+        min-height: 100dvh;
+        padding: var(--safe-padding-y) var(--safe-padding-x);
+        padding-bottom: calc(var(--safe-padding-y) + env(safe-area-inset-bottom));
+        width: 100%;
+        opacity: 0;
+        visibility: hidden;
+        transition: opacity var(--transition-cinematic), visibility var(--transition-cinematic);
+        
+        /* Contain content within viewport */
+        contain: layout style;
+    }
+
+    .screen.active {
+        opacity: 1;
+        visibility: visible;
+    }
+
+    /* Screen Sections */
+    .screen-header {
+        padding-bottom: var(--space-lg);
+        text-align: center;
+    }
+
+    .screen-content {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        width: 100%;
+        padding: var(--space-md) 0;
+    }
+    
+    /* Mission screen specific - align content to top */
+    #mission-screen .screen-content {
+        justify-content: flex-start;
+        padding-top: var(--space-xl);
+    }
+
+    .screen-footer {
+        padding-top: var(--space-lg);
+        text-align: center;
+    }
+
+    /* Terminal Container */
+    .terminal-container {
+        width: var(--container-width);
+        max-width: var(--container-max);
+        padding: var(--space-xl);
+        background: var(--color-surface);
+        border: 2px solid var(--color-primary);
+        border-radius: 8px;
+        box-shadow: var(--shadow-terminal);
+        
+        /* Prevent content overflow */
+        overflow: hidden;
+        word-break: break-word;
+    }
+
+    /* Status Bar */
+    .status-bar {
+        display: flex;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: var(--space-sm);
+        opacity: var(--opacity-muted);
+    }
+
+    .status-item {
+        white-space: nowrap;
+    }
+
+    /* General Components */
+    .subtitle {
+        margin-top: var(--space-sm);
+        opacity: var(--opacity-muted);
+        text-align: center;
+    }
+
+    /* Progress Indicator */
+    .progress-indicator {
+        display: inline-flex;
+        align-items: center;
+        gap: var(--space-sm);
+    }
+
+    /* Security Notice */
+    .security-notice {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: var(--space-xs);
+        text-align: center;
+    }
+
+    .warning-text {
+        color: var(--color-danger);
+        font-weight: bold;
+    }
+
+    .info-text {
+        color: var(--color-secondary);
+    }
+}

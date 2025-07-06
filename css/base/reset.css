@@ -1,0 +1,36 @@
+/* ==========================================================================
+   Base: Browser Reset & HTML/Body Styles
+   ========================================================================== */
+
+@layer base {
+    *,
+    *::before,
+    *::after {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+    }
+
+    html {
+        /* Smooth scrolling by default */
+        scroll-behavior: smooth;
+        
+        /* Prevent text size adjustments on orientation change */
+        -webkit-text-size-adjust: 100%;
+        text-size-adjust: 100%;
+        
+        /* Better font rendering */
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+    }
+
+    body {
+        min-height: 100vh;
+        min-height: 100dvh; /* Dynamic viewport height for mobile */
+        font-family: 'Courier New', monospace;
+        line-height: 1.6;
+        color: var(--color-primary);
+        background-color: var(--color-background);
+        overflow-x: hidden;
+    }
+}

@@ -1,0 +1,26 @@
+/* ==========================================================================
+   Utilities: Visual Effects & Data Animations
+   ========================================================================== */
+
+@layer utilities {
+    /* Data Animation Effects */
+    .data-flash {
+        animation: dataFlash 0.5s ease-out;
+    }
+}
+
+/* Data Animation Keyframes */
+@keyframes dataFlash {
+    0% { 
+        color: var(--color-primary);
+        text-shadow: var(--glow-primary);
+    }
+    50% { 
+        color: #ffffff;
+        text-shadow: 0 0 15px var(--color-primary);
+    }
+    100% { 
+        color: var(--color-primary);
+        text-shadow: var(--glow-primary);
+    }
+}

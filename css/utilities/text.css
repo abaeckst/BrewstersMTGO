@@ -1,0 +1,22 @@
+/* ==========================================================================
+   Utilities: Text & Typography
+   ========================================================================== */
+
+@layer utilities {
+    /* Text Color Utilities */
+    .text-yellow {
+        color: var(--color-warning);
+    }
+
+    .text-primary {
+        color: var(--color-primary);
+    }
+
+    .text-secondary {
+        color: var(--color-secondary);
+    }
+
+    .text-danger {
+        color: var(--color-danger);
+    }
+}

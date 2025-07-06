@@ -1,0 +1,266 @@
+/* ==========================================================================
+   Screens: Countdown Screen V2 - 14-Day Mission Timer
+   ========================================================================== */
+
+@layer screens {
+    /* Main Countdown Screen Layout */
+    #countdown-screen {
+        background: radial-gradient(circle at center, #000 0%, #001100 50%, #000 100%);
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-start;
+        align-items: center;
+        text-align: center;
+        padding: var(--space-xl);
+        min-height: 100vh;
+        min-height: 100dvh;
+        overflow-y: auto;
+        gap: var(--space-xl);
+        color: var(--color-primary);
+        --countdown-used-height: 60vh;
+    }
+
+    /* Sequential Revelation System - Stage Classes */
+    .countdown-stage-hidden {
+        opacity: 0 !important;
+        transition: opacity 1.0s ease-out !important;
+    }
+
+    .countdown-stage-reveal {
+        opacity: 1 !important;
+        transition: opacity 1.0s ease-out !important;
+    }
+
+    /* Phase 1: Congratulations Message */
+    #congratulations-message {
+        font-size: clamp(1.2rem, 3.5vw, 1.8rem);
+        line-height: 1.6;
+        color: var(--color-primary);
+        text-shadow: var(--glow-primary);
+        width: 100%;
+        margin: var(--space-sm) 0;
+        font-family: 'Courier New', monospace;
+        letter-spacing: 1px;
+        text-align: center;
+    }
+
+    /* Typing cursor animation for congratulations */
+    .typing-cursor::after {
+        content: '_';
+        animation: cursor-blink 1s infinite;
+        color: var(--color-primary);
+    }
+
+    @keyframes cursor-blink {
+        0%, 50% { opacity: 1; }
+        51%, 100% { opacity: 0; }
+    }
+
+    /* Phase 2: Timer Display */
+    #timer-display {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: var(--space-md);
+        margin: var(--space-sm) 0;
+    }
+
+
+    .timer-digits {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: var(--space-md);
+        flex-wrap: wrap;
+    }
+
+    .digit-pair {
+        display: flex;
+        gap: var(--space-xs);
+        align-items: center;
+    }
+
+    .digit-value {
+        font-size: clamp(3rem, 8vw, 6rem);
+        font-family: 'Courier New', monospace;
+        color: var(--color-primary);
+        text-shadow: var(--glow-primary);
+        background: rgba(0, 255, 0, 0.1);
+        border: 2px solid var(--color-primary);
+        border-radius: 8px;
+        padding: var(--space-sm) var(--space-md);
+        min-width: 1.2em;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+        overflow: hidden;
+        transition: all 0.3s ease;
+    }
+
+    .digit-value::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+        animation: digit-scan 4s ease-in-out infinite;
+    }
+
+    .digit-changing {
+        box-shadow: 0 0 20px var(--color-primary);
+    }
+
+    .digit-separator {
+        font-size: clamp(1.5rem, 6vw, 3rem);
+        color: var(--color-secondary);
+        margin: 0 var(--space-xs);
+        font-family: 'Courier New', monospace;
+    }
+
+    @keyframes digit-scan {
+        0% { left: -100%; }
+        50% { left: 100%; }
+        100% { left: -100%; }
+    }
+
+    /* Phase 3: "YOUR TIME STARTS NOW" Section */
+    #time-starts-section {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: var(--space-lg);
+        margin: var(--space-sm) 0;
+    }
+
+    .time-starts-words {
+        display: flex;
+        justify-content: center;
+        gap: var(--space-2xl);
+        flex-wrap: wrap;
+        font-size: clamp(1.5rem, 4vw, 2.5rem);
+        font-family: 'Courier New', monospace;
+        color: var(--color-primary);
+        text-shadow: var(--glow-primary);
+        letter-spacing: 3px;
+    }
+
+    .time-word {
+        transition: all 1.0s ease-out;
+    }
+
+    .time-word.countdown-stage-hidden {
+        opacity: 0 !important;
+    }
+
+    .time-word.countdown-stage-reveal {
+        opacity: 1 !important;
+        transform: scale(1) !important;
+    }
+
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+        #countdown-screen {
+            padding: var(--space-md);
+            gap: var(--space-md);
+        }
+
+        .timer-digits {
+            gap: var(--space-sm);
+        }
+
+        .digit-pair {
+            gap: 2px;
+        }
+
+
+        .time-starts-words {
+            gap: var(--space-xl);
+        }
+
+        .digit-separator {
+            margin: 0 2px;
+        }
+
+    }
+
+    @media (max-width: 480px) {
+        .timer-digits {
+            gap: var(--space-sm);
+        }
+
+
+        .time-starts-words {
+            flex-direction: column;
+            gap: var(--space-xs);
+        }
+
+        .digit-value {
+            padding: var(--space-xs) var(--space-sm);
+        }
+    }
+
+    /* Accessibility - Reduced Motion */
+    @media (prefers-reduced-motion: reduce) {
+        .countdown-stage-hidden,
+        .countdown-stage-reveal {
+            transition: opacity 0.3s ease !important;
+        }
+
+        .digit-value::before {
+            animation: none;
+        }
+
+
+        .typing-cursor::after {
+            animation: none;
+            opacity: 1;
+        }
+    }
+
+    /* High Contrast Mode */
+    @media (prefers-contrast: high) {
+        .digit-value {
+            background: rgba(0, 255, 0, 0.3);
+            border-width: 3px;
+        }
+
+        .credit-name {
+            opacity: 1;
+        }
+    }
+}
+
+/* Additional Animations for Enhanced Cinematic Effect */
+@layer screens {
+    /* Subtle background pulse during countdown */
+    #countdown-screen.timer-active {
+        animation: background-pulse 10s ease-in-out infinite;
+    }
+
+    @keyframes background-pulse {
+        0%, 100% { 
+            background: radial-gradient(circle at center, #000 0%, #001100 50%, #000 100%);
+        }
+        50% { 
+            background: radial-gradient(circle at center, #001100 0%, #002200 50%, #001100 100%);
+        }
+    }
+
+    /* Glow effect for completed countdown */
+    #countdown-screen.countdown-complete {
+        animation: completion-glow 2s ease-in-out infinite;
+    }
+
+    @keyframes completion-glow {
+        0%, 100% { 
+            box-shadow: inset 0 0 20px rgba(0, 255, 0, 0.1);
+        }
+        50% { 
+            box-shadow: inset 0 0 40px rgba(0, 255, 0, 0.2);
+        }
+    }
+}

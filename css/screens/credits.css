@@ -1,0 +1,192 @@
+/* ==========================================================================
+   Screens: Credits Screen Styles
+   ========================================================================== */
+
+@layer screens {
+    /* Credits Screen Layout */
+    #credits-screen {
+        background: linear-gradient(135deg, #000 0%, #001a00 50%, #000 100%);
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+        padding: var(--space-xl);
+        min-height: 100vh;
+        min-height: 100dvh;
+        position: relative;
+        overflow: hidden;
+        isolation: isolate;
+    }
+
+    .credits-title {
+        font-size: var(--text-3xl);
+        color: var(--color-primary);
+        text-shadow: var(--glow-intense);
+        margin-bottom: var(--space-lg);
+        animation: creditsGlow 3s ease-in-out infinite;
+    }
+
+    /* Badge Styling for Credits Screen */
+    .mission-complete-badge {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        margin-bottom: var(--space-xl);
+        padding: var(--space-lg);
+        border: 2px solid var(--color-primary);
+        border-radius: 8px;
+        background: linear-gradient(135deg, rgba(0, 255, 0, 0.1), rgba(0, 204, 0, 0.1));
+        position: relative;
+        overflow: hidden;
+    }
+
+    .mission-complete-badge::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        left: -50%;
+        width: 200%;
+        height: 200%;
+        background: linear-gradient(45deg, transparent, rgba(0, 255, 0, 0.1), transparent);
+        animation: badgeSuccessScan 3s linear infinite;
+        pointer-events: none;
+    }
+
+    .mission-complete-badge .badge-inner {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: var(--space-sm);
+        position: relative;
+        z-index: 1;
+    }
+
+    .mission-complete-badge .badge-text {
+        font-size: var(--text-3xl);
+        color: var(--color-primary);
+        font-weight: bold;
+        letter-spacing: 2px;
+        text-shadow: 0 0 10px var(--color-primary);
+        animation: badgeSuccessPulse 2s ease-in-out infinite;
+    }
+
+    .mission-complete-badge .badge-subtext {
+        font-size: var(--text-3xl);
+        color: var(--color-secondary);
+        font-weight: bold;
+        letter-spacing: 1px;
+        text-shadow: 0 0 8px var(--color-secondary);
+        animation: badgeSuccessPulse 2s ease-in-out infinite 0.5s;
+    }
+
+    .mission-complete {
+        font-size: var(--text-xl);
+        color: var(--color-secondary);
+        margin-bottom: var(--space-xl);
+        letter-spacing: 2px;
+    }
+
+    .mission-stats {
+        display: grid;
+        gap: var(--space-lg);
+        margin-bottom: var(--space-xl);
+        max-width: 500px;
+        width: 100%;
+    }
+
+    .stat-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: var(--space-md);
+        background: rgba(0, 255, 0, 0.1);
+        border: 1px solid var(--color-secondary);
+        border-radius: 4px;
+    }
+
+    .stat-label {
+        color: var(--color-secondary);
+        font-weight: bold;
+    }
+
+    .stat-value {
+        color: var(--color-primary);
+        font-family: 'Courier New', monospace;
+        font-weight: bold;
+    }
+
+    .final-message {
+        font-size: var(--text-lg);
+        color: var(--color-primary);
+        margin-bottom: var(--space-xl);
+        line-height: 1.6;
+        max-width: 600px;
+    }
+
+    .self-destruct {
+        font-size: var(--text-base);
+        color: var(--color-danger);
+        animation: destructWarning 1s ease-in-out infinite;
+        margin-top: var(--space-xl);
+    }
+
+    .credits-content {
+        position: relative;
+        z-index: 2;
+    }
+
+    .credits-background {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: radial-gradient(
+            circle at var(--mouse-x, 50%) var(--mouse-y, 50%),
+            rgba(0, 255, 0, 0.1) 0%,
+            transparent 50%
+        );
+        pointer-events: none;
+        z-index: 1;
+    }
+}
+
+/* Credits Animations */
+@keyframes creditsGlow {
+    0%, 100% { 
+        text-shadow: var(--glow-primary);
+        transform: scale(1);
+    }
+    50% { 
+        text-shadow: var(--glow-intense), 0 0 100px var(--color-primary);
+        transform: scale(1.05);
+    }
+}
+
+@keyframes destructWarning {
+    0%, 100% { 
+        color: var(--color-danger);
+        text-shadow: 0 0 10px var(--color-danger);
+    }
+    50% { 
+        color: #ff6666;
+        text-shadow: 0 0 20px #ff6666;
+    }
+}
+
+@keyframes badgeSuccessScan {
+    0% { transform: translateX(-100%) translateY(-100%) rotate(45deg); }
+    100% { transform: translateX(100%) translateY(100%) rotate(45deg); }
+}
+
+@keyframes badgeSuccessPulse {
+    0%, 100% { 
+        transform: scale(1);
+        opacity: 1;
+    }
+    50% { 
+        transform: scale(1.05);
+        opacity: 0.9;
+    }
+}

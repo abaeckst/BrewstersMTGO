@@ -1,0 +1,115 @@
+/* ==========================================================================
+   Base: CSS Custom Properties - The Foundation
+   ========================================================================== */
+
+:root {
+    /* Colors - Spy Terminal Theme */
+    --color-primary: #00ff00;
+    --color-secondary: #00cc00;
+    --color-danger: #ff0040;
+    --color-warning: #ffaa00;
+    --color-background: #000000;
+    --color-surface: #0a0a0a;
+    --color-surface-light: #1a1a1a;
+    
+    /* Enhanced Color System with Opacity Variants */
+    --color-primary-alpha-10: rgba(0, 255, 0, 0.1);
+    --color-primary-alpha-20: rgba(0, 255, 0, 0.2);
+    --color-primary-alpha-30: rgba(0, 255, 0, 0.3);
+    --color-primary-alpha-40: rgba(0, 255, 0, 0.4);
+    --color-primary-alpha-50: rgba(0, 255, 0, 0.5);
+    --color-primary-alpha-60: rgba(0, 255, 0, 0.6);
+    --color-primary-alpha-80: rgba(0, 255, 0, 0.8);
+    --color-primary-alpha-90: rgba(0, 255, 0, 0.9);
+    
+    /* Background Color Variants */
+    --color-black-alpha-80: rgba(0, 0, 0, 0.8);
+    --color-black-alpha-90: rgba(0, 0, 0, 0.9);
+    
+    /* Button Background Gradients */
+    --gradient-button-base: linear-gradient(135deg, #001a00, #003300);
+    --gradient-button-hover: linear-gradient(135deg, #002200, #004400);
+    --gradient-button-sweep: linear-gradient(90deg, transparent, var(--color-primary-alpha-10), transparent);
+    
+    /* Enhanced Fluid Typography System - Mobile-First with Word Break Prevention */
+    --text-xs: clamp(18px, 3vw, 22px);     /* Enhanced mobile minimum */
+    --text-sm: clamp(20px, 3.5vw, 26px);   /* Better mobile readability */
+    --text-base: clamp(24px, 4.5vw, 32px); /* Larger mobile base */
+    --text-lg: clamp(28px, 5.5vw, 42px);   /* Optimized scaling */
+    --text-xl: clamp(34px, 6.5vw, 52px);   /* Better proportion */
+    --text-2xl: clamp(40px, 7.5vw, 60px);  /* Mobile-friendly scaling */
+    --text-3xl: clamp(48px, 8.5vw, 68px);  /* Responsive title size */
+    
+    /* Layout System */
+    --container-max: 800px;
+    --container-width: min(95vw, var(--container-max));
+    --safe-padding-x: max(20px, env(safe-area-inset-left));
+    --safe-padding-y: max(20px, env(safe-area-inset-top));
+    
+    /* Desktop Scaling System - Proportional scaling for larger screens */
+    --desktop-scale-multiplier: 1;
+    --desktop-text-multiplier: 1;
+    --desktop-spacing-multiplier: 1;
+    --desktop-terminal-multiplier: 1;
+    
+    /* Spacing Scale - Fluid responsive spacing */
+    --space-xs: clamp(4px, 1vw, 8px);
+    --space-sm: clamp(8px, 2vw, 16px);
+    --space-md: clamp(16px, 3vw, 24px);
+    --space-lg: clamp(24px, 4vw, 32px);
+    --space-xl: clamp(32px, 5vw, 48px);
+    --space-2xl: clamp(48px, 6vw, 64px);
+    
+    /* Border Radius System */
+    --radius-sm: 4px;
+    --radius-md: 6px;
+    --radius-lg: 8px;
+    
+    /* Border Width System */
+    --border-thin: 1px;
+    --border-normal: 2px;
+    
+    /* Letter Spacing System */
+    --letter-spacing-normal: 0.1em;
+    --letter-spacing-wide: 0.2em;
+    
+    /* Opacity Values */
+    --opacity-subtle: 0.3;
+    --opacity-dim: 0.6;
+    --opacity-muted: 0.8;
+    
+    /* Timing System - Comprehensive animation timing */
+    --timing-immediate: 0ms;
+    --timing-fast: 200ms;
+    --timing-normal: 300ms;
+    --timing-medium: 500ms;
+    --timing-slow: 800ms;
+    --timing-cinematic: 1200ms;
+    --timing-dramatic: 2000ms;
+    --timing-scanlines: 8s;
+    --timing-signal-bounce: 0.6s;
+    --timing-digit-flip: 0.6s;
+    
+    /* Transform Values */
+    --transform-button-lift: translateY(-2px);
+    --transform-button-reset: translateY(0);
+    
+    /* Fonts */
+    --font-mono: 'Courier New', 'Lucida Console', monospace;
+    
+    /* Legacy Animation Timing (maintained for compatibility) */
+    --transition-fast: var(--timing-fast);
+    --transition-base: var(--timing-normal);
+    --transition-slow: var(--timing-slow);
+    --transition-cinematic: var(--timing-cinematic);
+    
+    /* Effects */
+    --glow-primary: 0 0 20px var(--color-primary);
+    --glow-intense: 0 0 40px var(--color-primary);
+    --shadow-terminal: 0 4px 20px var(--color-primary-alpha-30);
+    
+    /* Box Shadow System */
+    --shadow-button-focus: 0 0 0 2px var(--color-primary-alpha-20), 0 0 20px var(--color-primary-alpha-40);
+    --shadow-button-active: 0 0 0 2px var(--color-primary-alpha-30), 0 0 10px var(--color-primary-alpha-50);
+    --shadow-input-focus: 0 0 0 2px var(--color-primary-alpha-20), 0 0 10px var(--color-primary-alpha-30);
+}

@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>CLASSIFIED TERMINAL - AUTHORIZED ACCESS ONLY</title>
+    
+    <!-- Single CSS file for clean architecture -->
+    <link rel="stylesheet" href="css/main.css">
+    
+    <!-- Preload critical assets -->
+    <!-- Font will be loaded via CSS fallback system -->
+</head>
+<body>
+    <!-- Application Container -->
+    <div id="app" class="app-container">
+        
+        <!-- Global Security Banner -->
+        <div class="security-banner" id="security-banner">
+            <div class="auth-text-sm security-notice">AUTHORIZED PERSONNEL ONLY</div>
+        </div>
+        
+        <!-- Wake Screen - Dormant Terminal (First Screen) -->
+        <div id="wake-screen" class="screen active wake-screen-dormant">
+            <!-- Dormant terminal container -->
+            <div class="dormant-terminal-container">
+                <!-- Wake trigger area -->
+                <div class="wake-trigger-area" id="wake-trigger">
+                    <div class="wake-instruction wake-stage-1-hidden">
+                        <span class="wake-text">[WAKE SYSTEM]</span>
+                        <div class="wake-hint">TAP TO ACTIVATE</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Boot Sequence Screen - Full Terminal Experience (Second Screen) -->
+        <div id="boot-sequence-screen" class="screen hidden boot-screen-fullscreen">
+            <!-- Full viewport boot sequence container -->
+            <div class="boot-sequence-container">
+                <!-- Boot messages will be dynamically added here -->
+                <!-- This will fill the entire screen like a real terminal -->
+            </div>
+        </div>
+        
+        <!-- Auth Screen -->
+        <div id="auth-screen" class="screen hidden screen-isolated">
+            <header class="screen-header">
+                <div class="status-bar text-xs auth-stage-1-hidden">
+                    <span class="status-item">SECURE CHANNEL: ESTABLISHED</span>
+                    <span class="status-item">ENCRYPTION: ACTIVE</span>
+                </div>
+                <h1 class="text-2xl auth-stage-2-hidden">OPERATIVE AUTHENTICATION</h1>
+                <div class="subtitle text-sm auth-stage-2-hidden">ENTER CREDENTIALS TO PROCEED</div>
+            </header>
+            
+            <main class="screen-content">
+                <div class="terminal-container auth-stage-3-hidden">
+                    <form id="auth-form" class="auth-form">
+                        <div class="form-group auth-stage-4-hidden">
+                            <label for="agent-name" class="form-label text-sm">
+                                AGENT DESIGNATION
+                            </label>
+                            <input 
+                                type="text" 
+                                id="agent-name" 
+                                class="terminal-input text-base"
+                                placeholder="ENTER AGENT NAME"
+                                required
+                                autocomplete="off"
+                                maxlength="20"
+                            />
+                            <div class="input-hint text-xs">
+                                ALPHANUMERIC CHARACTERS ONLY
+                            </div>
+                        </div>
+                        
+                        <div class="form-group auth-stage-4-hidden">
+                            <label for="access-code" class="form-label text-sm">
+                                ACCESS CODE
+                            </label>
+                            <input 
+                                type="password" 
+                                id="access-code" 
+                                class="terminal-input text-base"
+                                placeholder="ENTER ACCESS CODE"
+                                required
+                                autocomplete="off"
+                                maxlength="12"
+                            />
+                            <div class="input-hint text-xs">
+                                4-12 CHARACTERS REQUIRED
+                            </div>
+                        </div>
+                        
+                        <button type="submit" class="action-button text-lg auth-stage-5-hidden">
+                            AUTHENTICATE
+                        </button>
+                    </form>
+                </div>
+            </main>
+            
+            <footer class="screen-footer auth-stage-6-hidden">
+                <div class="security-notice text-xs">
+                    <span class="warning-text">⚠ UNAUTHORIZED ACCESS PROHIBITED</span>
+                    <span class="info-text">ALL ACTIVITY MONITORED</span>
+                </div>
+            </footer>
+        </div>
+        
+        <!-- Mission Screen -->
+        <div id="mission-screen" class="screen hidden">
+            <header class="screen-header">
+                <div class="status-bar text-xs reveal-element">
+                    <span class="status-item">TRANSMISSION: DETECTED</span>
+                    <span class="status-item">PRIORITY: CLASSIFIED</span>
+                </div>
+                <h1 class="text-2xl reveal-element">INCOMING TRANSMISSION</h1>
+            </header>
+            
+            <main class="screen-content">
+                <div class="scrollable-content">
+                    <div class="terminal-container">
+                        <!-- Stage 1: Signal Detection -->
+                        <div class="transmission-detection reveal-element">
+                        <div class="signal-status text-sm">
+                            ANALYZING SIGNAL...
+                        </div>
+                        <div class="signal-bars">
+                            <div class="bar" data-bar="1"></div>
+                            <div class="bar" data-bar="2"></div>
+                            <div class="bar" data-bar="3"></div>
+                            <div class="bar" data-bar="4"></div>
+                            <div class="bar" data-bar="5"></div>
+                        </div>
+                        <div class="signal-lock text-xs">
+                            SIGNAL LOCK: ESTABLISHING
+                        </div>
+                    </div>
+                    
+                    <!-- Stage 2: Personal Communication -->
+                    <div class="personal-communication">
+                        <div class="communication-header text-sm reveal-element">
+                            PERSONAL TRANSMISSION - EYES ONLY
+                        </div>
+                        <div class="personal-message text-base reveal-element">
+                            <!-- Content will be populated by JavaScript -->
+                        </div>
+                    </div>
+                    
+                    <!-- Stage 3: Mission Choices -->
+                    <div class="mission-choices">
+                        <div class="choice-prompt text-lg reveal-element">
+                            SELECT YOUR RESPONSE:
+                        </div>
+                        
+                        <div class="choice-options">
+                            <!-- Option Alpha -->
+                            <div class="mission-option">
+                                <div class="option-header text-base reveal-element">
+                                    OPTION ALPHA
+                                </div>
+                                <button class="mission-button decline-button text-base reveal-element">
+                                    DECLINE MISSION
+                                </button>
+                            </div>
+                            
+                            <!-- Option Bravo -->
+                            <div class="mission-option">
+                                <div class="option-header text-base reveal-element">
+                                    OPTION BRAVO
+                                </div>
+                                <button class="mission-button accept-button text-base reveal-element">
+                                    ACCEPT MISSION
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="choice-hint text-xs text-yellow reveal-element">
+                            TAP YOUR SELECTION
+                        </div>
+                    </div>
+                </div>
+                </div>
+            </main>
+            
+            <footer class="screen-footer reveal-element">
+                <div class="mission-status text-xs">
+                    <span class="status-item">AWAITING RESPONSE</span>
+                    <span class="status-item">TRANSMISSION SECURE</span>
+                </div>
+            </footer>
+        </div>
+        
+        <!-- Briefing Screen -->
+        <div id="briefing-screen" class="screen hidden">
+            <header class="screen-header">
+                <div class="classification-banner">
+                    <span class="classification-level">TOP SECRET</span>
+                    <span class="classification-code">PROJECT PHANTOM</span>
+                </div>
+                <h1 class="text-2xl briefing-title">MISSION BRIEFING</h1>
+            </header>
+            
+            <main class="screen-content">
+                <div class="terminal-container">
+                    <div class="agent-dossier reveal-element">
+                        <div class="dossier-header">
+                            <h2 class="text-lg">AGENT DOSSIER</h2>
+                            <div class="agent-photo-placeholder">
+                                <div class="photo-static"></div>
+                            </div>
+                        </div>
+                        <div class="dossier-details">
+                            <div class="detail-row">
+                                <span class="detail-label">AGENT:</span>
+                                <span class="detail-value agent-name-display">Loading...</span>
+                            </div>
+                            <div class="detail-row">
+                                <span class="detail-label">CLEARANCE:</span>
+                                <span class="detail-value">LEVEL 9 - ALPHA</span>
+                            </div>
+                            <div class="detail-row">
+                                <span class="detail-label">MISSION:</span>
+                                <span class="detail-value">OPERATION GOBLIN SURPRISE</span>
+                            </div>
+                            <div class="detail-row">
+                                <span class="detail-label">STATUS:</span>
+                                <span class="detail-value mission-status">BRIEFING IN PROGRESS</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mission-details reveal-element">
+                        <h3 class="text-lg">MISSION PARAMETERS</h3>
+                        <div class="parameter-grid">
+                            <div class="parameter-item">
+                                <span class="param-label">OBJECTIVE:</span>
+                                <span class="param-value">Run public giveaway contest to award 200 MTGO tickets. Must be fair, transparent, and legitimate.</span>
+                            </div>
+                            <div class="parameter-item">
+                                <span class="param-label">ASSETS:</span>
+                                <span class="param-value">200 MTGO tickets (loaded on goblinsurprise account), Goblin Surprise Twitter account (for contest promotion)</span>
+                            </div>
+                            <div class="parameter-item">
+                                <span class="param-label">TIMELINE:</span>
+                                <span class="param-value">14 days</span>
+                            </div>
+                            <div class="parameter-item">
+                                <span class="param-label">COMPENSATION:</span>
+                                <span class="param-value">600 tickets on completion</span>
+                            </div>
+                            <div class="parameter-item">
+                                <span class="param-label">STATUS:</span>
+                                <span class="param-value">CLASSIFIED</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+            
+            <footer class="screen-footer">
+                <div class="confirmation-prompt reveal-element">
+                    <p class="text-base">Agent, do you accept this mission?</p>
+                </div>
+                <div class="briefing-actions reveal-element">
+                    <button id="briefing-accept" class="action-button primary text-base">
+                        <span class="button-text">ACCEPT MISSION</span>
+                        <span class="button-subtitle">Proceed to countdown</span>
+                    </button>
+                    <button id="briefing-decline" class="action-button secondary text-base">
+                        <span class="button-text">DECLINE MISSION</span>
+                        <span class="button-subtitle">Return to civilian life</span>
+                    </button>
+                </div>
+            </footer>
+        </div>
+        
+        <!-- Countdown Screen V2 - 14-Day Mission Timer -->
+        <div id="countdown-screen" class="screen hidden">
+            <!-- Phase 1: Congratulations Message -->
+            <div id="congratulations-message" class="countdown-stage-hidden">
+                CONGRATULATIONS, OPERATIVE. YOU HAVE ACCEPTED THE MOST CRITICAL MISSION OF YOUR CAREER. YOU ARE THE ONLY AGENT WITH THE SKILLS AND CLEARANCE TO EXECUTE OPERATION: GOBLIN SURPRISE.
+            </div>
+
+            <!-- Phase 3: "YOUR TIME STARTS NOW" Section -->
+            <div id="time-starts-section" class="countdown-stage-hidden">
+                <div class="time-starts-words">
+                    <div class="time-word countdown-stage-hidden" id="word-your">YOUR</div>
+                    <div class="time-word countdown-stage-hidden" id="word-time">TIME</div>
+                    <div class="time-word countdown-stage-hidden" id="word-starts">STARTS</div>
+                    <div class="time-word countdown-stage-hidden" id="word-now">NOW</div>
+                </div>
+            </div>
+
+            <!-- Phase 2: Timer Display -->
+            <div id="timer-display" class="countdown-stage-hidden">
+                <div class="timer-digits">
+                    <div class="digit-pair">
+                        <span class="digit-value" id="days-tens">1</span>
+                        <span class="digit-value" id="days-ones">4</span>
+                    </div>
+                    <div class="digit-separator">:</div>
+                    <div class="digit-pair">
+                        <span class="digit-value" id="hours-tens">0</span>
+                        <span class="digit-value" id="hours-ones">0</span>
+                    </div>
+                    <div class="digit-separator">:</div>
+                    <div class="digit-pair">
+                        <span class="digit-value" id="minutes-tens">0</span>
+                        <span class="digit-value" id="minutes-ones">0</span>
+                    </div>
+                    <div class="digit-separator">:</div>
+                    <div class="digit-pair">
+                        <span class="digit-value" id="seconds-tens">0</span>
+                        <span class="digit-value" id="seconds-ones">0</span>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+        
+        <!-- Credits Screen -->
+        <div id="credits-screen" class="screen hidden screen-isolated">
+            <header class="screen-header">
+                <h1 class="text-2xl credits-title">MISSION ACCOMPLISHED</h1>
+                <div class="mission-complete-badge">
+                    <div class="badge-inner">
+                        <div class="badge-text">CLASSIFIED</div>
+                        <div class="badge-subtext">OPERATION COMPLETE</div>
+                    </div>
+                </div>
+            </header>
+            
+            <main class="screen-content">
+                <div class="terminal-container">
+                    <div class="credits-section reveal-element">
+                        <h2 class="text-lg">MISSION DEBRIEF</h2>
+                        <div class="debrief-stats">
+                            <div class="stat-item">
+                                <span class="stat-label">OPERATION:</span>
+                                <span class="stat-value">GOBLIN SURPRISE</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">STATUS:</span>
+                                <span class="stat-value">SUCCESS</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">AGENT:</span>
+                                <span class="stat-value agent-name-credits">CLASSIFIED</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="credits-section reveal-element">
+                        <h2 class="text-lg">SPECIAL THANKS</h2>
+                        <div class="thanks-list">
+                            <div class="thanks-item">Brewster - Mission Handler</div>
+                            <div class="thanks-item">MTGO Community - Unwitting Accomplices</div>
+                            <div class="thanks-item">You - Agent Extraordinary</div>
+                        </div>
+                    </div>
+                    
+                    <div class="credits-section reveal-element">
+                        <h2 class="text-lg">CLASSIFIED INFORMATION</h2>
+                        <div class="classified-info">
+                            <p class="text-base">This terminal will self-destruct in 10 seconds...</p>
+                            <p class="text-base">Thank you for your service, Agent.</p>
+                        </div>
+                    </div>
+                </div>
+            </main>
+            
+            <footer class="screen-footer">
+                <button id="restart-mission" class="action-button text-base">
+                    <span class="button-text">NEW MISSION</span>
+                    <span class="button-subtitle">Start over</span>
+                </button>
+            </footer>
+        </div>
+        
+        <!-- Mission Declined Screen -->
+        <div id="declined-screen" class="screen hidden screen-isolated">
+            <header class="screen-header">
+                <h1 class="text-2xl declined-title">MISSION DECLINED</h1>
+                <div class="declined-badge">
+                    <div class="badge-inner">
+                        <div class="badge-text">HONORABLE</div>
+                        <div class="badge-subtext">DISCHARGE</div>
+                    </div>
+                </div>
+            </header>
+            
+            <main class="screen-content">
+                <div class="terminal-container">
+                    <div class="discharge-details reveal-element">
+                        <h2 class="text-lg">DISCHARGE SUMMARY</h2>
+                        <div class="discharge-stats">
+                            <div class="stat-item">
+                                <span class="stat-label">AGENT:</span>
+                                <span class="stat-value agent-name-declined">CLASSIFIED</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">SERVICE RECORD:</span>
+                                <span class="stat-value">EXEMPLARY</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">COMPENSATION:</span>
+                                <span class="stat-value">600 MTGO TICKETS</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">STATUS:</span>
+                                <span class="stat-value">CIVILIAN</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="final-message reveal-element">
+                        <p class="text-base">Your service to the agency has been commendable.</p>
+                        <p class="text-base">Enjoy your return to civilian life and your MTGO winnings.</p>
+                        <p class="text-base">This terminal will now close.</p>
+                    </div>
+                </div>
+            </main>
+            
+            <footer class="screen-footer">
+                <button id="restart-declined" class="action-button text-base">
+                    <span class="button-text">RECONSIDER</span>
+                    <span class="button-subtitle">Start over</span>
+                </button>
+            </footer>
+        </div>
+        
+        <!-- CRT Effects Layer -->
+        <div class="crt-effects">
+            <div class="scanlines"></div>
+            <div class="phosphor-glow"></div>
+        </div>
+        
+    </div>
+    
+    <!-- Scripts -->
+    <script type="module" src="js/app.js"></script>
+</body>
+</html>

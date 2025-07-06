@@ -1,0 +1,87 @@
+/* ==========================================================================
+   Utilities: Screen Positioning Fix
+   ========================================================================== */
+
+@layer utilities {
+    /* Extend app container for proper positioning context */
+    .app-container {
+        position: relative;
+        width: 100%;
+        min-height: 100vh;
+        min-height: 100dvh;
+        height: auto; /* Allow container to expand with content */
+        overflow-x: hidden; /* Prevent horizontal scroll, allow vertical scroll */
+        /* Preserve existing background and color from terminal.css */
+        background: var(--color-background);
+        color: var(--color-primary);
+    }
+    
+    /* Absolute positioning override for .screen elements
+       This removes screens from document flow to prevent blank space issues */
+    .screen {
+        position: absolute !important;
+        top: 0;
+        left: 0;
+        width: 100%;
+        min-height: 100%;
+        z-index: 1;
+        
+        /* Preserve existing grid layout within the screen */
+        display: grid;
+        grid-template-rows: auto 1fr auto;
+        
+        /* Dynamic viewport handling for iOS Safari */
+        min-height: 100vh;
+        min-height: 100dvh;
+        
+        /* Maintain existing padding and safe area handling */
+        padding: var(--safe-padding-y) var(--safe-padding-x);
+        padding-bottom: calc(var(--safe-padding-y) + env(safe-area-inset-bottom));
+        
+        /* Additional iOS Safari safeguards */
+        padding-top: calc(var(--safe-padding-y) + env(safe-area-inset-top));
+        padding-left: calc(var(--safe-padding-x) + env(safe-area-inset-left));
+        padding-right: calc(var(--safe-padding-x) + env(safe-area-inset-right));
+        
+        /* Preserve existing transition behavior */
+        opacity: 0;
+        visibility: hidden;
+        transition: opacity var(--transition-cinematic), visibility var(--transition-cinematic);
+        
+        /* Contain content within viewport */
+        contain: layout style;
+    }
+    
+    /* Special case: Mission screen allows content to extend beyond viewport for browser scrolling */
+    #mission-screen {
+        min-height: auto; /* Allow content to determine height */
+        height: auto; /* Allow natural content height expansion */
+    }
+
+    /* Active screen gets higher z-index */
+    .screen.active {
+        z-index: 10;
+        opacity: 1;
+        visibility: visible;
+    }
+    
+    /* Mission screen hybrid positioning: When active, use relative positioning to allow document flow */
+    #mission-screen.active {
+        position: relative !important;
+        min-height: 100vh;
+        min-height: 100dvh;
+        /* Reset top/left for relative positioning */
+        top: auto !important;
+        left: auto !important;
+        /* Smooth transition for position change */
+        transition: opacity var(--transition-cinematic), visibility var(--transition-cinematic);
+    }
+
+    /* Hidden screens stay at base z-index with additional safeguards */
+    .screen.hidden {
+        z-index: 1;
+        visibility: hidden;
+        opacity: 0;
+        pointer-events: none;
+    }
+}

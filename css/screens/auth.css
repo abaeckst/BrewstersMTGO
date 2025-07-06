@@ -1,0 +1,139 @@
+/* ==========================================================================
+   Screens: Auth Screen Sequential Revelation System
+   ========================================================================== */
+
+@layer screens {
+    /* Auth Screen Layout */
+    #auth-screen {
+        padding: var(--space-lg);
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+        min-height: 100dvh;
+    }
+
+    #auth-screen .screen-header {
+        width: 100%;
+        max-width: var(--container-width);
+        text-align: center;
+        margin-bottom: var(--space-xl);
+    }
+
+    #auth-screen .screen-content {
+        width: 100%;
+        max-width: var(--container-width);
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+    }
+
+    #auth-screen .screen-footer {
+        width: 100%;
+        max-width: var(--container-width);
+        margin-top: var(--space-xl);
+    }
+}
+
+/* Sequential Revelation System for Auth Screen - Layer-based Architecture */
+@layer stages {
+    /* Stage 1: Status Bar */
+    #auth-screen .auth-stage-1-hidden {
+        opacity: 0;
+        transform: translateY(-10px);
+        transition: all 1.0s ease-out;
+    }
+
+    #auth-screen .auth-stage-1-reveal {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+    /* Stage 2: Title and Subtitle */
+    #auth-screen .auth-stage-2-hidden {
+        opacity: 0;
+        transform: translateY(20px) scale(0.95);
+        transition: all 1.0s ease-out;
+    }
+
+    #auth-screen .auth-stage-2-reveal {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+
+    /* Stage 3: Terminal Container */
+    #auth-screen .auth-stage-3-hidden {
+        opacity: 0;
+        transform: translateY(30px);
+        transition: all 1.0s ease-out;
+    }
+
+    #auth-screen .auth-stage-3-reveal {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+    /* Stage 4: Form Elements */
+    #auth-screen .auth-stage-4-hidden {
+        opacity: 0;
+        transform: translateY(15px);
+        transition: all 1.0s ease-out 0.2s;
+    }
+
+    #auth-screen .auth-stage-4-reveal {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+    /* Stage 5: Submit Button */
+    #auth-screen .auth-stage-5-hidden {
+        opacity: 0;
+        transform: translateY(20px) scale(0.9);
+        transition: all 1.0s ease-out;
+    }
+
+    #auth-screen .auth-stage-5-reveal {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+
+    /* Stage 6: Footer */
+    #auth-screen .auth-stage-6-hidden {
+        opacity: 0;
+        transform: translateY(10px);
+        transition: all 1.0s ease-out;
+    }
+
+    #auth-screen .auth-stage-6-reveal {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Desktop Viewport Scaling for Auth Screen */
+@media (min-width: 1366px) {
+    #auth-screen {
+        /* Scale down content for standard laptop screens */
+        font-size: calc(1rem * 0.85);
+    }
+    
+    #auth-screen .terminal-container {
+        max-width: 500px;
+        transform: scale(0.9);
+        transform-origin: center;
+    }
+}
+
+@media (min-width: 1920px) {
+    #auth-screen {
+        /* Normal scaling for larger screens */
+        font-size: 1rem;
+    }
+    
+    #auth-screen .terminal-container {
+        max-width: 600px;
+        transform: scale(1);
+    }
+}

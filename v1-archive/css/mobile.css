@@ -1,0 +1,1228 @@
+/* BREWSTER'S MTGO MISSION TERMINAL - Mobile Styles */
+
+/* Mobile Breakpoints */
+@media screen and (max-width: 768px) {
+    :root {
+        --font-size-base: 36px;
+        --font-size-large: 48px;
+        --font-size-xlarge: 64px;
+    }
+    
+    /* Mobile Mission Screen Text Scaling - High Priority Overrides */
+    .priority-line {
+    }
+    
+    .personal-message {
+        padding: var(--spacing-small);
+    }
+    
+    .option-text {
+        letter-spacing: 1px;
+    }
+    
+    .prompt-text {
+    }
+    
+    /* Mobile Mission Buttons - Dynamic Sizing */
+    .mission-button {
+        width: 98% !important;
+        max-width: 500px !important;
+        /* height: 200px !important; - REMOVED for dynamic sizing */
+        min-height: 100px !important; /* Minimum mobile touch target */
+        max-height: 300px !important; /* Prevent excessive height */
+        height: auto !important; /* Allow content to determine height */
+        padding: var(--spacing-large) var(--spacing-small) !important;
+    }
+    
+    .mission-button .button-text {
+        line-height: 1.4 !important;
+        word-wrap: break-word !important;
+        overflow-wrap: break-word !important;
+        hyphens: auto !important;
+    }
+    
+    /* Adjust container padding for mobile */
+    .terminal-container {
+        width: 95%;
+        padding: var(--spacing-medium);
+    }
+    
+    /* Mobile text wrapping optimization */
+    .option-text {
+        word-wrap: break-word !important;
+        overflow-wrap: break-word !important;
+        hyphens: auto !important;
+        max-width: 100% !important;
+    }
+    
+    /* Mobile typing effect optimization */
+    .option-text.typing-effect {
+        overflow: visible !important;
+        white-space: pre-wrap !important;
+        word-wrap: break-word !important;
+        max-width: 100% !important;
+    }
+    
+    /* Enhanced Auth Terminal for Mobile */
+    .auth-terminal-container {
+        max-width: 95%;
+        min-height: auto !important; /* Remove excessive height */
+        height: auto !important; /* Allow content to determine height */
+        padding: var(--spacing-medium) var(--spacing-small) !important;
+        /* Add safe area support for iPhone Dynamic Island/notch */
+        margin-top: max(env(safe-area-inset-top), 30px) !important;
+        margin-bottom: max(env(safe-area-inset-bottom), 20px) !important;
+        /* Ensure content fits within viewport */
+        max-height: calc(100vh - env(safe-area-inset-top) - env(safe-area-inset-bottom) - 60px) !important;
+        overflow-y: auto !important;
+    }
+    
+    /* Additional mobile auth screen spacing */
+    #auth-screen .terminal-header {
+        padding: var(--spacing-medium) var(--spacing-small) var(--spacing-small) !important;
+    }
+    
+    /* Mobile Security Status Panel */
+    .security-status-panel {
+        flex-direction: column;
+        gap: var(--spacing-xs);
+        padding: var(--spacing-small);
+        text-align: center;
+    }
+    
+    .protocol-status, .encryption-status {
+        font-size: 12px;
+    }
+    
+    /* Mobile System Diagnostics */
+    .system-diagnostics {
+        margin: var(--spacing-small) 0;
+        padding: var(--spacing-small);
+    }
+    
+    .diagnostic-line {
+        font-size: 14px;
+        line-height: 1.6;
+    }
+    
+    /* Mobile Enhanced Form Elements */
+    .enhanced-input {
+        font-size: 20px; /* Increased for better readability */
+        padding: var(--spacing-small);
+        min-height: 60px; /* Increased to accommodate larger text */
+    }
+    
+    .enhanced-button {
+        font-size: 18px;
+        padding: var(--spacing-small) var(--spacing-medium);
+        min-height: 50px;
+        letter-spacing: 1px;
+    }
+    
+    /* Mobile CTA */
+    .cta-text {
+        letter-spacing: 1px;
+    }
+    
+    /* Mobile Clearance Warning */
+    .clearance-warning {
+        margin-top: var(--spacing-xs);
+    }
+    
+    /* Smaller header text */
+    .header-text {
+        font-size: 26px;
+    }
+    
+    /* Fix auth header text cutoff on mobile */
+    #auth-screen .header-text.auth-text-2xl {
+        font-size: 26px !important; /* Reduced from 32px for better fit */
+        line-height: 1.2 !important;
+        word-wrap: break-word !important;
+        overflow-wrap: break-word !important;
+        hyphens: auto !important;
+        padding: var(--spacing-small) !important;
+        text-align: center !important;
+        margin-top: var(--spacing-small) !important;
+        /* Ensure text fits within viewport */
+        max-width: 100% !important;
+    }
+    
+    /* Extra small screens (iPhone SE, etc.) */
+    @media screen and (max-width: 375px) {
+        #auth-screen .header-text.auth-text-2xl {
+            font-size: 22px !important;
+        }
+    }
+    
+    /* iPhone 14 Pro Max specific adjustments */
+    @media screen and (max-width: 430px) and (min-width: 415px) {
+        #auth-screen .header-text.auth-text-2xl {
+            font-size: 24px !important;
+            padding: var(--spacing-medium) var(--spacing-small) !important;
+        }
+    }
+    
+    /* Terminal Briefing Mobile Optimization */
+    .terminal-briefing {
+        padding: var(--spacing-small);
+        margin: var(--spacing-small);
+        max-height: 85vh;
+        overflow-y: auto;
+    }
+    
+    .terminal-prompt {
+        font-size: 20px;
+        flex-wrap: wrap;
+        gap: var(--spacing-small);
+    }
+    
+    .terminal-output {
+        min-height: 250px;
+        font-size: 20px;
+    }
+    
+    .ascii-header {
+        font-size: 18px;
+        margin-bottom: var(--spacing-medium);
+    }
+    
+    .briefing-lines {
+        font-size: 18px;
+        line-height: 1.5;
+    }
+    
+    .briefing-line {
+        margin-bottom: var(--spacing-xsmall);
+        word-wrap: break-word;
+    }
+
+    .briefing-line.header {
+        font-size: 18px;
+        margin-top: var(--spacing-small);
+    }
+
+    .briefing-line.reward,
+    .briefing-line.warning {
+        font-size: 16px;
+    }
+
+    .briefing-line.url {
+        font-size: 16px;
+        margin-left: var(--spacing-small);
+    }
+
+    .briefing-line.note {
+        font-size: 16px;
+    }
+
+    .terminal-divider {
+        font-size: 16px;
+        margin: var(--spacing-small) 0;
+    }
+    
+    .terminal-progress {
+        padding: var(--spacing-small);
+        font-size: 16px;
+    }
+    
+    .progress-bar {
+        height: 16px;
+        margin: var(--spacing-xsmall) 0;
+    }
+    
+    /* Adjust form inputs for touch */
+    .terminal-input {
+        padding: var(--spacing-medium);
+        font-size: 16px; /* Prevents zoom on iOS */
+    }
+    
+    /* Larger touch targets for buttons */
+    .terminal-button {
+        padding: var(--spacing-medium) var(--spacing-large);
+        min-height: 48px;
+    }
+    
+    /* Sound button adjustments */
+    .sound-button {
+        width: 150px;
+        height: 150px;
+    }
+    
+    .button-icon {
+        font-size: 36px;
+    }
+    
+    /* Volume indicator */
+    .indicator-bar {
+        width: 90%;
+        max-width: 250px;
+    }
+    
+    /* ASCII Flip Clock Mobile Optimization */
+    .ascii-flip-clock {
+        gap: var(--spacing-small);
+        margin-bottom: var(--spacing-large);
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+    
+    .flip-digit {
+        width: 50px;
+        height: 70px;
+        margin: 0 1px;
+    }
+    
+    .ascii-frame {
+        font-size: 14px;
+    }
+    
+    .ascii-digit {
+        font-size: 20px;
+    }
+    
+    .flip-separator {
+        font-size: 28px;
+        margin: 0 var(--spacing-small);
+    }
+    
+    .flip-label {
+        font-size: 14px;
+        margin-top: 4px;
+    }
+    
+    .countdown-message {
+        font-size: var(--font-size-large);
+        letter-spacing: 2px;
+        margin-top: var(--spacing-small);
+    }
+    
+    .countdown-label {
+        font-size: 16px;
+        margin-bottom: var(--spacing-medium);
+    }
+    
+    /* Mission buttons layout */
+    .mission-choices {
+        flex-direction: column;
+        gap: var(--spacing-large);
+    }
+    
+    
+    /* Terminal interface mobile optimization */
+    .terminal-briefing {
+        padding: var(--spacing-small);
+        margin: var(--spacing-small);
+        max-height: 85vh;
+        overflow-y: auto;
+    }
+    
+    /* Countdown timer */
+    .countdown-timer {
+        gap: var(--spacing-small);
+    }
+    
+    .timer-box {
+        width: 70px;
+        height: 70px;
+    }
+    
+    .timer-value {
+        font-size: 24px;
+    }
+    
+    .timer-label {
+        font-size: 14px;
+    }
+}
+
+/* Small Mobile (iPhone SE, etc.) */
+@media screen and (max-width: 375px) {
+    :root {
+        --font-size-base: 20px;
+        --font-size-large: 24px;
+        --font-size-xlarge: 28px;
+    }
+    
+    /* Small Mobile Mission Screen Text */
+    .priority-line {
+        font-size: 24px;
+    }
+    
+    .personal-message {
+        font-size: 26px;
+    }
+    
+    .option-text {
+        font-size: 28px;
+    }
+    
+    .prompt-text {
+        font-size: 24px;
+    }
+    
+    /* Small Mobile Mission Buttons */
+    .mission-button {
+        font-size: 20px;
+        height: 85px;
+    }
+    
+    .mission-button .button-text {
+        font-size: 20px;
+    }
+    
+    /* Even smaller containers */
+    .terminal-container {
+        padding: var(--spacing-small);
+    }
+    
+    
+    /* Smaller sound button */
+    .sound-button {
+        width: 120px;
+        height: 120px;
+    }
+    
+    /* Compact timer boxes */
+    .timer-box {
+        width: 60px;
+        height: 60px;
+    }
+    
+    .timer-value {
+        font-size: 20px;
+    }
+}
+
+/* Landscape Orientation */
+@media screen and (orientation: landscape) and (max-height: 500px) {
+    /* Adjust for limited vertical space */
+    .terminal-container {
+        max-height: 90vh;
+        overflow-y: auto;
+    }
+    
+    /* Side-by-side layout for mission buttons */
+    .mission-choices {
+        flex-direction: row;
+        justify-content: center;
+        gap: var(--spacing-xlarge);
+    }
+    
+    
+    /* Horizontal timer layout */
+    .countdown-timer {
+        flex-direction: row;
+    }
+    
+    /* Reduce vertical spacing */
+    .sound-test-area {
+        padding: var(--spacing-large) 0;
+    }
+    
+    .test-instructions {
+        margin-bottom: var(--spacing-medium);
+    }
+}
+
+/* Touch-specific adjustments */
+@media (hover: none) and (pointer: coarse) {
+    /* Remove hover effects on touch devices */
+    .terminal-button:hover {
+        background: var(--color-primary);
+        box-shadow: none;
+    }
+    
+    .sound-button:hover {
+        transform: none;
+        box-shadow: none;
+    }
+    
+    /* Add active states for better feedback */
+    .terminal-button:active {
+        transform: scale(0.95);
+    }
+    
+    /* Larger tap targets */
+    .terminal-input {
+        min-height: 44px;
+    }
+    
+    /* Prevent text selection on buttons */
+    button {
+        -webkit-user-select: none;
+        user-select: none;
+        -webkit-tap-highlight-color: transparent;
+    }
+}
+
+/* iOS Specific Fixes */
+@supports (-webkit-touch-callout: none) {
+    /* Fix for iOS Safari */
+    body {
+        -webkit-text-size-adjust: 100%;
+    }
+    
+    /* Prevent double-tap zoom */
+    button, input {
+        touch-action: manipulation;
+    }
+    
+    /* Fix position fixed issues */
+    .screen {
+        -webkit-transform: translate3d(0, 0, 0);
+        transform: translate3d(0, 0, 0);
+    }
+}
+
+/* Android Specific Fixes */
+@media screen and (-webkit-min-device-pixel-ratio: 0) {
+    /* Improve font rendering */
+    body {
+        text-rendering: optimizeLegibility;
+    }
+}
+
+/* Accessibility - Reduced Motion */
+@media (prefers-reduced-motion: reduce) {
+    /* Disable most animations but preserve essential UI feedback */
+    *:not(.signal-bars .bar.bouncing) {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+    
+    /* Keep essential animations but reduce them */
+    .animate-pulse {
+        animation: none;
+        opacity: 1;
+    }
+    
+    .animate-flash {
+        animation: flash 2s infinite; /* Slower flash */
+    }
+    
+    /* Signal animation preserved but gentler for motion sensitivity */
+    .signal-bars .bar.bouncing {
+        animation: signal-bounce 1.2s ease-in-out infinite !important; /* Slower, gentler */
+        opacity: 0.8 !important; /* Slightly dimmed for sensitivity */
+    }
+}
+
+/* High Contrast Mode Support */
+@media (prefers-contrast: high) {
+    :root {
+        --color-primary: #00ff00;
+        --color-background: #000000;
+    }
+    
+    .terminal-container {
+        border-width: 3px;
+    }
+    
+    .terminal-input {
+        border-width: 2px;
+    }
+}
+
+/* Print Styles (for QR code cards) */
+@media print {
+    body {
+        background: white;
+        color: black;
+    }
+    
+    .screen:not(.active) {
+        display: none;
+    }
+    
+    /* Hide animations and effects */
+    body::before,
+    .animate-*,
+    .glow-* {
+        animation: none !important;
+        box-shadow: none !important;
+        text-shadow: none !important;
+    }
+}
+
+/* Mobile Styles for Mission Screen Redesign */
+@media screen and (max-width: 768px) {
+    /* Transmission Detection Section */
+    .transmission-detection {
+        padding: var(--spacing-medium);
+        margin: var(--spacing-small) 0;
+        min-height: 300px;
+        width: 95%;
+        max-width: 600px;
+    }
+    
+    .detection-header {
+        margin-bottom: var(--spacing-medium);
+        letter-spacing: 2px;
+    }
+    
+    .signal-bars {
+        gap: var(--spacing-small);
+        margin: var(--spacing-medium) 0;
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+    
+    .signal-bar {
+        width: 40px;
+        height: 8px;
+        min-height: 8px;
+    }
+    
+    /* Binary Choice Section */
+    .binary-choice {
+        padding: var(--spacing-medium);
+        margin: var(--spacing-small) 0;
+        width: 95%;
+        max-width: 600px;
+    }
+    
+    .choice-options {
+        flex-direction: column;
+        gap: var(--spacing-large);
+        margin: var(--spacing-large) 0;
+    }
+    
+    .abort-option,
+    .mission-option {
+        width: 100%;
+        max-width: 300px;
+        padding: var(--spacing-large);
+        font-size: var(--font-size-base);
+        min-height: 80px;
+        border-radius: 8px;
+        text-align: center;
+        letter-spacing: 1px;
+    }
+    
+    .abort-option {
+        background: rgba(255, 0, 0, 0.1);
+        border: 2px solid #ff0000;
+        color: #ff0000;
+    }
+    
+    .mission-option {
+        background: rgba(0, 255, 0, 0.1);
+        border: 2px solid var(--color-primary);
+        color: var(--color-primary);
+    }
+    
+    .keyboard-prompt {
+        font-size: 18px;
+        margin-top: var(--spacing-medium);
+        text-align: center;
+        opacity: 0.8;
+        letter-spacing: 1px;
+    }
+    
+    /* Mission choice text sizing */
+    .choice-text {
+        font-size: var(--font-size-base);
+        font-weight: bold;
+        line-height: 1.4;
+    }
+    
+    .choice-description {
+        font-size: 16px;
+        margin-top: var(--spacing-small);
+        opacity: 0.9;
+    }
+    
+    .choice-key {
+        font-size: 20px;
+        font-weight: bold;
+        margin-bottom: var(--spacing-small);
+        color: #ffffff;
+    }
+}
+
+/* Small Mobile Adjustments */
+@media screen and (max-width: 375px) {
+    .transmission-detection,
+    .binary-choice {
+        padding: var(--spacing-small);
+        min-height: 250px;
+    }
+    
+    .detection-header {
+        font-size: var(--font-size-base);
+        letter-spacing: 1px;
+    }
+    
+    .abort-option,
+    .mission-option {
+        padding: var(--spacing-medium);
+        font-size: 18px;
+        min-height: 70px;
+    }
+    
+    .keyboard-prompt {
+        font-size: 16px;
+    }
+    
+    .choice-description {
+        font-size: 14px;
+    }
+    
+    .signal-bar {
+        width: 30px;
+        height: 6px;
+    }
+}
+
+/* Landscape Orientation for Mission Screen */
+@media screen and (orientation: landscape) and (max-height: 500px) {
+    .choice-options {
+        flex-direction: row;
+        justify-content: center;
+        gap: var(--spacing-xlarge);
+    }
+    
+    .abort-option,
+    .mission-option {
+        width: 200px;
+        max-width: 200px;
+        padding: var(--spacing-medium);
+        font-size: 16px;
+        min-height: 60px;
+    }
+    
+    .transmission-detection,
+    .binary-choice {
+        min-height: 200px;
+    }
+}
+
+/* Enhanced Mission Screen Mobile Fixes - Updated */
+@media screen and (max-width: 768px) {
+    /* Critical Fix: Ensure mission screen starts at viewport top */
+    #mission-screen {
+        position: absolute !important;
+        top: 0 !important;
+        left: 0 !important;
+        width: 100vw !important;
+        height: 100vh !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        display: flex !important;
+        align-items: flex-start !important;
+        justify-content: center !important;
+        box-sizing: border-box !important;
+        overflow-y: auto !important;
+    }
+    
+    /* Allow scrolling when content exceeds viewport */
+    html, body {
+        overflow: auto !important;
+        height: 100% !important;
+    }
+    
+    /* Fix black area below content on mission screen */
+    #mission-screen .terminal-container {
+        min-height: auto !important;
+        height: auto !important;
+        padding-bottom: var(--spacing-xlarge) !important;
+        margin-bottom: var(--spacing-xlarge) !important;
+    }
+    
+    /* Prevent over-scrolling past content */
+    #mission-screen.active {
+        min-height: 100vh !important;
+        height: auto !important;
+        overflow-y: auto !important;
+        overflow-x: hidden !important;
+        padding-bottom: 0 !important;
+    }
+    
+    /* Ensure proper content flow */
+    #mission-screen .terminal-container > *:last-child {
+        margin-bottom: var(--spacing-xlarge) !important;
+    }
+    /* Terminal Communication Mobile Layout */
+    .terminal-communication {
+        padding: var(--spacing-small) !important;
+        margin-bottom: var(--spacing-small) !important; /* Reduce margin */
+        width: 100% !important;
+        max-width: 100% !important;
+        margin-left: 0 !important;
+        margin-right: 0 !important;
+        box-sizing: border-box !important;
+    }
+    
+    /* Optimize priority lines for mobile */
+    .priority-line {
+        /* Font size now controlled by systematic text classes (mission-text-xs: 18px mobile) */
+        margin-bottom: var(--spacing-unit) !important; /* Reduce margins */
+        letter-spacing: 0px !important;
+        line-height: 1.3 !important;
+    }
+    
+    .comm-header {
+        margin-bottom: var(--spacing-medium); /* 24px instead of 32px */
+    }
+    
+    .priority-line {
+        font-size: var(--font-size-base); /* Keep at 22px mobile base */
+        margin-bottom: var(--spacing-small); /* 16px */
+        letter-spacing: 1px;
+    }
+    
+    /* Personal Message Mobile Optimization - Enhanced */
+    .personal-message {
+        /* Font size now controlled by systematic text classes (mission-text-sm: 22px mobile) */
+        line-height: 1.4 !important; /* Tighter line height */
+        letter-spacing: 0px !important; /* Remove letter spacing for width */
+        padding: var(--spacing-small) !important;
+        margin-bottom: var(--spacing-small) !important; /* Reduce margin */
+        width: 100% !important;
+        max-width: 100% !important;
+        box-sizing: border-box !important;
+        word-wrap: break-word !important;
+        overflow-wrap: break-word !important;
+        white-space: pre-wrap !important; /* Preserve line breaks */
+        hyphens: auto !important; /* Enable hyphenation */
+        -webkit-hyphens: auto !important;
+        -moz-hyphens: auto !important;
+        text-align: left !important;
+        border-left: 2px solid var(--color-primary) !important; /* Thinner border */
+        background: rgba(0, 255, 0, 0.02) !important;
+    }
+    
+    /* Progressive Choices Mobile Layout */
+    .progressive-choices {
+        padding: var(--spacing-small); /* 16px instead of 32px */
+        width: 95%;
+        max-width: 600px;
+        margin: 0 auto;
+    }
+    
+    .option-section {
+        margin-bottom: var(--spacing-small) !important; /* Reduce spacing */
+        text-align: center;
+        width: 100% !important;
+        max-width: 100% !important;
+        box-sizing: border-box !important;
+        padding: var(--spacing-unit) !important; /* Add padding */
+    }
+    
+    .option-text {
+        /* Font size now controlled by systematic text classes (mission-text-xs: 18px mobile) */
+        margin-bottom: var(--spacing-small) !important;
+        letter-spacing: 0px !important; /* Remove letter spacing */
+        line-height: 1.3 !important; /* Tighter line height */
+        word-wrap: break-word !important;
+        overflow-wrap: break-word !important;
+        hyphens: auto !important;
+        -webkit-hyphens: auto !important;
+        max-width: 100% !important;
+        text-align: center !important;
+    }
+    
+    /* Progressive Choices Mobile Layout */
+    .progressive-choices {
+        padding: var(--spacing-medium) !important;
+    }
+    
+    .option-section {
+        margin-bottom: var(--spacing-large) !important;
+        text-align: center !important;
+    }
+    
+    /* Enhanced Mission Buttons Mobile - Dynamic Sizing */
+    .mission-button {
+        padding: var(--spacing-medium) var(--spacing-small) !important;
+        /* Font size now controlled by systematic text classes */
+        letter-spacing: 0px !important;
+        width: 280px !important; /* Slightly wider to reduce wrapping */
+        /* height: 70px !important; - REMOVED for dynamic sizing */
+        min-height: 100px !important; /* Larger minimum for mobile readability */
+        height: auto !important; /* Content-based height */
+        margin: var(--spacing-small) auto !important;
+        display: flex !important; /* Better for centering dynamic content */
+        align-items: center !important;
+        justify-content: center !important;
+        flex-direction: column !important; /* Stack content vertically */
+        line-height: 1.3 !important; /* Optimized for mobile */
+        border-radius: 4px !important;
+        box-sizing: border-box !important;
+        text-align: center !important;
+        word-wrap: break-word !important;
+        overflow-wrap: break-word !important;
+    }
+    
+    .button-text {
+        display: block !important;
+        margin: 0 !important; /* No margins in flex container */
+        /* Font size now controlled by systematic text classes */
+        line-height: 1.4 !important; /* Better readability */
+        font-weight: bold !important;
+        width: 100% !important;
+        text-align: center !important;
+        word-wrap: break-word !important;
+        overflow-wrap: break-word !important;
+        hyphens: auto !important;
+        flex-shrink: 0 !important; /* Don't compress text */
+        max-width: 100% !important;
+        /* Let flex container handle padding */
+    }
+    
+    
+    /* Final Prompt Mobile */
+    .final-prompt {
+        padding: var(--spacing-medium) !important;
+        margin-top: var(--spacing-medium) !important;
+        margin-bottom: var(--spacing-small) !important;
+        text-align: center;
+        width: 100% !important;
+        box-sizing: border-box !important;
+        border: 2px solid var(--color-primary) !important;
+        background: rgba(0, 255, 0, 0.05) !important;
+        border-radius: 6px !important;
+    }
+    
+    .touch-hint {
+        color: var(--color-primary) !important;
+        margin: var(--spacing-medium) 0 !important;
+        letter-spacing: 2px !important;
+        font-weight: bold !important;
+        text-transform: uppercase !important;
+        animation: pulse-glow 1.5s ease-in-out infinite !important;
+        text-shadow: 0 0 15px var(--color-primary) !important;
+    }
+    
+    .prompt-text {
+        margin-bottom: var(--spacing-unit) !important;
+        letter-spacing: 0px !important; /* Remove letter spacing */
+        line-height: 1.3 !important;
+    }
+    
+    
+    .prompt-cursor {
+        /* Font size now controlled by systematic text classes (mission-text-xs: 18px mobile) */
+    }
+    
+    /* Mission Screen Container Mobile - Override base styles */
+    #mission-screen .terminal-container {
+        width: 100% !important;
+        max-width: 100vw !important;
+        padding: var(--spacing-small) !important;
+        min-height: 100vh !important;
+        max-height: none !important;
+        overflow-y: visible !important;
+        margin: 0 !important;
+        display: flex !important;
+        flex-direction: column !important;
+        justify-content: flex-start !important;
+        align-items: center !important;
+        box-sizing: border-box !important;
+        position: relative !important;
+    }
+    
+    /* Ensure all mission content is contained and properly spaced */
+    #mission-screen .transmission-detection,
+    #mission-screen .terminal-communication,
+    #mission-screen .progressive-choices {
+        flex-shrink: 0; /* Prevent shrinking */
+        width: 100%;
+        max-width: 100%;
+        box-sizing: border-box;
+        margin-left: auto;
+        margin-right: auto;
+        padding-left: var(--spacing-small);
+        padding-right: var(--spacing-small);
+    }
+    
+    /* Reduce spacing between major sections to fit more content */
+    #mission-screen .transmission-detection {
+        margin-bottom: var(--spacing-small) !important;
+        padding: var(--spacing-small) !important;
+    }
+    
+    #mission-screen .terminal-communication {
+        margin-bottom: var(--spacing-small) !important;
+        padding: var(--spacing-small) !important;
+    }
+    
+    #mission-screen .progressive-choices {
+        padding: var(--spacing-small) !important;
+    }
+    
+    /* Critical: Ensure Option Bravo section is visible - Enhanced */
+    #option-bravo-section {
+        margin-bottom: var(--spacing-medium) !important;
+        padding-bottom: var(--spacing-small) !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        box-sizing: border-box !important;
+        min-height: auto !important;
+        position: relative !important;
+        left: 0 !important;
+        right: 0 !important;
+    }
+    
+    /* Override problematic transforms that push content off-screen */
+    #mission-screen .mission-stage-6-hidden {
+        opacity: 0 !important;
+        transform: none !important; /* Remove translateX that causes off-screen positioning */
+        transition: opacity 1.0s ease-out !important;
+    }
+    
+    #mission-screen .mission-stage-6-reveal {
+        opacity: 1 !important;
+        transform: none !important;
+    }
+    
+    #mission-screen .mission-stage-7-hidden {
+        opacity: 0 !important;
+        transform: none !important; /* Remove scale that can cause overflow */
+        transition: opacity 1.0s ease-out !important;
+    }
+    
+    #mission-screen .mission-stage-7-reveal {
+        opacity: 1 !important;
+        transform: none !important;
+    }
+    
+    /* Ensure final prompt doesn't overflow */
+    .final-prompt {
+        padding-bottom: var(--spacing-large) !important;
+        margin-bottom: 0 !important;
+    }
+    
+    /* Additional mobile optimizations for compact layout */
+    .transmission-detection {
+        margin-bottom: var(--spacing-small) !important;
+    }
+    
+    .comm-header {
+        margin-bottom: var(--spacing-small) !important;
+    }
+    
+    .option-section {
+        margin-bottom: var(--spacing-medium) !important;
+    }
+    
+    /* Optimize detection status and signal bars for mobile */
+    .detection-header {
+        margin-bottom: var(--spacing-small) !important;
+        letter-spacing: 1px !important; /* Reduce letter spacing */
+    }
+    
+    .detection-status {
+        margin-bottom: var(--spacing-small) !important;
+        letter-spacing: 1px !important;
+    }
+    
+    .signal-bars {
+        margin: var(--spacing-small) 0 !important;
+        height: 40px !important; /* Compact height */
+        justify-content: center !important;
+        gap: var(--spacing-unit) !important; /* Smaller gaps */
+    }
+    
+    .signal-bars .bar {
+        width: 12px !important; /* Slightly smaller bars */
+        height: 25px !important;
+        margin: 0 2px !important;
+    }
+    
+    /* Mobile Signal Bar Bouncing Animation - Critical Fix */
+    .signal-bars .bar.bouncing {
+        animation: signal-bounce 0.6s ease-in-out infinite !important;
+        transform-origin: bottom !important;
+        transition: none !important; /* Prevent transition conflicts with animation */
+        border-color: var(--color-secondary) !important; /* Visual debugging aid */
+        box-shadow: 0 0 6px var(--color-secondary) !important; /* Enhanced mobile visibility */
+    }
+    
+    /* Mobile-optimized revelation stage transitions */
+    #mission-screen .mission-stage-1-hidden {
+        opacity: 0 !important;
+        transform: translateY(10px) !important; /* Smaller transform for mobile */
+        transition: all 1.0s ease-out !important;
+    }
+    
+    #mission-screen .mission-stage-1-reveal {
+        opacity: 1 !important;
+        transform: translateY(0) !important;
+    }
+    
+    #mission-screen .mission-stage-2-hidden {
+        opacity: 0 !important;
+        transform: scale(0.95) !important; /* Smaller scale for mobile */
+        transition: all 1.0s ease-out !important;
+    }
+    
+    #mission-screen .mission-stage-2-reveal {
+        opacity: 1 !important;
+        transform: scale(1) !important;
+    }
+    
+    #mission-screen .mission-stage-3-hidden {
+        opacity: 0 !important;
+        transform: translateY(5px) !important; /* Minimal transform */
+        transition: all 1.0s ease-out !important;
+    }
+    
+    #mission-screen .mission-stage-3-reveal {
+        opacity: 1 !important;
+        transform: translateY(0) !important;
+    }
+    
+    #mission-screen .mission-stage-4-hidden {
+        opacity: 0 !important;
+        transform: none !important; /* No transform for mobile */
+        transition: opacity 1.0s ease-out !important;
+    }
+    
+    #mission-screen .mission-stage-4-reveal {
+        opacity: 1 !important;
+        transform: none !important;
+    }
+    
+    #mission-screen .mission-stage-5-hidden {
+        opacity: 0 !important;
+        transform: none !important; /* No transform for mobile */
+        transition: opacity 1.0s ease-out !important;
+    }
+    
+    #mission-screen .mission-stage-5-reveal {
+        opacity: 1 !important;
+        transform: none !important;
+    }
+    
+    #mission-screen .mission-stage-8-hidden {
+        opacity: 0 !important;
+        transform: none !important; /* No transform for mobile */
+        transition: opacity 1.0s ease-out !important;
+    }
+    
+    #mission-screen .mission-stage-8-reveal {
+        opacity: 1 !important;
+        transform: none !important;
+    }
+    
+    /* Mobile performance optimizations */
+    #mission-screen * {
+        -webkit-transform: translateZ(0) !important; /* Enable hardware acceleration */
+        transform: translateZ(0) !important;
+        -webkit-backface-visibility: hidden !important;
+        backface-visibility: hidden !important;
+        -webkit-perspective: 1000 !important;
+        perspective: 1000 !important;
+    }
+}
+
+/* Small Mobile Enhanced Mission Screen (iPhone SE, etc.) */
+@media screen and (max-width: 375px) {
+    /* Ensure small screens fit all content */
+    #mission-screen {
+        padding: 0 !important;
+        min-height: 100vh !important;
+        width: 100vw !important;
+    }
+    
+    #mission-screen .terminal-container {
+        width: 100% !important;
+        max-width: 100vw !important;
+        padding: var(--spacing-unit) !important;
+        min-height: 100vh !important;
+    }
+    
+    .terminal-communication {
+        padding: var(--spacing-unit) !important;
+        width: 100% !important;
+        margin-bottom: var(--spacing-unit) !important;
+    }
+    
+    .personal-message {
+        /* Font size now controlled by systematic text classes (mission-text-xs: 18px mobile) */
+        padding: var(--spacing-unit) !important;
+        letter-spacing: 0px !important;
+        line-height: 1.3 !important;
+        margin-bottom: var(--spacing-unit) !important;
+        border-left: 1px solid var(--color-primary) !important; /* Thinner border */
+    }
+    
+    .priority-line {
+        /* Font size now controlled by systematic text classes (approximately 16px for ultra-compact) */
+        margin-bottom: 4px !important;
+        line-height: 1.2 !important;
+    }
+    
+    .progressive-choices {
+        padding: var(--spacing-unit);
+        width: 98%;
+    }
+    
+    .option-text {
+        /* Font size now controlled by systematic text classes (approximately 16px for ultra-compact) */
+        line-height: 1.2 !important;
+        margin-bottom: var(--spacing-unit) !important;
+        letter-spacing: 0px !important;
+        word-break: break-word !important;
+    }
+    
+    
+    
+    .final-prompt {
+        padding: var(--spacing-unit);
+        margin-top: var(--spacing-small);
+    }
+    
+    .prompt-text {
+        font-size: 20px;
+        margin-bottom: var(--spacing-unit);
+    }
+    
+    
+    #mission-screen .terminal-container {
+        width: 98% !important;
+        max-width: 375px !important;
+        padding: var(--spacing-unit) !important;
+        max-height: 98vh !important;
+        display: flex !important;
+        flex-direction: column !important;
+        justify-content: flex-start !important;
+        box-sizing: border-box !important;
+    }
+    
+    /* Critical fixes for small mobile */
+    #option-bravo-section {
+        margin-bottom: var(--spacing-small) !important;
+        padding-bottom: var(--spacing-unit) !important;
+        width: 100% !important;
+        box-sizing: border-box !important;
+    }
+    
+    .final-prompt {
+        padding-bottom: var(--spacing-medium) !important;
+        margin-bottom: 0 !important;
+    }
+    
+    /* Additional compact optimizations for small mobile */
+    .transmission-detection {
+        margin-bottom: var(--spacing-unit) !important;
+        padding: var(--spacing-unit) !important;
+    }
+    
+    .comm-header {
+        margin-bottom: var(--spacing-unit) !important;
+    }
+    
+    .signal-bars {
+        height: 30px; /* Even smaller on tiny screens */
+        margin: var(--spacing-unit) 0;
+    }
+    
+    .detection-status {
+        font-size: 20px;
+        margin-bottom: var(--spacing-unit);
+    }
+}

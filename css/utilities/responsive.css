@@ -1,0 +1,82 @@
+/* ==========================================================================
+   Utilities: Responsive Design System
+   ========================================================================== */
+
+@layer utilities {
+    /* Viewport-based scaling */
+    .viewport-mobile {
+        --viewport-scale: 1;
+    }
+    
+    .viewport-tablet {
+        --viewport-scale: 0.95;
+    }
+    
+    .viewport-laptop {
+        --viewport-scale: 0.85;
+    }
+    
+    .viewport-desktop {
+        --viewport-scale: 1;
+    }
+    
+    /* Responsive container sizing */
+    .responsive-container {
+        width: calc(var(--container-width) * var(--scale-container, 1));
+        max-width: var(--container-max);
+        margin: 0 auto;
+    }
+    
+    /* Responsive text scaling */
+    .responsive-text {
+        font-size: calc(var(--text-base) * var(--scale-text, 1));
+    }
+    
+    /* Responsive spacing */
+    .responsive-spacing {
+        padding: calc(var(--space-lg) * var(--scale-spacing, 1));
+        gap: calc(var(--space-md) * var(--scale-spacing, 1));
+    }
+    
+    /* Viewport-specific utilities */
+    @media (max-width: 768px) {
+        .hide-mobile { display: none !important; }
+        .show-mobile { display: block !important; }
+    }
+    
+    @media (min-width: 769px) and (max-width: 1024px) {
+        .hide-tablet { display: none !important; }
+        .show-tablet { display: block !important; }
+    }
+    
+    @media (min-width: 1025px) and (max-width: 1366px) {
+        .hide-laptop { display: none !important; }
+        .show-laptop { display: block !important; }
+    }
+    
+    @media (min-width: 1367px) {
+        .hide-desktop { display: none !important; }
+        .show-desktop { display: block !important; }
+    }
+    
+    /* Responsive button sizing */
+    .responsive-button {
+        font-size: calc(var(--text-base) * var(--scale-text, 1));
+        padding: calc(var(--space-md) * var(--scale-spacing, 1)) 
+                 calc(var(--space-lg) * var(--scale-spacing, 1));
+        min-width: calc(200px * var(--scale-container, 1));
+    }
+    
+    /* Responsive terminal windows */
+    .responsive-terminal {
+        transform: scale(var(--scale-container, 1));
+        transform-origin: center;
+    }
+    
+    /* Prevent text overflow on all viewports */
+    .responsive-nowrap {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+}

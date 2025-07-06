@@ -1,0 +1,57 @@
+/* ==========================================================================
+   Base: Typography System
+   ========================================================================== */
+
+/* Base Typography Classes */
+.text-xs { font-size: var(--text-xs); }
+.text-sm { font-size: var(--text-sm); }
+.text-base { font-size: var(--text-base); }
+.text-lg { font-size: var(--text-lg); }
+.text-xl { font-size: var(--text-xl); }
+.text-2xl { font-size: var(--text-2xl); }
+.text-3xl { font-size: var(--text-3xl); }
+
+@layer utilities {
+    /* Mobile Word Break Prevention - Universal Application */
+    .text-xs, .text-sm, .text-base, .text-lg, .text-xl, .text-2xl, .text-3xl,
+    h1, h2, h3, h4, h5, h6,
+    .terminal-title, .subtitle, .terminal-input, .action-button,
+    .form-label, .input-hint, .status-item, .choice-prompt,
+    .button-label, .button-description, .button-detail,
+    .boot-message, .classification-level, .classification-code,
+    .agent-name-display, .mission-status, .param-label, .param-value,
+    .detail-label, .detail-value, .stat-label, .stat-value {
+        word-break: keep-all;
+        hyphens: none;
+        overflow-wrap: break-word;
+        -webkit-hyphens: none;
+        -moz-hyphens: none;
+        -ms-hyphens: none;
+    }
+
+    /* Text Content - Clean wrapping without hyphenation */
+    .text-content {
+        /* Prevent ugly hyphenation */
+        word-wrap: break-word;
+        overflow-wrap: break-word;
+        hyphens: none;
+        -webkit-hyphens: none;
+        -moz-hyphens: none;
+        -ms-hyphens: none;
+        
+        /* Better text distribution */
+        text-wrap: balance;
+        
+        /* Performance optimizations */
+        text-rendering: optimizeLegibility;
+    }
+}
+
+/* Terminal Text Styling */
+.terminal-title {
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: var(--letter-spacing-normal);
+    text-shadow: var(--glow-primary);
+    text-align: center;
+}

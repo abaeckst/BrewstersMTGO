@@ -1,0 +1,166 @@
+/* ==========================================================================
+   Components: CRT Effects & Animations
+   ========================================================================== */
+
+@layer components {
+    /* CRT Effects */
+    .crt-effects {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        pointer-events: none;
+        z-index: 9999;
+        opacity: 0;
+        transition: opacity var(--timing-medium) ease-out;
+    }
+
+    /* Terminal active state - show scan lines immediately */
+    .app-container.terminal-active .crt-effects {
+        opacity: 1;
+    }
+
+    /* Scanlines */
+    .scanlines {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: linear-gradient(
+            rgba(0, 0, 0, 0) 50%,
+            var(--color-primary-alpha-20) 50%
+        );
+        background-size: 100% var(--radius-sm);
+        animation: scanlines var(--timing-scanlines) linear infinite;
+        opacity: var(--opacity-muted);
+    }
+
+    /* Phosphor Glow */
+    .phosphor-glow {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: radial-gradient(
+            ellipse at center,
+            transparent 0%,
+            var(--color-primary-alpha-20) 100%
+        );
+    }
+
+    /* Blinking Cursor */
+    .blink {
+        animation: blink 1s step-end infinite;
+    }
+
+    /* Enhanced CRT effects for animations */
+    .phosphor-glow-active {
+        text-shadow: 
+            0 0 5px var(--color-primary),
+            0 0 10px var(--color-primary),
+            0 0 15px var(--color-primary),
+            0 0 20px var(--color-primary);
+        animation: phosphorPulse 2s ease-in-out;
+    }
+
+    /* Performance optimizations */
+    .reveal-element,
+    .screen {
+        will-change: opacity, transform;
+    }
+}
+
+/* Screen Transitions & Reveal Animations */
+@layer screens {
+    /* Screen transition states */
+    .screen {
+        opacity: 1;
+        transform: scale(1);
+        transition: opacity var(--timing-slow) ease-out, transform var(--timing-slow) ease-out;
+    }
+
+    .screen.hidden {
+        display: none;
+    }
+
+    .screen.active {
+        display: block;
+    }
+
+    /* Reveal element system */
+    .reveal-element {
+        opacity: 0;
+        transform: translateY(var(--space-md));
+        transition: opacity var(--timing-slow) ease-out, transform var(--timing-slow) ease-out;
+    }
+
+    .reveal-element.revealed {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+    /* Screen transition animations */
+    .screen.transitioning-out {
+        animation: screenOut 600ms ease-in forwards;
+    }
+
+    .screen.transitioning-in {
+        animation: screenIn 600ms ease-out forwards;
+    }
+}
+
+/* Keyframes */
+@keyframes fadeInUp {
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes blink {
+    0%, 50% { opacity: 1; }
+    51%, 100% { opacity: 0; }
+}
+
+@keyframes scanlines {
+    0% { background-position: 0 0; }
+    100% { background-position: 0 10px; }
+}
+
+@keyframes screenOut {
+    to {
+        opacity: 0;
+        transform: scale(0.95);
+    }
+}
+
+@keyframes screenIn {
+    from {
+        opacity: 0;
+        transform: scale(1.05);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+@keyframes phosphorPulse {
+    0%, 100% { 
+        text-shadow: 
+            0 0 5px var(--color-primary),
+            0 0 10px var(--color-primary),
+            0 0 15px var(--color-primary),
+            0 0 20px var(--color-primary);
+    }
+    50% { 
+        text-shadow: 
+            0 0 10px var(--color-primary),
+            0 0 20px var(--color-primary),
+            0 0 30px var(--color-primary),
+            0 0 40px var(--color-primary);
+    }
+}
