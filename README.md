@@ -12,8 +12,8 @@ A cinematic spy-thriller web experience that presents users with a binary missio
 
 ```bash
 # Clone the repository
-git clone https://github.com/yourusername/brewstersmtgo.git
-cd brewstersmtgo
+git clone https://github.com/abaeckst/BrewstersMTGO.git
+cd BrewstersMTGO
 
 # Start local server for development
 python -m http.server 8000

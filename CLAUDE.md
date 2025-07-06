@@ -301,7 +301,18 @@ Complete list of 28 contributors implemented:
 
 ## Deployment
 
-Target: https://abaeckst.github.io/BrewstersMTGO
+**Live Site**: https://abaeckst.github.io/BrewstersMTGO
+**Repository**: https://github.com/abaeckst/BrewstersMTGO
+
+### GitHub Pages Setup
 - Static files only (GitHub Pages)
 - No build process required
 - Multi-file architecture for maintainability
+- Deployed from main branch / root folder
+- Automatic deployment on push to main
+
+### Deployment Process
+1. Push changes to main branch
+2. GitHub Pages automatically rebuilds (1-2 minutes)
+3. Site updates at live URL
+4. Test all functionality in production environment
