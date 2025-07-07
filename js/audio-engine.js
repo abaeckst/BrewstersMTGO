@@ -711,6 +711,102 @@ export const AudioEngine = {
         }
     },
     
+    // Progressive iOS audio preparation system
+    async preloadAndPrime(soundKey) {
+        console.log(`📱 Preloading and priming audio for iOS: ${soundKey}`);
+        
+        try {
+            // Ensure audio context is unlocked
+            if (this.context && this.context.state === 'suspended') {
+                await this.context.resume();
+                console.log('📱 Audio context resumed for preloading');
+            }
+            
+            // Special handling for Mission Impossible theme
+            if (soundKey === 'missionThemeFull') {
+                return await this.primeMissionTheme();
+            }
+            
+            // Standard audio priming for other sounds
+            const sound = this.sounds[soundKey];
+            if (sound && sound.element) {
+                // Prime the audio element for iOS
+                sound.element.currentTime = 0;
+                sound.element.muted = true;
+                
+                try {
+                    await sound.element.play();
+                    sound.element.pause();
+                    sound.element.muted = false;
+                    console.log(`📱 Successfully primed ${soundKey} for iOS playback`);
+                    return true;
+                } catch (error) {
+                    console.warn(`📱 Failed to prime ${soundKey}:`, error);
+                    sound.element.muted = false;
+                    return false;
+                }
+            }
+            
+            return false;
+        } catch (error) {
+            console.warn(`📱 Preload and prime failed for ${soundKey}:`, error);
+            return false;
+        }
+    },
+    
+    // iOS-specific Mission Impossible theme preparation
+    async primeMissionTheme() {
+        console.log('📱 Priming Mission Impossible theme for iOS');
+        
+        const sound = this.sounds.missionThemeFull;
+        if (!sound || !sound.element) {
+            console.warn('📱 Mission theme not available for priming');
+            return false;
+        }
+        
+        try {
+            // iOS silent pre-play technique
+            const originalVolume = sound.element.volume;
+            sound.element.volume = 0.01; // Nearly silent
+            sound.element.currentTime = 0;
+            
+            // Play a tiny burst to register with iOS
+            await sound.element.play();
+            
+            // Stop immediately and restore settings
+            setTimeout(() => {
+                sound.element.pause();
+                sound.element.currentTime = 0;
+                sound.element.volume = originalVolume;
+                console.log('📱 Mission theme successfully primed for iOS');
+            }, 50);
+            
+            // Mark as primed for later playback
+            sound.isPrimed = true;
+            return true;
+            
+        } catch (error) {
+            console.warn('📱 Mission theme priming failed:', error);
+            return false;
+        }
+    },
+    
+    // Enhanced play method with iOS priming awareness
+    async playWithIOSFallback(soundKey, options = {}) {
+        console.log(`🎵 Enhanced iOS-aware playback: ${soundKey}`);
+        
+        // Check if this sound was primed for iOS
+        const sound = this.sounds[soundKey];
+        if (sound && sound.isPrimed && this.isIOS()) {
+            console.log(`📱 Using primed audio for ${soundKey}`);
+            // Reset primed flag
+            sound.isPrimed = false;
+        }
+        
+        // Use standard play method
+        return await this.play(soundKey, options);
+    },
+
     // Generated Mission Impossible theme fallback
     playMissionThemeGenerated(onDropCallback) {
         const theme = [

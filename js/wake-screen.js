@@ -152,6 +152,19 @@ export class WakeScreen {
             });
         }
 
+        // PROGRESSIVE AUDIO: Preload Mission Impossible theme during wake interaction
+        if (audioEngine && audioEngine.preloadAndPrime) {
+            audioEngine.preloadAndPrime('missionThemeFull').then(success => {
+                if (success) {
+                    console.log('📱 Mission theme successfully preloaded during wake');
+                } else {
+                    console.warn('📱 Mission theme preload failed during wake (will retry later)');
+                }
+            }).catch(error => {
+                console.warn('📱 Mission theme preload error during wake:', error);
+            });
+        }
+
         // Audio feedback - immediate beep to confirm interaction
         if (audioEngine) {
             audioEngine.play('terminalBeep', { volume: 0.3 });

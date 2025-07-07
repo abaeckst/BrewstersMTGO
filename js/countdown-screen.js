@@ -217,7 +217,18 @@ class CountdownScreen {
             console.log('📱 Is iOS:', AudioEngine.isIOS());
             
             try {
-                const audioElement = await AudioEngine.play('missionThemeFull', { loop: true });
+                // For mobile devices, use enhanced iOS-aware playback
+                const isMobile = /Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+                if (isMobile) {
+                    console.log('📱 Mobile detected - using enhanced iOS-aware playback');
+                    // Add a brief delay to allow any pending audio context operations
+                    await this.delay(100);
+                }
+                
+                // Use enhanced playback method if available (handles primed audio)
+                const audioElement = AudioEngine.playWithIOSFallback ? 
+                    await AudioEngine.playWithIOSFallback('missionThemeFull', { loop: true }) :
+                    await AudioEngine.play('missionThemeFull', { loop: true });
                 this.audioTriggered = true;
                 
                 if (audioElement) {

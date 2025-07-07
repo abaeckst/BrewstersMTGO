@@ -528,6 +528,20 @@ YOU HAVE EARNED THE RIGHT TO CHOOSE YOUR FINAL MISSION:`;
         // Play confirmation audio
         if (accepted) {
             AudioEngine.play('success');
+            
+            // PROGRESSIVE AUDIO: Prime Mission Impossible theme on mission acceptance
+            if (AudioEngine.preloadAndPrime) {
+                console.log('📱 Priming Mission theme after mission acceptance...');
+                AudioEngine.preloadAndPrime('missionThemeFull').then(success => {
+                    if (success) {
+                        console.log('📱 Mission theme successfully primed after acceptance');
+                    } else {
+                        console.warn('📱 Mission theme priming failed after acceptance');
+                    }
+                }).catch(error => {
+                    console.warn('📱 Mission theme priming error after acceptance:', error);
+                });
+            }
         } else {
             AudioEngine.play('disconnect');
         }
