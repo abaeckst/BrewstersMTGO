@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>Wake Screen Visibility Test</title>
+    
+    <!-- Load actual CSS -->
+    <link rel="stylesheet" href="css/main.css">
+    
+    <style>
+        /* Debug overlay fixed at top */
+        #debug-status {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: rgba(0, 255, 0, 0.9);
+            color: #000;
+            font-family: monospace;
+            font-size: 14px;
+            padding: 10px;
+            z-index: 9999;
+            text-align: center;
+            font-weight: bold;
+        }
+        
+        /* Visual indicator for wake screen */
+        #wake-screen-indicator {
+            position: fixed;
+            top: 50px;
+            right: 10px;
+            width: 200px;
+            background: rgba(255, 255, 0, 0.9);
+            color: #000;
+            font-family: monospace;
+            font-size: 12px;
+            padding: 10px;
+            z-index: 9998;
+            border: 2px solid #000;
+        }
+        
+        /* Test button */
+        #test-button {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: #ff0000;
+            color: #fff;
+            border: none;
+            padding: 15px 25px;
+            font-size: 16px;
+            cursor: pointer;
+            z-index: 9997;
+            font-family: monospace;
+            font-weight: bold;
+        }
+        
+        /* Copy button */
+        #copy-results {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            background: #00ff00;
+            color: #000;
+            border: none;
+            padding: 15px 25px;
+            font-size: 16px;
+            cursor: pointer;
+            z-index: 9997;
+            font-family: monospace;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div id="debug-status">
+        📱 Wake Screen Visibility Test - Loading...
+    </div>
+    
+    <div id="wake-screen-indicator">
+        <div>🎯 Wake Screen Status</div>
+        <div id="wake-status">Checking...</div>
+    </div>
+    
+    <button id="test-button" onclick="runTest()">
+        🔍 RUN TEST
+    </button>
+    
+    <button id="copy-results" onclick="copyResults()">
+        📋 COPY RESULTS
+    </button>
+
+    <!-- Exact wake screen HTML from index.html -->
+    <div id="app" class="app-container">
+        <div class="security-banner" id="security-banner">
+            <div class="auth-text-sm security-notice">AUTHORIZED PERSONNEL ONLY</div>
+        </div>
+        
+        <div id="wake-screen" class="screen active wake-screen-dormant">
+            <div class="dormant-terminal-container">
+                <div class="wake-trigger-area" id="wake-trigger">
+                    <div class="wake-instruction wake-stage-1-hidden">
+                        <span class="wake-text">[WAKE SYSTEM]</span>
+                        <div class="wake-hint">TAP TO ACTIVATE</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let testResults = '';
+        
+        function updateStatus(message) {
+            document.getElementById('debug-status').textContent = message;
+        }
+        
+        function updateWakeStatus(message) {
+            document.getElementById('wake-status').innerHTML = message;
+        }
+        
+        function addResult(message) {
+            testResults += message + '\n';
+            console.log(message);
+        }
+        
+        function copyResults() {
+            if (navigator.clipboard) {
+                navigator.clipboard.writeText(testResults).then(() => {
+                    updateStatus('✅ Results copied to clipboard!');
+                }).catch(() => {
+                    fallbackCopy();
+                });
+            } else {
+                fallbackCopy();
+            }
+        }
+        
+        function fallbackCopy() {
+            const textArea = document.createElement('textarea');
+            textArea.value = testResults;
+            textArea.style.position = 'fixed';
+            textArea.style.opacity = '0';
+            document.body.appendChild(textArea);
+            textArea.select();
+            try {
+                document.execCommand('copy');
+                updateStatus('✅ Results copied (fallback)!');
+            } catch (err) {
+                updateStatus('❌ Copy failed - check console');
+            }
+            document.body.removeChild(textArea);
+        }
+        
+        function runTest() {
+            updateStatus('🔍 Running comprehensive wake screen test...');
+            testResults = '';
+            
+            addResult('=== WAKE SCREEN VISIBILITY TEST ===');
+            addResult(`Test time: ${new Date().toISOString()}`);
+            addResult(`Browser: ${navigator.userAgent}`);
+            addResult(`Screen: ${screen.width}x${screen.height}`);
+            addResult(`Viewport: ${window.innerWidth}x${window.innerHeight}`);
+            addResult('');
+            
+            // Test 1: App container
+            const appContainer = document.getElementById('app');
+            if (appContainer) {
+                const appStyle = window.getComputedStyle(appContainer);
+                const appRect = appContainer.getBoundingClientRect();
+                
+                addResult('--- APP CONTAINER ---');
+                addResult(`Exists: ✅`);
+                addResult(`Display: ${appStyle.display}`);
+                addResult(`Position: ${appStyle.position}`);
+                addResult(`Visibility: ${appStyle.visibility}`);
+                addResult(`Opacity: ${appStyle.opacity}`);
+                addResult(`Z-index: ${appStyle.zIndex}`);
+                addResult(`Background: ${appStyle.backgroundColor}`);
+                addResult(`Size: ${Math.round(appRect.width)}x${Math.round(appRect.height)}`);
+                addResult(`Location: (${Math.round(appRect.left)}, ${Math.round(appRect.top)})`);
+                addResult(`Classes: "${appContainer.className}"`);
+                addResult('');
+            } else {
+                addResult('--- APP CONTAINER ---');
+                addResult('❌ App container not found!');
+                addResult('');
+            }
+            
+            // Test 2: Wake screen
+            const wakeScreen = document.getElementById('wake-screen');
+            if (wakeScreen) {
+                const wakeStyle = window.getComputedStyle(wakeScreen);
+                const wakeRect = wakeScreen.getBoundingClientRect();
+                
+                addResult('--- WAKE SCREEN ---');
+                addResult(`Exists: ✅`);
+                addResult(`Display: ${wakeStyle.display}`);
+                addResult(`Position: ${wakeStyle.position}`);
+                addResult(`Visibility: ${wakeStyle.visibility}`);
+                addResult(`Opacity: ${wakeStyle.opacity}`);
+                addResult(`Z-index: ${wakeStyle.zIndex}`);
+                addResult(`Background: ${wakeStyle.backgroundColor}`);
+                addResult(`Size: ${Math.round(wakeRect.width)}x${Math.round(wakeRect.height)}`);
+                addResult(`Location: (${Math.round(wakeRect.left)}, ${Math.round(wakeRect.top)})`);
+                addResult(`Classes: "${wakeScreen.className}"`);
+                addResult('');
+                
+                // Update status indicator
+                updateWakeStatus(`
+                    Display: ${wakeStyle.display}<br>
+                    Visibility: ${wakeStyle.visibility}<br>
+                    Opacity: ${wakeStyle.opacity}<br>
+                    Size: ${Math.round(wakeRect.width)}x${Math.round(wakeRect.height)}<br>
+                    Classes: "${wakeScreen.className}"
+                `);
+            } else {
+                addResult('--- WAKE SCREEN ---');
+                addResult('❌ Wake screen not found!');
+                addResult('');
+                updateWakeStatus('❌ Wake screen not found!');
+            }
+            
+            // Test 3: Wake instruction
+            const wakeInstruction = document.querySelector('.wake-instruction');
+            if (wakeInstruction) {
+                const instrStyle = window.getComputedStyle(wakeInstruction);
+                const instrRect = wakeInstruction.getBoundingClientRect();
+                
+                addResult('--- WAKE INSTRUCTION ---');
+                addResult(`Exists: ✅`);
+                addResult(`Display: ${instrStyle.display}`);
+                addResult(`Position: ${instrStyle.position}`);
+                addResult(`Visibility: ${instrStyle.visibility}`);
+                addResult(`Opacity: ${instrStyle.opacity}`);
+                addResult(`Transform: ${instrStyle.transform}`);
+                addResult(`Transition: ${instrStyle.transition}`);
+                addResult(`Size: ${Math.round(instrRect.width)}x${Math.round(instrRect.height)}`);
+                addResult(`Location: (${Math.round(instrRect.left)}, ${Math.round(instrRect.top)})`);
+                addResult(`Classes: "${wakeInstruction.className}"`);
+                addResult('');
+            } else {
+                addResult('--- WAKE INSTRUCTION ---');
+                addResult('❌ Wake instruction not found!');
+                addResult('');
+            }
+            
+            // Test 4: Test revelation
+            addResult('--- WAKE REVELATION TEST ---');
+            if (wakeInstruction) {
+                addResult('Testing wake instruction revelation...');
+                addResult(`Before - Classes: "${wakeInstruction.className}"`);
+                addResult(`Before - Opacity: ${window.getComputedStyle(wakeInstruction).opacity}`);
+                
+                // Trigger revelation
+                wakeInstruction.classList.remove('wake-stage-1-hidden');
+                wakeInstruction.classList.add('wake-stage-1-reveal');
+                
+                // Check immediately after change
+                setTimeout(() => {
+                    const afterStyle = window.getComputedStyle(wakeInstruction);
+                    addResult(`After - Classes: "${wakeInstruction.className}"`);
+                    addResult(`After - Opacity: ${afterStyle.opacity}`);
+                    addResult(`After - Transform: ${afterStyle.transform}`);
+                    addResult('');
+                    
+                    addResult('=== TEST COMPLETE ===');
+                    updateStatus('✅ Test complete - Check results and copy if needed');
+                    
+                    // Final visual check
+                    const finalRect = wakeInstruction.getBoundingClientRect();
+                    if (finalRect.width > 0 && finalRect.height > 0 && afterStyle.opacity > 0) {
+                        addResult('🎉 WAKE INSTRUCTION SHOULD BE VISIBLE!');
+                    } else {
+                        addResult('❌ Wake instruction still not visible after revelation');
+                    }
+                }, 100);
+            } else {
+                addResult('❌ Cannot test revelation - wake instruction not found');
+                addResult('');
+                addResult('=== TEST COMPLETE ===');
+                updateStatus('❌ Test complete - Wake instruction not found');
+            }
+        }
+        
+        // Auto-run test after page load
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                runTest();
+            }, 1000);
+        });
+        
+        // Initial status check
+        window.addEventListener('DOMContentLoaded', () => {
+            updateStatus('📱 Wake Screen Visibility Test - Ready');
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mobile Countdown Audio Test</title>
+    <style>
+        body {
+            font-family: 'Courier New', monospace;
+            background: #000;
+            color: #00ff00;
+            margin: 0;
+            padding: 20px;
+            font-size: 16px;
+            line-height: 1.6;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        .test-section {
+            background: #001100;
+            border: 1px solid #00ff00;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+        button {
+            background: #003300;
+            color: #00ff00;
+            border: 1px solid #00ff00;
+            padding: 10px 20px;
+            font-family: 'Courier New', monospace;
+            font-size: 16px;
+            cursor: pointer;
+            margin: 10px 10px 10px 0;
+            border-radius: 3px;
+        }
+        button:hover {
+            background: #005500;
+        }
+        button:active {
+            background: #007700;
+        }
+        .log {
+            background: #000000;
+            border: 1px solid #333;
+            padding: 10px;
+            margin: 10px 0;
+            max-height: 200px;
+            overflow-y: auto;
+            font-size: 14px;
+            white-space: pre-wrap;
+        }
+        .status {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 3px;
+        }
+        .success { background: #003300; }
+        .error { background: #330000; }
+        .warning { background: #333300; }
+        .info { background: #000033; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎵 Mobile Countdown Audio Test</h1>
+        <p>Test suite for debugging Mission Impossible theme playback on mobile devices.</p>
+        
+        <div class="test-section">
+            <h2>📱 Device Information</h2>
+            <div id="device-info" class="log"></div>
+        </div>
+        
+        <div class="test-section">
+            <h2>🔊 Audio Engine Status</h2>
+            <button onclick="initAudioEngine()">Initialize Audio Engine</button>
+            <button onclick="checkAudioStatus()">Check Status</button>
+            <div id="audio-status" class="log"></div>
+        </div>
+        
+        <div class="test-section">
+            <h2>🎵 Mission Impossible Theme Tests</h2>
+            <button onclick="testFileBasedTheme()">Test File-Based Theme</button>
+            <button onclick="testGeneratedTheme()">Test Generated Theme</button>
+            <button onclick="testWithLoop()">Test with Loop</button>
+            <button onclick="stopAllAudio()">Stop All Audio</button>
+            <div id="theme-test" class="log"></div>
+        </div>
+        
+        <div class="test-section">
+            <h2>🧪 Audio Context Tests</h2>
+            <button onclick="testAudioContext()">Test Audio Context</button>
+            <button onclick="testUnlock()">Test Unlock</button>
+            <button onclick="testBasicTone()">Test Basic Tone</button>
+            <div id="context-test" class="log"></div>
+        </div>
+        
+        <div class="test-section">
+            <h2>📋 Test Log</h2>
+            <button onclick="clearLogs()">Clear Logs</button>
+            <div id="test-log" class="log"></div>
+        </div>
+    </div>
+
+    <script type="module">
+        // Import the audio engine
+        import { AudioEngine } from './js/audio-engine.js';
+        
+        // Make it globally available for testing
+        window.AudioEngine = AudioEngine;
+        
+        let currentAudio = null;
+        
+        // Initialize device info
+        function showDeviceInfo() {
+            const info = {
+                userAgent: navigator.userAgent,
+                platform: navigator.platform,
+                screen: `${screen.width}x${screen.height}`,
+                viewport: `${window.innerWidth}x${window.innerHeight}`,
+                touchSupport: 'ontouchstart' in window,
+                audioContextSupport: !!(window.AudioContext || window.webkitAudioContext),
+                isIOS: /iPad|iPhone|iPod/.test(navigator.userAgent),
+                isAndroid: /Android/i.test(navigator.userAgent),
+                isMobile: /Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)
+            };
+            
+            document.getElementById('device-info').textContent = JSON.stringify(info, null, 2);
+        }
+        
+        // Initialize audio engine
+        window.initAudioEngine = async function() {
+            log('🔊 Initializing audio engine...');
+            try {
+                const result = await AudioEngine.init();
+                log(`✅ Audio engine initialized: ${result}`);
+                checkAudioStatus();
+            } catch (error) {
+                log(`❌ Audio engine initialization failed: ${error.message}`);
+            }
+        };
+        
+        // Check audio status
+        window.checkAudioStatus = function() {
+            const status = AudioEngine.getStatus();
+            const debugInfo = AudioEngine.getMobileDebugInfo();
+            
+            document.getElementById('audio-status').textContent = 
+                'Status:\n' + JSON.stringify(status, null, 2) + 
+                '\n\nDebug Info:\n' + JSON.stringify(debugInfo, null, 2);
+        };
+        
+        // Test file-based theme
+        window.testFileBasedTheme = async function() {
+            log('🎵 Testing file-based Mission Impossible theme...');
+            try {
+                currentAudio = await AudioEngine.play('missionThemeFull', { loop: false });
+                if (currentAudio) {
+                    log('✅ File-based theme started successfully');
+                    log(`🎵 Audio element type: ${typeof currentAudio}`);
+                } else {
+                    log('⚠️ File-based theme returned null');
+                }
+            } catch (error) {
+                log(`❌ File-based theme failed: ${error.message}`);
+            }
+        };
+        
+        // Test generated theme
+        window.testGeneratedTheme = async function() {
+            log('🎵 Testing generated Mission Impossible theme...');
+            try {
+                currentAudio = AudioEngine.playGeneratedSound('missionThemeFull', { loop: false });
+                if (currentAudio) {
+                    log('✅ Generated theme started successfully');
+                    log(`🎵 Audio element type: ${typeof currentAudio}`);
+                } else {
+                    log('⚠️ Generated theme returned null');
+                }
+            } catch (error) {
+                log(`❌ Generated theme failed: ${error.message}`);
+            }
+        };
+        
+        // Test with loop
+        window.testWithLoop = async function() {
+            log('🎵 Testing Mission Impossible theme with loop...');
+            try {
+                currentAudio = await AudioEngine.play('missionThemeFull', { loop: true });
+                if (currentAudio) {
+                    log('✅ Looping theme started successfully');
+                    log(`🎵 Audio element type: ${typeof currentAudio}`);
+                    log(`🔄 Loop enabled: ${currentAudio.loop}`);
+                } else {
+                    log('⚠️ Looping theme returned null');
+                }
+            } catch (error) {
+                log(`❌ Looping theme failed: ${error.message}`);
+            }
+        };
+        
+        // Stop all audio
+        window.stopAllAudio = function() {
+            log('🛑 Stopping all audio...');
+            if (currentAudio) {
+                if (typeof currentAudio.pause === 'function') {
+                    currentAudio.pause();
+                }
+                if (typeof currentAudio.stop === 'function') {
+                    currentAudio.stop();
+                }
+                currentAudio = null;
+                log('✅ Audio stopped');
+            } else {
+                log('⚠️ No audio to stop');
+            }
+        };
+        
+        // Test audio context
+        window.testAudioContext = function() {
+            log('🧪 Testing audio context...');
+            const context = AudioEngine.context;
+            if (context) {
+                log(`✅ Audio context exists: ${context.constructor.name}`);
+                log(`🔊 Context state: ${context.state}`);
+                log(`🎵 Sample rate: ${context.sampleRate}`);
+                log(`⏰ Current time: ${context.currentTime.toFixed(3)}s`);
+            } else {
+                log('❌ No audio context found');
+            }
+        };
+        
+        // Test unlock
+        window.testUnlock = async function() {
+            log('🔓 Testing audio unlock...');
+            try {
+                const result = await AudioEngine.unlockAudioContext();
+                log(`✅ Audio unlock result: ${result}`);
+                log(`🔊 Context state after unlock: ${AudioEngine.context ? AudioEngine.context.state : 'none'}`);
+            } catch (error) {
+                log(`❌ Audio unlock failed: ${error.message}`);
+            }
+        };
+        
+        // Test basic tone
+        window.testBasicTone = function() {
+            log('🎵 Testing basic tone...');
+            try {
+                const oscillator = AudioEngine.generateBeep(440, 0.5);
+                log('✅ Basic tone generated');
+            } catch (error) {
+                log(`❌ Basic tone failed: ${error.message}`);
+            }
+        };
+        
+        // Clear logs
+        window.clearLogs = function() {
+            document.getElementById('test-log').textContent = '';
+        };
+        
+        // Logging function
+        function log(message) {
+            const timestamp = new Date().toLocaleTimeString();
+            const logEntry = `[${timestamp}] ${message}\n`;
+            document.getElementById('test-log').textContent += logEntry;
+            console.log(message);
+        }
+        
+        // Initialize on load
+        showDeviceInfo();
+        
+        // Auto-initialize audio on first user interaction
+        let autoInitialized = false;
+        document.addEventListener('touchstart', async () => {
+            if (!autoInitialized) {
+                autoInitialized = true;
+                log('📱 Touch detected - auto-initializing audio...');
+                await initAudioEngine();
+            }
+        }, { once: true });
+        
+        document.addEventListener('click', async () => {
+            if (!autoInitialized) {
+                autoInitialized = true;
+                log('🖱️ Click detected - auto-initializing audio...');
+                await initAudioEngine();
+            }
+        }, { once: true });
+        
+    </script>
+</body>
+</html>

@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Credits Mobile Audio Debug</title>
+    <style>
+        body {
+            background: #000;
+            color: #00ff00;
+            font-family: monospace;
+            padding: 20px;
+            margin: 0;
+        }
+        button {
+            background: #002200;
+            color: #00ff00;
+            border: 2px solid #00ff00;
+            padding: 15px 30px;
+            font-size: 18px;
+            margin: 10px;
+            cursor: pointer;
+            font-family: monospace;
+        }
+        button:active {
+            background: #00ff00;
+            color: #000;
+        }
+        .log {
+            margin-top: 20px;
+            padding: 10px;
+            background: #001100;
+            border: 1px solid #00ff00;
+            max-height: 400px;
+            overflow-y: auto;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+        .status {
+            margin: 10px 0;
+            padding: 10px;
+            background: #002200;
+            border: 1px solid #00ff00;
+        }
+    </style>
+</head>
+<body>
+    <h1>Credits Mobile Audio Test</h1>
+    
+    <div class="status">
+        <div>Device Type: <span id="device-type">Detecting...</span></div>
+        <div>Audio Context: <span id="audio-context">Checking...</span></div>
+        <div>Audio Loaded: <span id="audio-loaded">Checking...</span></div>
+        <div>Touch Events: <span id="touch-events">Checking...</span></div>
+    </div>
+    
+    <button id="unlock-audio">Unlock Audio Context</button>
+    <button id="test-beep">Test Beep</button>
+    <button id="test-success">Test Success</button>
+    <button id="test-sequence">Test Credits Sequence</button>
+    <button id="simulate-credits">Simulate Credits Screen</button>
+    
+    <div class="log" id="log"></div>
+    
+    <script type="module">
+        import { AudioEngine } from './js/audio-engine.js';
+        
+        const log = document.getElementById('log');
+        const deviceType = document.getElementById('device-type');
+        const audioContext = document.getElementById('audio-context');
+        const audioLoaded = document.getElementById('audio-loaded');
+        const touchEvents = document.getElementById('touch-events');
+        
+        function addLog(message) {
+            const timestamp = new Date().toLocaleTimeString();
+            log.textContent += `[${timestamp}] ${message}\n`;
+            log.scrollTop = log.scrollHeight;
+            console.log(message);
+        }
+        
+        // Initialize
+        addLog('Initializing audio test...');
+        
+        // Device detection
+        const isMobile = window.innerWidth <= 768 || 'ontouchstart' in window;
+        deviceType.textContent = isMobile ? 'Mobile' : 'Desktop';
+        touchEvents.textContent = 'ontouchstart' in window ? 'Supported' : 'Not Supported';
+        
+        // Initialize audio engine
+        AudioEngine.init().then(() => {
+            addLog('Audio engine initialized');
+            updateStatus();
+        }).catch(error => {
+            addLog(`Audio engine init error: ${error.message}`);
+            updateStatus();
+        });
+        
+        function updateStatus() {
+            audioContext.textContent = AudioEngine.context ? AudioEngine.context.state : 'No context';
+            audioLoaded.textContent = AudioEngine.loaded ? 'Yes' : 'No';
+        }
+        
+        // Button handlers
+        document.getElementById('unlock-audio').addEventListener('click', async () => {
+            addLog('Attempting to unlock audio context...');
+            const result = await AudioEngine.unlockAudioContext();
+            addLog(`Unlock result: ${result}`);
+            updateStatus();
+        });
+        
+        document.getElementById('test-beep').addEventListener('click', () => {
+            addLog('Playing beep sound...');
+            const result = AudioEngine.play('beep');
+            addLog(`Beep result: ${result ? 'Playing' : 'Failed'}`);
+            updateStatus();
+        });
+        
+        document.getElementById('test-success').addEventListener('click', () => {
+            addLog('Playing success sound...');
+            const result = AudioEngine.play('success');
+            addLog(`Success result: ${result ? 'Playing' : 'Failed'}`);
+            updateStatus();
+        });
+        
+        document.getElementById('test-sequence').addEventListener('click', () => {
+            addLog('Testing credits audio sequence...');
+            
+            // Simulate credits sequence timing
+            const sounds = [
+                { name: 'success', delay: 1000 },
+                { name: 'systemReady', delay: 2000 },
+                { name: 'terminalTextBeep', delay: 4000 },
+                { name: 'alert', delay: 6000 }
+            ];
+            
+            sounds.forEach(({ name, delay }) => {
+                setTimeout(() => {
+                    addLog(`Playing ${name} at ${delay}ms...`);
+                    const result = AudioEngine.play(name);
+                    addLog(`${name} result: ${result ? 'Playing' : 'Failed'}`);
+                }, delay);
+            });
+        });
+        
+        document.getElementById('simulate-credits').addEventListener('click', () => {
+            addLog('Simulating full credits screen experience...');
+            updateStatus();
+            
+            // Check initial state
+            addLog(`Initial audio context state: ${AudioEngine.context?.state}`);
+            addLog(`Initial audio loaded: ${AudioEngine.loaded}`);
+            
+            // Simulate mobile check
+            if (isMobile && AudioEngine.context?.state === 'suspended') {
+                addLog('Mobile with suspended audio detected - would show tap prompt');
+                addLog('User taps to continue...');
+                
+                // Simulate unlock
+                AudioEngine.play('beep', { volume: 0.1 }).then(result => {
+                    addLog(`Unlock beep result: ${result ? 'Playing' : 'Failed'}`);
+                    
+                    // Then start sequence
+                    startCreditsSequence();
+                });
+            } else {
+                // Direct start
+                startCreditsSequence();
+            }
+        });
+        
+        function startCreditsSequence() {
+            addLog('Starting credits sequence...');
+            
+            // Test immediate sound
+            if (isMobile) {
+                addLog('Mobile: Playing immediate test sound');
+                const testResult = AudioEngine.play('beep', { volume: 0.1 });
+                addLog(`Test sound result: ${testResult ? 'Playing' : 'Failed'}`);
+            }
+            
+            // Stage 1
+            setTimeout(() => {
+                addLog('Stage 1: Mission complete confirmation');
+                const result = AudioEngine.play('success');
+                addLog(`Success sound result: ${result ? 'Playing' : 'Failed'}`);
+            }, 1000);
+            
+            // Stage 2
+            setTimeout(() => {
+                addLog('Stage 2: Debrief section');
+                const result = AudioEngine.play('systemReady');
+                addLog(`System ready sound result: ${result ? 'Playing' : 'Failed'}`);
+                
+                // Simulate beeps for items
+                for (let i = 0; i < 3; i++) {
+                    setTimeout(() => {
+                        const beepResult = AudioEngine.play('beep');
+                        addLog(`Item ${i + 1} beep: ${beepResult ? 'Playing' : 'Failed'}`);
+                    }, i * 150);
+                }
+            }, 2000);
+            
+            // Crescendo
+            setTimeout(() => {
+                addLog('Audio crescendo starting...');
+                const crescendo = [
+                    { sound: 'connectionEstablish', delay: 0 },
+                    { sound: 'systemReady', delay: 800 },
+                    { sound: 'success', delay: 1600 },
+                    { sound: 'terminalTextBeep', delay: 2400 }
+                ];
+                
+                crescendo.forEach(({ sound, delay }) => {
+                    setTimeout(() => {
+                        const result = AudioEngine.play(sound);
+                        addLog(`Crescendo ${sound}: ${result ? 'Playing' : 'Failed'}`);
+                    }, delay);
+                });
+            }, 8000);
+        }
+        
+        // Update status every second
+        setInterval(updateStatus, 1000);
+        
+        // Log any audio context state changes
+        if (AudioEngine.context) {
+            AudioEngine.context.addEventListener('statechange', () => {
+                addLog(`Audio context state changed to: ${AudioEngine.context.state}`);
+                updateStatus();
+            });
+        }
+    </script>
+</body>
+</html>

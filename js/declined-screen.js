@@ -4,6 +4,8 @@
  * Part of Brewster's MTGO Mission Terminal V2
  */
 
+import { AudioEngine } from './audio-engine.js';
+
 class DeclinedScreen {
     constructor() {
         this.elements = {
@@ -31,20 +33,20 @@ class DeclinedScreen {
         
         // Stage 1: Discharge confirmation (1s delay)
         setTimeout(() => {
-            window.AudioEngine.play('systemReady');
+            AudioEngine.play('systemReady');
             console.log('✅ Discharge confirmation played');
         }, 1000);
         
         // Stage 2: Discharge details animation (2s delay)
         setTimeout(() => {
-            window.AudioEngine.play('terminalTextBeep');
+            AudioEngine.play('terminalTextBeep');
             this.animateDischargeDetails();
             console.log('📊 Discharge details animated');
         }, 2000);
         
         // Stage 3: Final message reveal (4s delay)
         setTimeout(() => {
-            window.AudioEngine.play('confirmationBeep');
+            AudioEngine.play('success');
             this.animateFinalMessage();
             console.log('💬 Final message revealed');
         }, 4000);
@@ -62,7 +64,7 @@ class DeclinedScreen {
         stats.forEach((stat, index) => {
             setTimeout(() => {
                 stat.style.animation = 'dataFlash 0.5s ease-out';
-                window.AudioEngine.play('beep');
+                AudioEngine.play('beep');
                 
             }, index * 200);
         });
@@ -77,7 +79,7 @@ class DeclinedScreen {
             paragraphs.forEach((p, index) => {
                 setTimeout(() => {
                     p.style.animation = 'textGlow 1s ease-out';
-                    window.AudioEngine.play('beep');
+                    AudioEngine.play('beep');
                 }, index * 800);
             });
         }
@@ -132,7 +134,7 @@ class DeclinedScreen {
             document.head.appendChild(style);
             
             // Play reveal sound
-            window.AudioEngine.play('systemReady');
+            AudioEngine.play('systemReady');
         }
     }
     
@@ -144,11 +146,11 @@ class DeclinedScreen {
             
             // Audio feedback for hover
             this.elements.restartButton.addEventListener('mouseenter', () => {
-                window.AudioEngine.play('beep');
+                AudioEngine.play('beep');
             });
             
             this.elements.restartButton.addEventListener('touchstart', () => {
-                window.AudioEngine.play('beep');
+                AudioEngine.play('beep');
             }, { passive: true });
         }
         
@@ -158,7 +160,7 @@ class DeclinedScreen {
     reconsiderMission() {
         console.log('🔄 Reconsidering mission - returning to intro');
         
-        window.AudioEngine.play('confirmationBeep');
+        AudioEngine.play('success');
         
         // Visual feedback
         this.elements.restartButton.style.background = 'linear-gradient(45deg, #00aa00, #00ff00)';
@@ -169,15 +171,22 @@ class DeclinedScreen {
         // Clear localStorage to reset the experience
         localStorage.removeItem('agentName');
         localStorage.removeItem('missionChoice');
+        localStorage.removeItem('missionAccepted');
         
         // Add dramatic transition effect
         const screen = document.getElementById('declined-screen');
         screen.style.transition = 'all 1s ease-out';
         screen.style.background = 'linear-gradient(135deg, #002200 0%, #004400 50%, #002200 100%)';
         
-        // Refresh page after brief delay for clean restart
+        // Transition back to wake state after brief delay for clean restart
         setTimeout(() => {
-            location.reload();
+            if (window.app && window.app.state) {
+                console.log('🔄 Transitioning back to wake state for fresh start');
+                window.app.transitionTo(window.app.state.states.WAKE);
+            } else {
+                console.error('❌ window.app or window.app.state not available for declined restart transition');
+                location.reload(); // Fallback
+            }
         }, 1000);
     }
     

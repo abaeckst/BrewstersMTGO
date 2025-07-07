@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Import Test</title>
+    <style>
+        body {
+            font-family: monospace;
+            background: #000;
+            color: #00ff00;
+            padding: 20px;
+            font-size: 16px;
+        }
+        
+        .test-result {
+            margin: 5px 0;
+            padding: 10px;
+            border-left: 4px solid #00ff00;
+            background: #002200;
+        }
+        
+        .error {
+            border-left-color: #ff0000;
+            color: #ff0000;
+            background: #220000;
+        }
+        
+        .success {
+            border-left-color: #00ff00;
+            color: #00ff00;
+        }
+        
+        .warning {
+            border-left-color: #ffff00;
+            color: #ffff00;
+            background: #222200;
+        }
+    </style>
+</head>
+<body>
+    <h1>🔍 Import Test - Find the Failing Dependency</h1>
+    <div id="results"></div>
+
+    <script type="module">
+        const results = document.getElementById('results');
+        
+        function addResult(message, type = 'info') {
+            const div = document.createElement('div');
+            div.className = `test-result ${type}`;
+            div.textContent = message;
+            results.appendChild(div);
+            console.log(`${type.toUpperCase()}: ${message}`);
+        }
+        
+        // Test each import individually
+        const imports = [
+            { name: 'AppState', path: './js/state.js' },
+            { name: 'CinematicEngine', path: './js/cinematic.js' },
+            { name: 'AudioEngine', path: './js/audio-engine.js' },
+            { name: 'viewport', path: './js/viewport.js' },
+            { name: 'WakeScreen', path: './js/wake-screen.js' },
+            { name: 'MissionScreen', path: './js/mission-screen.js' },
+            { name: 'BriefingScreen', path: './js/briefing-screen.js' },
+            { name: 'CountdownScreen', path: './js/countdown-screen.js' },
+            { name: 'CreditsScreen', path: './js/credits-screen.js' },
+            { name: 'DeclinedScreen', path: './js/declined-screen.js' },
+            { name: 'IOSPolyfills', path: './js/ios-polyfills.js' }
+        ];
+        
+        addResult('Starting import tests...', 'warning');
+        
+        // Test each import
+        for (const imp of imports) {
+            try {
+                addResult(`Testing ${imp.name} from ${imp.path}...`, 'info');
+                
+                const module = await import(imp.path);
+                
+                if (module) {
+                    const exportedNames = Object.keys(module);
+                    addResult(`✅ ${imp.name}: SUCCESS - exports: ${exportedNames.join(', ')}`, 'success');
+                    
+                    // Check if the expected export exists
+                    const expectedExport = module[imp.name] || module.default;
+                    if (expectedExport) {
+                        addResult(`   ✅ Expected export found: ${typeof expectedExport}`, 'success');
+                    } else {
+                        addResult(`   ⚠️ Expected export '${imp.name}' not found`, 'warning');
+                    }
+                } else {
+                    addResult(`❌ ${imp.name}: Module is null/undefined`, 'error');
+                }
+                
+            } catch (error) {
+                addResult(`❌ ${imp.name}: FAILED - ${error.message}`, 'error');
+                addResult(`   Error details: ${error.stack?.split('\n')[0] || 'No stack trace'}`, 'error');
+            }
+        }
+        
+        // After all imports, try to construct the App class manually
+        setTimeout(async () => {
+            addResult('', 'info');
+            addResult('Testing App class construction...', 'warning');
+            
+            try {
+                // Import all dependencies first
+                const { AppState } = await import('./js/state.js');
+                const { CinematicEngine } = await import('./js/cinematic.js');
+                const { AudioEngine } = await import('./js/audio-engine.js');
+                const { viewport } = await import('./js/viewport.js');
+                const WakeScreen = (await import('./js/wake-screen.js')).default;
+                const { MissionScreen } = await import('./js/mission-screen.js');
+                const BriefingScreen = (await import('./js/briefing-screen.js')).default;
+                const CountdownScreen = (await import('./js/countdown-screen.js')).default;
+                const CreditsScreen = (await import('./js/credits-screen.js')).default;
+                const DeclinedScreen = (await import('./js/declined-screen.js')).default;
+                const IOSPolyfills = (await import('./js/ios-polyfills.js')).default;
+                
+                addResult('All dependencies imported successfully', 'success');
+                
+                // Test each dependency
+                addResult(`AppState: ${typeof AppState} - ${AppState ? 'OK' : 'NULL'}`, AppState ? 'success' : 'error');
+                addResult(`CinematicEngine: ${typeof CinematicEngine} - ${CinematicEngine ? 'OK' : 'NULL'}`, CinematicEngine ? 'success' : 'error');
+                addResult(`AudioEngine: ${typeof AudioEngine} - ${AudioEngine ? 'OK' : 'NULL'}`, AudioEngine ? 'success' : 'error');
+                addResult(`viewport: ${typeof viewport} - ${viewport ? 'OK' : 'NULL'}`, viewport ? 'success' : 'error');
+                addResult(`WakeScreen: ${typeof WakeScreen} - ${WakeScreen ? 'OK' : 'NULL'}`, WakeScreen ? 'success' : 'error');
+                
+                // Try to create instances
+                addResult('Testing instance creation...', 'warning');
+                
+                const state = new AppState();
+                addResult(`AppState instance: ${state.constructor.name}`, 'success');
+                
+                const cinematic = new CinematicEngine();
+                addResult(`CinematicEngine instance: ${cinematic.constructor.name}`, 'success');
+                
+                addResult('✅ All dependencies can be instantiated!', 'success');
+                
+            } catch (error) {
+                addResult(`❌ App construction test failed: ${error.message}`, 'error');
+                addResult(`   Error at: ${error.stack?.split('\n')[1] || 'Unknown location'}`, 'error');
+            }
+        }, 2000);
+        
+    </script>
+</body>
+</html>

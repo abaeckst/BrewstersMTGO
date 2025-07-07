@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>App Init() & CSS Rendering Test</title>
+    
+    <!-- Load the actual CSS -->
+    <link rel="stylesheet" href="css/main.css">
+    
+    <style>
+        /* Debug overlay */
+        #debug-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: rgba(0, 0, 0, 0.9);
+            color: #00ff00;
+            font-family: monospace;
+            font-size: 12px;
+            padding: 10px;
+            z-index: 9999;
+            max-height: 300px;
+            overflow-y: auto;
+            border-bottom: 2px solid #00ff00;
+        }
+        
+        .debug-line {
+            margin: 2px 0;
+        }
+        
+        .debug-error {
+            color: #ff0000;
+        }
+        
+        .debug-success {
+            color: #00ff00;
+        }
+        
+        .debug-warning {
+            color: #ffff00;
+        }
+        
+        /* CSS Test Panel */
+        #css-test-panel {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(0, 0, 0, 0.9);
+            color: #00ccff;
+            font-family: monospace;
+            font-size: 10px;
+            padding: 10px;
+            z-index: 9998;
+            max-height: 150px;
+            overflow-y: auto;
+            border-top: 2px solid #00ccff;
+        }
+        
+        .css-test-line {
+            margin: 2px 0;
+        }
+        
+        .copy-button {
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            background: #00ff00;
+            color: #000;
+            border: none;
+            padding: 5px 10px;
+            font-size: 12px;
+            cursor: pointer;
+            z-index: 10000;
+            font-family: monospace;
+        }
+    </style>
+</head>
+<body>
+    <!-- Copy button -->
+    <button class="copy-button" onclick="copyAllOutput()">📋 Copy All</button>
+    
+    <!-- Debug overlay -->
+    <div id="debug-overlay">
+        <div class="debug-line debug-warning">🔍 App Init() & CSS Rendering Test - Comprehensive Testing...</div>
+    </div>
+    
+    <!-- CSS Test Panel -->
+    <div id="css-test-panel">
+        <div class="css-test-line">🎨 CSS Rendering Analysis Panel</div>
+    </div>
+
+    <!-- Copy the exact app structure from index.html -->
+    <div id="app" class="app-container">
+        
+        <!-- Global Security Banner -->
+        <div class="security-banner" id="security-banner">
+            <div class="auth-text-sm security-notice">AUTHORIZED PERSONNEL ONLY</div>
+        </div>
+        
+        <!-- Wake Screen - Dormant Terminal (First Screen) -->
+        <div id="wake-screen" class="screen active wake-screen-dormant">
+            <!-- Dormant terminal container -->
+            <div class="dormant-terminal-container">
+                <!-- Wake trigger area -->
+                <div class="wake-trigger-area" id="wake-trigger">
+                    <div class="wake-instruction wake-stage-1-hidden">
+                        <span class="wake-text">[WAKE SYSTEM]</span>
+                        <div class="wake-hint">TAP TO ACTIVATE</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Boot Sequence Screen - Full Terminal Experience (Second Screen) -->
+        <div id="boot-sequence-screen" class="screen hidden boot-screen-fullscreen">
+            <!-- Full viewport boot sequence container -->
+            <div class="boot-sequence-container">
+                <!-- Boot messages will be dynamically added here -->
+                <!-- This will fill the entire screen like a real terminal -->
+            </div>
+        </div>
+        
+        <!-- Auth Screen -->
+        <div id="auth-screen" class="screen hidden screen-isolated">
+            <header class="screen-header">
+                <div class="mission-title">CLASSIFIED TERMINAL ACCESS</div>
+                <div class="auth-text-sm">AUTHORIZED PERSONNEL ONLY</div>
+            </header>
+            
+            <main class="screen-content">
+                <form id="auth-form" class="auth-form">
+                    <div class="auth-field">
+                        <input 
+                            type="text" 
+                            id="operative-name" 
+                            name="operative-name" 
+                            placeholder="OPERATIVE NAME" 
+                            autocomplete="username"
+                            class="auth-input-lg"
+                            required>
+                    </div>
+                    
+                    <div class="auth-field">
+                        <input 
+                            type="password" 
+                            id="access-code" 
+                            name="access-code" 
+                            placeholder="ACCESS CODE" 
+                            autocomplete="current-password"
+                            class="auth-input-lg"
+                            required>
+                    </div>
+                    
+                    <button type="submit" class="button button-primary button-auth">
+                        AUTHENTICATE
+                    </button>
+                </form>
+            </main>
+        </div>
+        
+        <!-- Mission Screen -->
+        <div id="mission-screen" class="screen hidden screen-isolated">
+            <header class="screen-header">
+                <div class="mission-title">INCOMING TRANSMISSION</div>
+                <div class="auth-text-sm security-level">CLASSIFIED - EYES ONLY</div>
+            </header>
+            
+            <main class="screen-content">
+                <div class="mission-brief">
+                    <p class="mission-text">OPERATIVE: URGENT MISSION AVAILABLE</p>
+                    <p class="mission-text">TARGET: HIGH-VALUE MAGIC: THE GATHERING ONLINE ASSETS</p>
+                    <p class="mission-text">TIMEFRAME: IMMEDIATE DEPLOYMENT REQUIRED</p>
+                </div>
+                
+                <div class="mission-actions">
+                    <button class="button button-accept accept-button">
+                        ACCEPT MISSION
+                    </button>
+                    <button class="button button-decline decline-button">
+                        DECLINE MISSION
+                    </button>
+                </div>
+            </main>
+        </div>
+        
+        <!-- Other screens... (abbreviated for test) -->
+        <div id="briefing-screen" class="screen hidden"></div>
+        <div id="countdown-screen" class="screen hidden"></div>
+        <div id="credits-screen" class="screen hidden"></div>
+        <div id="declined-screen" class="screen hidden"></div>
+        
+    </div>
+
+    <script>
+        // Debug logging
+        const debugOverlay = document.getElementById('debug-overlay');
+        const cssTestPanel = document.getElementById('css-test-panel');
+        let debugLineCount = 1;
+        let allOutput = '';
+        
+        function addDebugLine(message, type = 'info') {
+            const timestamp = new Date().toISOString().substring(11, 23);
+            const line = document.createElement('div');
+            line.className = `debug-line debug-${type}`;
+            line.textContent = `${timestamp}: ${message}`;
+            debugOverlay.appendChild(line);
+            
+            // Track all output
+            allOutput += `[${timestamp}] ${type.toUpperCase()}: ${message}\n`;
+            
+            // Keep only last 25 lines
+            if (debugOverlay.children.length > 25) {
+                debugOverlay.removeChild(debugOverlay.firstChild);
+            }
+            
+            debugOverlay.scrollTop = debugOverlay.scrollHeight;
+        }
+        
+        function addCSSLine(message) {
+            const line = document.createElement('div');
+            line.className = 'css-test-line';
+            line.textContent = message;
+            cssTestPanel.appendChild(line);
+            
+            // Track all output
+            allOutput += `CSS: ${message}\n`;
+            
+            // Keep only last 15 lines
+            if (cssTestPanel.children.length > 15) {
+                cssTestPanel.removeChild(cssTestPanel.firstChild);
+            }
+            
+            cssTestPanel.scrollTop = cssTestPanel.scrollHeight;
+        }
+        
+        function copyAllOutput() {
+            if (navigator.clipboard) {
+                navigator.clipboard.writeText(allOutput).then(() => {
+                    addDebugLine('✅ All output copied to clipboard!', 'success');
+                }).catch(() => {
+                    fallbackCopy();
+                });
+            } else {
+                fallbackCopy();
+            }
+        }
+        
+        function fallbackCopy() {
+            const textArea = document.createElement('textarea');
+            textArea.value = allOutput;
+            textArea.style.position = 'fixed';
+            textArea.style.opacity = '0';
+            document.body.appendChild(textArea);
+            textArea.select();
+            try {
+                document.execCommand('copy');
+                addDebugLine('✅ Output copied (fallback method)', 'success');
+            } catch (err) {
+                addDebugLine('❌ Copy failed - text is in console', 'error');
+            }
+            document.body.removeChild(textArea);
+        }
+        
+        // CSS Testing Function
+        function testCSSRendering() {
+            addCSSLine('🎨 Starting CSS Rendering Analysis...');
+            
+            // Test wake screen
+            const wakeScreen = document.getElementById('wake-screen');
+            if (wakeScreen) {
+                const style = window.getComputedStyle(wakeScreen);
+                const rect = wakeScreen.getBoundingClientRect();
+                
+                addCSSLine(`Wake Screen: display=${style.display}, visibility=${style.visibility}`);
+                addCSSLine(`Wake Screen: opacity=${style.opacity}, position=${style.position}`);
+                addCSSLine(`Wake Screen: size=${Math.round(rect.width)}x${Math.round(rect.height)}`);
+                addCSSLine(`Wake Screen: classes="${wakeScreen.className}"`);
+                
+                // Test wake instruction
+                const wakeInstruction = wakeScreen.querySelector('.wake-instruction');
+                if (wakeInstruction) {
+                    const instrStyle = window.getComputedStyle(wakeInstruction);
+                    addCSSLine(`Wake Instruction: opacity=${instrStyle.opacity}`);
+                    addCSSLine(`Wake Instruction: transform=${instrStyle.transform}`);
+                    addCSSLine(`Wake Instruction: classes="${wakeInstruction.className}"`);
+                } else {
+                    addCSSLine('❌ Wake instruction element not found!');
+                }
+            } else {
+                addCSSLine('❌ Wake screen element not found!');
+            }
+            
+            // Test app container
+            const appContainer = document.getElementById('app');
+            if (appContainer) {
+                const appStyle = window.getComputedStyle(appContainer);
+                const appRect = appContainer.getBoundingClientRect();
+                
+                addCSSLine(`App Container: display=${appStyle.display}, position=${appStyle.position}`);
+                addCSSLine(`App Container: size=${Math.round(appRect.width)}x${Math.round(appRect.height)}`);
+                addCSSLine(`App Container: background=${appStyle.backgroundColor}`);
+            } else {
+                addCSSLine('❌ App container not found!');
+            }
+            
+            addCSSLine('✅ CSS analysis complete');
+        }
+        
+        // Track all console output
+        const originalConsole = {
+            log: console.log,
+            error: console.error,
+            warn: console.warn,
+            info: console.info
+        };
+        
+        console.log = (...args) => {
+            originalConsole.log(...args);
+            addDebugLine(args.join(' '), 'info');
+        };
+        
+        console.error = (...args) => {
+            originalConsole.error(...args);
+            addDebugLine('ERROR: ' + args.join(' '), 'error');
+        };
+        
+        console.warn = (...args) => {
+            originalConsole.warn(...args);
+            addDebugLine('WARN: ' + args.join(' '), 'warning');
+        };
+        
+        // Track global errors
+        window.addEventListener('error', (event) => {
+            console.error('GLOBAL:', event.error?.message || event.message);
+        });
+        
+        window.addEventListener('unhandledrejection', (event) => {
+            console.error('PROMISE:', event.reason);
+        });
+        
+        addDebugLine('Test started, checking for window.app creation...', 'info');
+        
+        // Check for app initialization and then test init()
+        let checkCount = 0;
+        const checkInterval = setInterval(() => {
+            checkCount++;
+            
+            if (window.app) {
+                addDebugLine('✅ window.app detected!', 'success');
+                addDebugLine(`App type: ${typeof window.app}`, 'info');
+                addDebugLine(`App constructor: ${window.app.constructor.name}`, 'info');
+                addDebugLine(`Available methods: ${Object.getOwnPropertyNames(Object.getPrototypeOf(window.app)).join(', ')}`, 'info');
+                
+                // Test if getCurrentState exists
+                if (typeof window.app.getCurrentState === 'function') {
+                    addDebugLine(`App state: ${window.app.getCurrentState()}`, 'success');
+                } else {
+                    addDebugLine('getCurrentState method missing!', 'error');
+                }
+                
+                // Check audio engine
+                addDebugLine(`Audio engine: ${typeof window.app.audio}`, 'info');
+                
+                // Test app.init() if available
+                if (typeof window.app.init === 'function') {
+                    addDebugLine('🚀 Found app.init() method - calling it now!', 'success');
+                    
+                    // Call app.init() and track its execution
+                    window.app.init().then(() => {
+                        addDebugLine('✅ app.init() completed successfully!', 'success');
+                        
+                        // Test CSS rendering after init
+                        setTimeout(() => {
+                            testCSSRendering();
+                        }, 1000);
+                        
+                        // Test wake screen revelation
+                        setTimeout(() => {
+                            addDebugLine('Testing wake screen revelation...', 'info');
+                            const wakeInstruction = document.querySelector('.wake-instruction');
+                            if (wakeInstruction) {
+                                wakeInstruction.classList.remove('wake-stage-1-hidden');
+                                wakeInstruction.classList.add('wake-stage-1-reveal');
+                                addDebugLine('✅ Wake instruction revelation triggered', 'success');
+                                
+                                // Test CSS again after revelation
+                                setTimeout(() => {
+                                    addCSSLine('🔄 CSS after wake revelation:');
+                                    testCSSRendering();
+                                }, 1000);
+                            } else {
+                                addDebugLine('❌ Wake instruction not found for revelation', 'error');
+                            }
+                        }, 3000);
+                        
+                    }).catch((error) => {
+                        addDebugLine(`❌ app.init() failed: ${error.message}`, 'error');
+                        if (error.stack) {
+                            addDebugLine(`Error stack: ${error.stack}`, 'error');
+                        }
+                    });
+                } else {
+                    addDebugLine('⚠️ app.init() method not found', 'warning');
+                    
+                    // Still test CSS rendering even without init
+                    setTimeout(() => {
+                        testCSSRendering();
+                    }, 1000);
+                }
+                
+                clearInterval(checkInterval);
+            } else if (checkCount >= 30) {
+                addDebugLine('❌ window.app never created after 30 seconds', 'error');
+                clearInterval(checkInterval);
+            } else {
+                addDebugLine(`Waiting for app... (${checkCount}/30)`, 'warning');
+            }
+        }, 1000);
+        
+        // Copy exact loading logic from index.html
+        function supportsES6Modules() {
+            var script = document.createElement('script');
+            return 'noModule' in script;
+        }
+        
+        function supportsDynamicImports() {
+            try {
+                new Function('import("")');
+                return true;
+            } catch (e) {
+                return false;
+            }
+        }
+        
+        const es6Support = supportsES6Modules();
+        const dynamicSupport = supportsDynamicImports();
+        
+        addDebugLine(`ES6: ${es6Support}, Dynamic: ${dynamicSupport}`, 'info');
+        
+        if (es6Support && dynamicSupport) {
+            addDebugLine('Loading js/app.js (ES6 modules)', 'info');
+            const script = document.createElement('script');
+            script.type = 'module';
+            script.src = 'js/app.js';
+            script.onload = () => addDebugLine('app.js loaded', 'success');
+            script.onerror = (e) => addDebugLine('app.js failed to load', 'error');
+            document.head.appendChild(script);
+        } else {
+            addDebugLine('Loading js/ios-module-bridge.js', 'info');
+            const script = document.createElement('script');
+            script.src = 'js/ios-module-bridge.js';
+            script.onload = () => addDebugLine('ios-module-bridge.js loaded', 'success');
+            script.onerror = (e) => addDebugLine('ios-module-bridge.js failed to load', 'error');
+            document.head.appendChild(script);
+        }
+    </script>
+</body>
+</html>

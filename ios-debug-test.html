@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>iOS Debug Test - Brewster's MTGO</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: #000;
+            color: #00ff00;
+            font-size: 18px; /* Prevent iOS zoom */
+        }
+        
+        .test-section {
+            margin-bottom: 30px;
+            padding: 15px;
+            border: 1px solid #00ff00;
+            background: #001100;
+        }
+        
+        .test-result {
+            margin: 10px 0;
+            padding: 10px;
+            background: #002200;
+            border-left: 4px solid #00ff00;
+        }
+        
+        .error {
+            border-left-color: #ff0000;
+            color: #ff0000;
+        }
+        
+        .success {
+            border-left-color: #00ff00;
+            color: #00ff00;
+        }
+        
+        .warning {
+            border-left-color: #ffff00;
+            color: #ffff00;
+        }
+        
+        button {
+            background: #00ff00;
+            color: #000;
+            border: none;
+            padding: 15px 30px;
+            font-size: 16px;
+            cursor: pointer;
+            margin: 10px;
+            border-radius: 5px;
+        }
+        
+        button:hover {
+            background: #00cc00;
+        }
+        
+        #console {
+            background: #000;
+            color: #00ff00;
+            padding: 10px;
+            font-family: monospace;
+            font-size: 14px;
+            height: 200px;
+            overflow-y: auto;
+            border: 1px solid #00ff00;
+            margin-top: 20px;
+            white-space: pre-wrap;
+        }
+    </style>
+</head>
+<body>
+    <h1>🕵️‍♂️ iOS Debug Test - Brewster's MTGO</h1>
+    <p><strong>Purpose:</strong> Isolate fundamental iOS compatibility issues</p>
+    
+    <div class="test-section">
+        <h2>📱 Device Detection</h2>
+        <div id="device-info"></div>
+    </div>
+    
+    <div class="test-section">
+        <h2>🎯 Touch Event Test</h2>
+        <button id="touch-test-btn">Touch Me!</button>
+        <div id="touch-results"></div>
+    </div>
+    
+    <div class="test-section">
+        <h2>🔊 Audio Context Test</h2>
+        <button id="audio-test-btn">Test Audio</button>
+        <div id="audio-results"></div>
+    </div>
+    
+    <div class="test-section">
+        <h2>📦 ES6 Module Test</h2>
+        <button id="module-test-btn">Test ES6 Import</button>
+        <div id="module-results"></div>
+    </div>
+    
+    <div class="test-section">
+        <h2>🔧 Feature Detection</h2>
+        <div id="feature-results"></div>
+    </div>
+    
+    <div class="test-section">
+        <h2>📊 Console Output</h2>
+        <div id="console"></div>
+    </div>
+
+    <script>
+        // Console capture for debugging
+        const consoleDiv = document.getElementById('console');
+        const originalConsole = {
+            log: console.log,
+            error: console.error,
+            warn: console.warn
+        };
+        
+        function logToConsole(type, message) {
+            const timestamp = new Date().toISOString().substring(11, 23);
+            const logEntry = `[${timestamp}] ${type.toUpperCase()}: ${message}\n`;
+            consoleDiv.textContent += logEntry;
+            consoleDiv.scrollTop = consoleDiv.scrollHeight;
+            
+            // Also log to browser console
+            originalConsole[type](message);
+        }
+        
+        console.log = (msg) => logToConsole('log', msg);
+        console.error = (msg) => logToConsole('error', msg);
+        console.warn = (msg) => logToConsole('warn', msg);
+        
+        // Start logging
+        console.log('iOS Debug Test Started');
+        
+        // Device Detection
+        function detectDevice() {
+            const info = document.getElementById('device-info');
+            const userAgent = navigator.userAgent;
+            const isIOS = /iPad|iPhone|iPod/.test(userAgent);
+            const isIOSChrome = isIOS && /CriOS/.test(userAgent);
+            const isIOSFirefox = isIOS && /FxiOS/.test(userAgent);
+            const isIOSSafari = isIOS && !isIOSChrome && !isIOSFirefox;
+            
+            const deviceInfo = {
+                userAgent: userAgent,
+                isIOS: isIOS,
+                isIOSSafari: isIOSSafari,
+                isIOSChrome: isIOSChrome,
+                isIOSFirefox: isIOSFirefox,
+                screenWidth: window.screen.width,
+                screenHeight: window.screen.height,
+                windowWidth: window.innerWidth,
+                windowHeight: window.innerHeight,
+                devicePixelRatio: window.devicePixelRatio,
+                touchSupport: 'ontouchstart' in window
+            };
+            
+            info.innerHTML = Object.entries(deviceInfo).map(([key, value]) => 
+                `<div class="test-result ${typeof value === 'boolean' ? (value ? 'success' : 'warning') : ''}">
+                    <strong>${key}:</strong> ${value}
+                </div>`
+            ).join('');
+            
+            console.log('Device detected:', JSON.stringify(deviceInfo, null, 2));
+        }
+        
+        // Touch Event Test
+        function setupTouchTest() {
+            const button = document.getElementById('touch-test-btn');
+            const results = document.getElementById('touch-results');
+            
+            let touchCount = 0;
+            let clickCount = 0;
+            
+            // Touch events
+            button.addEventListener('touchstart', (e) => {
+                touchCount++;
+                results.innerHTML += `<div class="test-result success">TouchStart #${touchCount} - Touches: ${e.touches.length}</div>`;
+                console.log(`TouchStart event #${touchCount}`, e.touches.length);
+            }, { passive: true });
+            
+            button.addEventListener('touchend', (e) => {
+                results.innerHTML += `<div class="test-result success">TouchEnd - Changed touches: ${e.changedTouches.length}</div>`;
+                console.log('TouchEnd event', e.changedTouches.length);
+            }, { passive: true });
+            
+            // Click events
+            button.addEventListener('click', (e) => {
+                clickCount++;
+                results.innerHTML += `<div class="test-result success">Click #${clickCount}</div>`;
+                console.log(`Click event #${clickCount}`);
+            });
+            
+            console.log('Touch test setup complete');
+        }
+        
+        // Audio Context Test
+        function setupAudioTest() {
+            const button = document.getElementById('audio-test-btn');
+            const results = document.getElementById('audio-results');
+            
+            button.addEventListener('click', async () => {
+                try {
+                    results.innerHTML = '<div class="test-result warning">Testing audio context...</div>';
+                    console.log('Starting audio test');
+                    
+                    // Test AudioContext creation
+                    const AudioContext = window.AudioContext || window.webkitAudioContext;
+                    if (!AudioContext) {
+                        throw new Error('AudioContext not supported');
+                    }
+                    
+                    const audioContext = new AudioContext();
+                    console.log('AudioContext created:', audioContext.state);
+                    
+                    // Test resume (required for iOS)
+                    if (audioContext.state === 'suspended') {
+                        await audioContext.resume();
+                        console.log('AudioContext resumed:', audioContext.state);
+                    }
+                    
+                    // Create and play a simple beep
+                    const oscillator = audioContext.createOscillator();
+                    const gainNode = audioContext.createGain();
+                    
+                    oscillator.connect(gainNode);
+                    gainNode.connect(audioContext.destination);
+                    
+                    oscillator.frequency.value = 440; // A4 note
+                    gainNode.gain.value = 0.1;
+                    
+                    oscillator.start();
+                    setTimeout(() => oscillator.stop(), 200);
+                    
+                    results.innerHTML = `
+                        <div class="test-result success">AudioContext: ${audioContext.state}</div>
+                        <div class="test-result success">Sample rate: ${audioContext.sampleRate}Hz</div>
+                        <div class="test-result success">Beep played successfully</div>
+                    `;
+                    
+                    console.log('Audio test successful');
+                    
+                } catch (error) {
+                    results.innerHTML = `<div class="test-result error">Audio Error: ${error.message}</div>`;
+                    console.error('Audio test failed:', error);
+                }
+            });
+        }
+        
+        // ES6 Module Test
+        function setupModuleTest() {
+            const button = document.getElementById('module-test-btn');
+            const results = document.getElementById('module-results');
+            
+            button.addEventListener('click', async () => {
+                try {
+                    results.innerHTML = '<div class="test-result warning">Testing ES6 module import...</div>';
+                    console.log('Starting ES6 module test');
+                    
+                    // Test dynamic import
+                    const moduleScript = `
+                        export function testFunction() {
+                            return 'ES6 module working!';
+                        }
+                        export const testValue = 42;
+                    `;
+                    
+                    // Create blob URL for module
+                    const blob = new Blob([moduleScript], { type: 'application/javascript' });
+                    const moduleUrl = URL.createObjectURL(blob);
+                    
+                    const module = await import(moduleUrl);
+                    
+                    const result = module.testFunction();
+                    const value = module.testValue;
+                    
+                    results.innerHTML = `
+                        <div class="test-result success">Dynamic import: Working</div>
+                        <div class="test-result success">Function result: ${result}</div>
+                        <div class="test-result success">Exported value: ${value}</div>
+                    `;
+                    
+                    console.log('ES6 module test successful');
+                    
+                    // Clean up
+                    URL.revokeObjectURL(moduleUrl);
+                    
+                } catch (error) {
+                    results.innerHTML = `<div class="test-result error">Module Error: ${error.message}</div>`;
+                    console.error('ES6 module test failed:', error);
+                }
+            });
+        }
+        
+        // Feature Detection
+        function detectFeatures() {
+            const results = document.getElementById('feature-results');
+            
+            const features = {
+                'ES6 Modules': 'noModule' in HTMLScriptElement.prototype,
+                'Dynamic Import': typeof window.import === 'function',
+                'AudioContext': !!(window.AudioContext || window.webkitAudioContext),
+                'Touch Events': 'ontouchstart' in window,
+                'Passive Events': (() => {
+                    let passive = false;
+                    try {
+                        window.addEventListener('test', null, { get passive() { passive = true; } });
+                    } catch (e) {}
+                    return passive;
+                })(),
+                'CSS Grid': CSS.supports('display', 'grid'),
+                'CSS Flexbox': CSS.supports('display', 'flex'),
+                'Fetch API': typeof fetch === 'function',
+                'Promise': typeof Promise === 'function',
+                'Async/Await': (async () => {}).constructor === (async function(){}).constructor,
+                'Service Worker': 'serviceWorker' in navigator,
+                'Web Audio API': 'AudioContext' in window || 'webkitAudioContext' in window
+            };
+            
+            results.innerHTML = Object.entries(features).map(([feature, supported]) => 
+                `<div class="test-result ${supported ? 'success' : 'error'}">
+                    <strong>${feature}:</strong> ${supported ? '✅ Supported' : '❌ Not Supported'}
+                </div>`
+            ).join('');
+            
+            console.log('Feature detection complete:', features);
+        }
+        
+        // Initialize all tests
+        function initializeTests() {
+            try {
+                console.log('Initializing tests...');
+                detectDevice();
+                setupTouchTest();
+                setupAudioTest();
+                setupModuleTest();
+                detectFeatures();
+                console.log('All tests initialized successfully');
+            } catch (error) {
+                console.error('Test initialization failed:', error);
+            }
+        }
+        
+        // Run when page loads
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initializeTests);
+        } else {
+            initializeTests();
+        }
+        
+        // Global error handler
+        window.addEventListener('error', (event) => {
+            console.error('Global error:', event.error?.message || event.message);
+        });
+        
+        window.addEventListener('unhandledrejection', (event) => {
+            console.error('Unhandled promise rejection:', event.reason);
+        });
+        
+        console.log('iOS Debug Test script loaded successfully');
+    </script>
+</body>
+</html>

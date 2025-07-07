@@ -449,15 +449,26 @@
             return 'noModule' in script;
         }
         
+        // Enhanced detection for dynamic imports
+        function supportsDynamicImports() {
+            try {
+                new Function('import("")');
+                return true;
+            } catch (e) {
+                return false;
+            }
+        }
+        
         // Load appropriate initialization system
-        if (supportsES6Modules()) {
-            // Modern browsers - load ES6 module system
+        if (supportsES6Modules() && supportsDynamicImports()) {
+            // Modern browsers with full ES6 module support
             const script = document.createElement('script');
             script.type = 'module';
             script.src = 'js/app.js';
             document.head.appendChild(script);
         } else {
-            // iOS Safari fallback - load compatibility bridge
+            // Browsers needing dynamic import polyfill
+            console.log('📱 Loading iOS compatibility bridge...');
             const script = document.createElement('script');
             script.src = 'js/ios-module-bridge.js';
             document.head.appendChild(script);

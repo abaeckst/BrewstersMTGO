@@ -141,6 +141,7 @@ YOU HAVE EARNED THE RIGHT TO CHOOSE YOUR FINAL MISSION:`;
         
         // Enable mission input
         this.missionInputEnabled = true;
+        console.log('🎯 [DEBUG] Mission input enabled:', this.missionInputEnabled);
         
         // Clean up temporary expanding element if it was created
         const tempExpand = document.getElementById('force-expand-temp');
@@ -149,7 +150,7 @@ YOU HAVE EARNED THE RIGHT TO CHOOSE YOUR FINAL MISSION:`;
             tempExpand.remove();
         }
         
-        console.log('✅ Mission screen ready for input');
+        console.log('✅ Mission screen ready for input - missionInputEnabled:', this.missionInputEnabled);
     }
     
     /**
@@ -485,6 +486,14 @@ YOU HAVE EARNED THE RIGHT TO CHOOSE YOUR FINAL MISSION:`;
      * Handle mission choice selection
      */
     async handleMissionChoice(accepted) {
+        console.log('🎯 [DEBUG] handleMissionChoice called with:', accepted);
+        console.log('🎯 [DEBUG] Current missionInputEnabled:', this.missionInputEnabled);
+        console.log('🎯 [DEBUG] Available globals:', {
+            windowApp: !!window.app,
+            windowAppState: !!window.app?.state,
+            windowAppStates: !!window.app?.state?.states
+        });
+        
         if (!this.missionInputEnabled) {
             console.log('⚠️ Mission input not enabled yet');
             return;
@@ -527,9 +536,11 @@ YOU HAVE EARNED THE RIGHT TO CHOOSE YOUR FINAL MISSION:`;
         await this.delay(800);
         
         // Trigger state transition through app (cinematic system handles scroll reset)
-        if (window.appState) {
-            const nextState = accepted ? window.appState.states.BRIEFING : window.appState.states.DECLINED;
-            window.appState.transition(nextState, window.app.cinematic);
+        if (window.app && window.app.state) {
+            const nextState = accepted ? window.app.state.states.BRIEFING : window.app.state.states.DECLINED;
+            window.app.state.transition(nextState, window.app.cinematic);
+        } else {
+            console.error('❌ window.app or window.app.state not available for mission transition');
         }
     }
     

@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>iOS App Debug - Brewster's MTGO</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: #000;
+            color: #00ff00;
+            font-size: 18px; /* Prevent iOS zoom */
+        }
+        
+        .debug-section {
+            margin-bottom: 30px;
+            padding: 15px;
+            border: 1px solid #00ff00;
+            background: #001100;
+        }
+        
+        .debug-result {
+            margin: 10px 0;
+            padding: 10px;
+            background: #002200;
+            border-left: 4px solid #00ff00;
+            font-size: 14px;
+            word-break: break-all;
+        }
+        
+        .error {
+            border-left-color: #ff0000;
+            color: #ff0000;
+        }
+        
+        .success {
+            border-left-color: #00ff00;
+            color: #00ff00;
+        }
+        
+        .warning {
+            border-left-color: #ffff00;
+            color: #ffff00;
+        }
+        
+        button {
+            background: #00ff00;
+            color: #000;
+            border: none;
+            padding: 15px 30px;
+            font-size: 16px;
+            cursor: pointer;
+            margin: 10px;
+            border-radius: 5px;
+        }
+        
+        #console {
+            background: #000;
+            color: #00ff00;
+            padding: 10px;
+            font-family: monospace;
+            font-size: 12px;
+            height: 300px;
+            overflow-y: auto;
+            border: 1px solid #00ff00;
+            margin-top: 20px;
+            white-space: pre-wrap;
+        }
+        
+        .test-script {
+            background: #001122;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #0088ff;
+            font-family: monospace;
+            font-size: 12px;
+            color: #0088ff;
+        }
+    </style>
+</head>
+<body>
+    <h1>🕵️‍♂️ iOS App Debug - Brewster's MTGO</h1>
+    <p><strong>Purpose:</strong> Identify why the main app fails to load on iOS</p>
+    
+    <div class="debug-section">
+        <h2>🔍 Current Status</h2>
+        <div id="current-status"></div>
+    </div>
+    
+    <div class="debug-section">
+        <h2>📦 ES6 Module Loading Test</h2>
+        <button id="test-es6-modules">Test ES6 Module Loading</button>
+        <div id="es6-results"></div>
+    </div>
+    
+    <div class="debug-section">
+        <h2>🔗 Network Loading Test</h2>
+        <button id="test-network">Test App File Loading</button>
+        <div id="network-results"></div>
+    </div>
+    
+    <div class="debug-section">
+        <h2>🎯 Exact App Loading Test</h2>
+        <button id="test-exact-app">Test Exact App Loading Logic</button>
+        <div id="app-results"></div>
+    </div>
+    
+    <div class="debug-section">
+        <h2>📱 App Detection Logic Test</h2>
+        <div id="detection-results"></div>
+    </div>
+    
+    <div class="debug-section">
+        <h2>🔊 iOS Audio Context Test</h2>
+        <button id="test-ios-audio">Test iOS Audio Context</button>
+        <div id="audio-results"></div>
+    </div>
+    
+    <div class="debug-section">
+        <h2>📊 Console Output</h2>
+        <div id="console"></div>
+    </div>
+
+    <script>
+        // Console capture with timestamp
+        const consoleDiv = document.getElementById('console');
+        const originalConsole = {
+            log: console.log,
+            error: console.error,
+            warn: console.warn,
+            info: console.info
+        };
+        
+        function logToConsole(type, ...args) {
+            const timestamp = new Date().toISOString().substring(11, 23);
+            const message = args.map(arg => 
+                typeof arg === 'object' ? JSON.stringify(arg, null, 2) : String(arg)
+            ).join(' ');
+            const logEntry = `[${timestamp}] ${type.toUpperCase()}: ${message}\n`;
+            consoleDiv.textContent += logEntry;
+            consoleDiv.scrollTop = consoleDiv.scrollHeight;
+            
+            // Also log to browser console
+            originalConsole[type](...args);
+        }
+        
+        console.log = (...args) => logToConsole('log', ...args);
+        console.error = (...args) => logToConsole('error', ...args);
+        console.warn = (...args) => logToConsole('warn', ...args);
+        console.info = (...args) => logToConsole('info', ...args);
+        
+        // Global error handler
+        window.addEventListener('error', (event) => {
+            console.error('GLOBAL ERROR:', event.error?.message || event.message, 'at', event.filename + ':' + event.lineno);
+        });
+        
+        window.addEventListener('unhandledrejection', (event) => {
+            console.error('UNHANDLED PROMISE REJECTION:', event.reason);
+        });
+        
+        console.log('🚀 iOS App Debug Test Started');
+        
+        // Current status check
+        function checkCurrentStatus() {
+            const status = document.getElementById('current-status');
+            
+            const userAgent = navigator.userAgent;
+            const isIOS = /iPad|iPhone|iPod/.test(userAgent);
+            const isIOSChrome = isIOS && /CriOS/.test(userAgent);
+            const isIOSFirefox = isIOS && /FxiOS/.test(userAgent);
+            const isIOSSafari = isIOS && !isIOSChrome && !isIOSFirefox;
+            
+            const statusInfo = {
+                userAgent: userAgent,
+                isIOS: isIOS,
+                browser: isIOSSafari ? 'Safari' : isIOSChrome ? 'Chrome' : isIOSFirefox ? 'Firefox' : 'Unknown',
+                screenSize: `${window.screen.width}x${window.screen.height}`,
+                viewportSize: `${window.innerWidth}x${window.innerHeight}`,
+                devicePixelRatio: window.devicePixelRatio,
+                touchSupport: 'ontouchstart' in window,
+                standalone: window.navigator.standalone,
+                cookieEnabled: navigator.cookieEnabled,
+                onLine: navigator.onLine
+            };
+            
+            status.innerHTML = Object.entries(statusInfo).map(([key, value]) => 
+                `<div class="debug-result ${typeof value === 'boolean' ? (value ? 'success' : 'warning') : ''}">
+                    <strong>${key}:</strong> ${value}
+                </div>`
+            ).join('');
+            
+            console.log('Device Status:', statusInfo);
+        }
+        
+        // ES6 Module loading test
+        function setupES6ModuleTest() {
+            const button = document.getElementById('test-es6-modules');
+            const results = document.getElementById('es6-results');
+            
+            button.addEventListener('click', async () => {
+                try {
+                    results.innerHTML = '<div class="debug-result warning">Testing ES6 module loading...</div>';
+                    console.log('Starting ES6 module test');
+                    
+                    // Test 1: Basic ES6 module support
+                    const supportsES6 = 'noModule' in HTMLScriptElement.prototype;
+                    console.log('ES6 module support:', supportsES6);
+                    
+                    // Test 2: Dynamic import support
+                    let supportsDynamic = false;
+                    try {
+                        new Function('import("")');
+                        supportsDynamic = true;
+                    } catch (e) {
+                        console.log('Dynamic import error:', e.message);
+                    }
+                    
+                    // Test 3: Try to load a simple module
+                    let moduleLoadTest = 'Not tested';
+                    try {
+                        const moduleScript = `
+                            export const testValue = 'ES6 module working!';
+                            console.log('✅ ES6 module executed successfully');
+                        `;
+                        
+                        const blob = new Blob([moduleScript], { type: 'application/javascript' });
+                        const moduleUrl = URL.createObjectURL(blob);
+                        
+                        const script = document.createElement('script');
+                        script.type = 'module';
+                        script.src = moduleUrl;
+                        
+                        await new Promise((resolve, reject) => {
+                            script.onload = resolve;
+                            script.onerror = reject;
+                            document.head.appendChild(script);
+                        });
+                        
+                        moduleLoadTest = 'Success';
+                        URL.revokeObjectURL(moduleUrl);
+                        
+                    } catch (e) {
+                        moduleLoadTest = `Failed: ${e.message}`;
+                        console.error('ES6 module load test failed:', e);
+                    }
+                    
+                    results.innerHTML = `
+                        <div class="debug-result ${supportsES6 ? 'success' : 'error'}">ES6 Module Support: ${supportsES6}</div>
+                        <div class="debug-result ${supportsDynamic ? 'success' : 'error'}">Dynamic Import Support: ${supportsDynamic}</div>
+                        <div class="debug-result ${moduleLoadTest === 'Success' ? 'success' : 'error'}">Module Load Test: ${moduleLoadTest}</div>
+                    `;
+                    
+                } catch (error) {
+                    results.innerHTML = `<div class="debug-result error">ES6 Test Error: ${error.message}</div>`;
+                    console.error('ES6 module test failed:', error);
+                }
+            });
+        }
+        
+        // Network loading test
+        function setupNetworkTest() {
+            const button = document.getElementById('test-network');
+            const results = document.getElementById('network-results');
+            
+            button.addEventListener('click', async () => {
+                try {
+                    results.innerHTML = '<div class="debug-result warning">Testing network loading...</div>';
+                    console.log('Starting network test');
+                    
+                    const filesToTest = [
+                        'js/app.js',
+                        'js/state.js',
+                        'js/audio-engine.js',
+                        'js/ios-module-bridge.js',
+                        'css/main.css'
+                    ];
+                    
+                    const testResults = [];
+                    
+                    for (const file of filesToTest) {
+                        try {
+                            const response = await fetch(file);
+                            const success = response.ok;
+                            const size = response.headers.get('content-length') || 'unknown';
+                            const contentType = response.headers.get('content-type') || 'unknown';
+                            
+                            testResults.push({
+                                file,
+                                success,
+                                status: response.status,
+                                size,
+                                contentType
+                            });
+                            
+                            console.log(`File ${file}: ${success ? 'OK' : 'FAILED'} (${response.status})`);
+                            
+                        } catch (error) {
+                            testResults.push({
+                                file,
+                                success: false,
+                                error: error.message
+                            });
+                            console.error(`File ${file} failed:`, error.message);
+                        }
+                    }
+                    
+                    results.innerHTML = testResults.map(result => 
+                        `<div class="debug-result ${result.success ? 'success' : 'error'}">
+                            <strong>${result.file}:</strong> ${result.success ? 'OK' : 'FAILED'}
+                            ${result.status ? ` (${result.status})` : ''}
+                            ${result.size ? ` - ${result.size} bytes` : ''}
+                            ${result.error ? ` - ${result.error}` : ''}
+                        </div>`
+                    ).join('');
+                    
+                } catch (error) {
+                    results.innerHTML = `<div class="debug-result error">Network Test Error: ${error.message}</div>`;
+                    console.error('Network test failed:', error);
+                }
+            });
+        }
+        
+        // Exact app loading test
+        function setupExactAppTest() {
+            const button = document.getElementById('test-exact-app');
+            const results = document.getElementById('app-results');
+            
+            button.addEventListener('click', async () => {
+                try {
+                    results.innerHTML = '<div class="debug-result warning">Testing exact app loading logic...</div>';
+                    console.log('Starting exact app loading test');
+                    
+                    // Copy the exact logic from index.html
+                    function supportsES6Modules() {
+                        var script = document.createElement('script');
+                        return 'noModule' in script;
+                    }
+                    
+                    function supportsDynamicImports() {
+                        try {
+                            new Function('import("")');
+                            return true;
+                        } catch (e) {
+                            return false;
+                        }
+                    }
+                    
+                    const es6Support = supportsES6Modules();
+                    const dynamicSupport = supportsDynamicImports();
+                    const shouldUseModules = es6Support && dynamicSupport;
+                    
+                    console.log('App Loading Decision:', {
+                        es6Support,
+                        dynamicSupport, 
+                        shouldUseModules,
+                        willLoad: shouldUseModules ? 'js/app.js' : 'js/ios-module-bridge.js'
+                    });
+                    
+                    // Test the actual loading
+                    let loadResult = 'Not tested';
+                    try {
+                        const script = document.createElement('script');
+                        
+                        if (shouldUseModules) {
+                            script.type = 'module';
+                            script.src = 'js/app.js';
+                        } else {
+                            script.src = 'js/ios-module-bridge.js';
+                        }
+                        
+                        await new Promise((resolve, reject) => {
+                            const timeout = setTimeout(() => {
+                                reject(new Error('Script load timeout (10s)'));
+                            }, 10000);
+                            
+                            script.onload = () => {
+                                clearTimeout(timeout);
+                                resolve();
+                            };
+                            
+                            script.onerror = (error) => {
+                                clearTimeout(timeout);
+                                reject(error);
+                            };
+                            
+                            document.head.appendChild(script);
+                        });
+                        
+                        loadResult = 'Success';
+                        
+                    } catch (error) {
+                        loadResult = `Failed: ${error.message}`;
+                        console.error('App loading test failed:', error);
+                    }
+                    
+                    results.innerHTML = `
+                        <div class="debug-result ${es6Support ? 'success' : 'error'}">ES6 Support: ${es6Support}</div>
+                        <div class="debug-result ${dynamicSupport ? 'success' : 'error'}">Dynamic Import Support: ${dynamicSupport}</div>
+                        <div class="debug-result ${shouldUseModules ? 'success' : 'warning'}">Will Use Modules: ${shouldUseModules}</div>
+                        <div class="debug-result">Will Load: ${shouldUseModules ? 'js/app.js' : 'js/ios-module-bridge.js'}</div>
+                        <div class="debug-result ${loadResult === 'Success' ? 'success' : 'error'}">Load Result: ${loadResult}</div>
+                    `;
+                    
+                } catch (error) {
+                    results.innerHTML = `<div class="debug-result error">App Test Error: ${error.message}</div>`;
+                    console.error('Exact app test failed:', error);
+                }
+            });
+        }
+        
+        // App detection logic test
+        function checkDetectionLogic() {
+            const results = document.getElementById('detection-results');
+            
+            // Copy the exact detection logic from index.html
+            function supportsES6Modules() {
+                var script = document.createElement('script');
+                return 'noModule' in script;
+            }
+            
+            function supportsDynamicImports() {
+                try {
+                    new Function('import("")');
+                    return true;
+                } catch (e) {
+                    return false;
+                }
+            }
+            
+            const es6Support = supportsES6Modules();
+            const dynamicSupport = supportsDynamicImports();
+            const shouldUseModules = es6Support && dynamicSupport;
+            
+            const detectionInfo = {
+                'ES6 Module Support': es6Support,
+                'Dynamic Import Support': dynamicSupport,
+                'Will Use ES6 Modules': shouldUseModules,
+                'Will Load File': shouldUseModules ? 'js/app.js' : 'js/ios-module-bridge.js'
+            };
+            
+            results.innerHTML = Object.entries(detectionInfo).map(([key, value]) => 
+                `<div class="debug-result ${typeof value === 'boolean' ? (value ? 'success' : 'warning') : ''}">
+                    <strong>${key}:</strong> ${value}
+                </div>`
+            ).join('');
+            
+            console.log('Detection Logic:', detectionInfo);
+        }
+        
+        // iOS Audio test
+        function setupIOSAudioTest() {
+            const button = document.getElementById('test-ios-audio');
+            const results = document.getElementById('audio-results');
+            
+            button.addEventListener('click', async () => {
+                try {
+                    results.innerHTML = '<div class="debug-result warning">Testing iOS audio context...</div>';
+                    console.log('Starting iOS audio test');
+                    
+                    const AudioContext = window.AudioContext || window.webkitAudioContext;
+                    
+                    if (!AudioContext) {
+                        results.innerHTML = '<div class="debug-result error">AudioContext not supported</div>';
+                        return;
+                    }
+                    
+                    const audioContext = new AudioContext();
+                    console.log('AudioContext created:', audioContext.state);
+                    
+                    // Try to resume (required for iOS)
+                    if (audioContext.state === 'suspended') {
+                        await audioContext.resume();
+                        console.log('AudioContext resumed:', audioContext.state);
+                    }
+                    
+                    // Create and play a test sound
+                    const oscillator = audioContext.createOscillator();
+                    const gainNode = audioContext.createGain();
+                    
+                    oscillator.connect(gainNode);
+                    gainNode.connect(audioContext.destination);
+                    
+                    oscillator.frequency.value = 440;
+                    gainNode.gain.value = 0.1;
+                    
+                    oscillator.start();
+                    setTimeout(() => oscillator.stop(), 200);
+                    
+                    results.innerHTML = `
+                        <div class="debug-result success">AudioContext Created: ${audioContext.constructor.name}</div>
+                        <div class="debug-result success">State: ${audioContext.state}</div>
+                        <div class="debug-result success">Sample Rate: ${audioContext.sampleRate}Hz</div>
+                        <div class="debug-result success">Test Sound Played</div>
+                    `;
+                    
+                    console.log('iOS audio test successful');
+                    
+                } catch (error) {
+                    results.innerHTML = `<div class="debug-result error">iOS Audio Error: ${error.message}</div>`;
+                    console.error('iOS audio test failed:', error);
+                }
+            });
+        }
+        
+        // Initialize all tests
+        function initializeTests() {
+            try {
+                console.log('Initializing debug tests...');
+                checkCurrentStatus();
+                setupES6ModuleTest();
+                setupNetworkTest();
+                setupExactAppTest();
+                checkDetectionLogic();
+                setupIOSAudioTest();
+                console.log('All debug tests initialized');
+            } catch (error) {
+                console.error('Debug test initialization failed:', error);
+            }
+        }
+        
+        // Run when page loads
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initializeTests);
+        } else {
+            initializeTests();
+        }
+        
+        console.log('iOS App Debug script loaded successfully');
+    </script>
+</body>
+</html>

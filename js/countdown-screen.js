@@ -4,6 +4,8 @@
  * Part of Brewster's MTGO Mission Terminal V2
  */
 
+import { AudioEngine } from './audio-engine.js';
+
 class CountdownScreen {
     constructor() {
         // 14 days in seconds (14 * 24 * 60 * 60 = 1,209,600)
@@ -175,10 +177,76 @@ class CountdownScreen {
         this.phase = 'audio-timer';
         
         // Play Mission Impossible theme when "NOW" appears (with looping)
-        if (!this.audioTriggered && window.AudioEngine) {
-            window.AudioEngine.play('missionThemeFull', { loop: true });
-            this.audioTriggered = true;
-            console.log('🎵 Mission Impossible theme started with looping');
+        if (!this.audioTriggered) {
+            console.log('🎵 About to play Mission Impossible theme...');
+            console.log('📱 Mobile Debug Info:', JSON.stringify(AudioEngine.getMobileDebugInfo(), null, 2));
+            console.log('🔊 Audio Engine Status:', JSON.stringify(AudioEngine.getStatus(), null, 2));
+            
+            // Check if audio engine is properly loaded
+            if (!AudioEngine.loaded) {
+                console.warn('⚠️ Audio engine not loaded - attempting to initialize');
+                try {
+                    await AudioEngine.init();
+                    console.log('✅ Audio engine initialized successfully');
+                } catch (error) {
+                    console.error('❌ Audio engine initialization failed:', error);
+                }
+            }
+            
+            // Check for mobile-specific audio context issues
+            if (AudioEngine.context && AudioEngine.context.state === 'suspended') {
+                console.warn('⚠️ Audio context suspended - attempting to unlock');
+                try {
+                    await AudioEngine.unlockAudioContext();
+                    console.log('✅ Audio context unlocked successfully');
+                } catch (error) {
+                    console.error('❌ Audio context unlock failed:', error);
+                }
+            }
+            
+            // Check if missionThemeFull exists in sounds
+            const soundExists = AudioEngine.sounds && AudioEngine.sounds.missionThemeFull;
+            console.log('🎵 Mission theme sound exists:', !!soundExists);
+            if (soundExists) {
+                console.log('🎵 Mission theme config:', JSON.stringify(AudioEngine.sounds.missionThemeFull, null, 2));
+            }
+            
+            // Check if we're on mobile and need different handling
+            const isMobile = /Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+            console.log('📱 Is mobile device:', isMobile);
+            console.log('📱 Is iOS:', AudioEngine.isIOS());
+            
+            try {
+                const audioElement = await AudioEngine.play('missionThemeFull', { loop: true });
+                this.audioTriggered = true;
+                
+                if (audioElement) {
+                    console.log('✅ Mission Impossible theme started successfully');
+                    console.log('🎵 Audio element:', audioElement);
+                    console.log('🎵 Audio element type:', typeof audioElement);
+                    
+                    // For mobile devices, add additional event listeners
+                    if (isMobile && audioElement.addEventListener) {
+                        audioElement.addEventListener('play', () => {
+                            console.log('🎵 Audio started playing');
+                        });
+                        audioElement.addEventListener('pause', () => {
+                            console.log('⏸️ Audio paused');
+                        });
+                        audioElement.addEventListener('ended', () => {
+                            console.log('🏁 Audio ended');
+                        });
+                        audioElement.addEventListener('error', (e) => {
+                            console.error('❌ Audio error:', e);
+                        });
+                    }
+                } else {
+                    console.warn('⚠️ Mission Impossible theme failed to start - no audio element returned');
+                }
+            } catch (error) {
+                console.error('❌ Mission Impossible theme playback failed:', error);
+                this.audioTriggered = true; // Still mark as triggered to prevent retries
+            }
         }
         
         // Start the actual countdown

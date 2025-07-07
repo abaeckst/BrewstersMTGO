@@ -4,6 +4,8 @@
  * Part of Brewster's MTGO Mission Terminal V2
  */
 
+import { AudioEngine } from './audio-engine.js';
+
 class CreditsScreen {
     constructor() {
         this.elements = {
@@ -15,43 +17,124 @@ class CreditsScreen {
         console.log('🏆 Credits screen controller initialized');
     }
     
-    init() {
+    async init() {
         console.log('🏆 Initializing credits screen...');
+        console.log('📱 Device type:', window.innerWidth <= 768 ? 'Mobile' : 'Desktop');
+        console.log('🔊 Audio context state:', AudioEngine.context?.state || 'No context');
+        
+        // Ensure audio context is unlocked for mobile
+        if (AudioEngine.context && AudioEngine.context.state === 'suspended') {
+            console.log('🔓 Attempting to unlock audio context for credits');
+            const unlocked = await AudioEngine.unlockAudioContext();
+            console.log('🔓 Audio unlock result:', unlocked);
+            console.log('🔊 Audio context state after unlock:', AudioEngine.context?.state);
+        }
         
         // Load agent name from localStorage
         const agentName = localStorage.getItem('agentName') || 'CLASSIFIED';
         this.elements.agentName.textContent = agentName;
         
-        // Start credits sequence
-        this.startCreditsSequence();
+        // For mobile: add a delay or require user interaction before starting audio-heavy sequence
+        const isMobile = window.innerWidth <= 768 || 'ontouchstart' in window;
+        if (isMobile && AudioEngine.context?.state === 'suspended') {
+            console.log('📱 Mobile detected with suspended audio - adding interaction prompt');
+            this.showMobileAudioPrompt();
+        } else {
+            // Start credits sequence
+            this.startCreditsSequence();
+        }
+    }
+    
+    showMobileAudioPrompt() {
+        console.log('📱 Showing mobile audio interaction prompt');
+        
+        // Create a temporary overlay prompting user to tap
+        const overlay = document.createElement('div');
+        overlay.style.cssText = `
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 10000;
+            color: #00ff00;
+            font-family: var(--font-mono);
+            font-size: var(--text-lg);
+            text-align: center;
+            padding: var(--space-md);
+        `;
+        overlay.innerHTML = '<div>TAP TO CONTINUE<br><span style="font-size: var(--text-sm);">Audio requires interaction</span></div>';
+        
+        const handleInteraction = async (e) => {
+            e.preventDefault();
+            console.log('📱 User interaction detected - unlocking audio');
+            
+            // Play a test sound to unlock audio
+            AudioEngine.play('beep', { volume: 0.1 });
+            
+            // Remove overlay
+            overlay.remove();
+            
+            // Remove listeners
+            overlay.removeEventListener('click', handleInteraction);
+            overlay.removeEventListener('touchstart', handleInteraction);
+            
+            // Start the credits sequence
+            this.startCreditsSequence();
+        };
+        
+        overlay.addEventListener('click', handleInteraction);
+        overlay.addEventListener('touchstart', handleInteraction, { passive: false });
+        
+        document.body.appendChild(overlay);
     }
     
     startCreditsSequence() {
         console.log('🎬 Starting credits sequence with audio crescendo');
+        console.log('🔊 Audio context state at sequence start:', AudioEngine.context?.state);
+        console.log('🔊 Audio engine loaded:', AudioEngine.loaded);
+        
+        // For mobile: ensure audio is ready with immediate test sound
+        if (window.innerWidth <= 768 || 'ontouchstart' in window) {
+            console.log('📱 Mobile detected - playing immediate test sound');
+            const testResult = AudioEngine.play('beep', { volume: 0.1 }); // Very quiet test sound
+            console.log('📱 Mobile test sound result:', testResult ? 'Playing' : 'Failed');
+        }
         
         // Stage 1: Mission complete confirmation (1s delay)
         setTimeout(() => {
-            window.AudioEngine.play('confirmationBeep');
-            console.log('✅ Mission complete confirmation played');
+            console.log('🎵 Attempting to play success sound...');
+            const result = AudioEngine.play('success');
+            console.log('✅ Mission complete confirmation result:', result ? 'Playing' : 'Failed');
         }, 1000);
         
         // Stage 2: Debrief section reveal (2s delay)
         setTimeout(() => {
-            window.AudioEngine.play('systemReady');
+            console.log('🎵 Attempting to play systemReady sound...');
+            const result = AudioEngine.play('systemReady');
+            console.log('📊 Debrief audio result:', result ? 'Playing' : 'Failed');
             this.animateCreditsSection('.debrief-stats');
             console.log('📊 Debrief section animated');
         }, 2000);
         
         // Stage 3: Special thanks reveal (4s delay)
         setTimeout(() => {
-            window.AudioEngine.play('terminalTextBeep');
+            console.log('🎵 Attempting to play terminalTextBeep sound...');
+            const result = AudioEngine.play('terminalTextBeep');
+            console.log('🙏 Thanks audio result:', result ? 'Playing' : 'Failed');
             this.animateCreditsSection('.thanks-list');
             console.log('🙏 Special thanks section animated');
         }, 4000);
         
         // Stage 4: Classified information reveal (6s delay)
         setTimeout(() => {
-            window.AudioEngine.play('errorBeep'); // Dramatic warning sound
+            console.log('🎵 Attempting to play alert sound...');
+            const result = AudioEngine.play('alert'); // Dramatic warning sound
+            console.log('🔒 Alert audio result:', result ? 'Playing' : 'Failed');
             this.animateCreditsSection('.classified-info');
             console.log('🔒 Classified information revealed');
         }, 6000);
@@ -76,27 +159,32 @@ class CreditsScreen {
             
             // Add individual item animations
             const items = section.querySelectorAll('.stat-item, .thanks-item, p');
+            console.log(`🎬 Animating ${items.length} items in ${selector}`);
             items.forEach((item, index) => {
                 setTimeout(() => {
                     item.style.animation = 'dataFlash 0.5s ease-out';
-                    window.AudioEngine.play('beep');
+                    const beepResult = AudioEngine.play('beep');
+                    console.log(`🔊 Item ${index + 1}/${items.length} beep result:`, beepResult ? 'Playing' : 'Failed');
                 }, index * 150);
             });
         }
     }
     
     playAudioCrescendo() {
+        console.log('🎵 Starting audio crescendo sequence');
         // Play a sequence of increasingly dramatic sounds
         const crescendoSequence = [
             { sound: 'connectionEstablish', delay: 0 },
             { sound: 'systemReady', delay: 800 },
-            { sound: 'confirmationBeep', delay: 1600 },
+            { sound: 'success', delay: 1600 },
             { sound: 'terminalTextBeep', delay: 2400 }
         ];
         
         crescendoSequence.forEach(({ sound, delay }) => {
             setTimeout(() => {
-                window.AudioEngine.play(sound);
+                console.log(`🎵 Crescendo: Playing ${sound} at ${delay}ms`);
+                const result = AudioEngine.play(sound);
+                console.log(`🎵 Crescendo ${sound} result:`, result ? 'Playing' : 'Failed');
             }, delay);
         });
     }
@@ -158,7 +246,7 @@ class CreditsScreen {
                 `;
                 
                 // Play beep for each second
-                window.AudioEngine.play('beep');
+                AudioEngine.play('beep');
                 
                 countdown--;
                 
@@ -172,7 +260,7 @@ class CreditsScreen {
                     `;
                     
                     // Play final dramatic sound
-                    window.AudioEngine.play('errorBeep');
+                    AudioEngine.play('alert');
                     
                     // Show restart button with dramatic effect
                     this.revealRestartButton();
@@ -215,11 +303,11 @@ class CreditsScreen {
             
             // Audio feedback for hover
             this.elements.restartButton.addEventListener('mouseenter', () => {
-                window.AudioEngine.play('beep');
+                AudioEngine.play('beep');
             });
             
             this.elements.restartButton.addEventListener('touchstart', () => {
-                window.AudioEngine.play('beep');
+                AudioEngine.play('beep');
             }, { passive: true });
         }
         
@@ -229,7 +317,7 @@ class CreditsScreen {
     restartMission() {
         console.log('🔄 Restarting mission - returning to intro');
         
-        window.AudioEngine.play('confirmationBeep');
+        AudioEngine.play('success');
         
         // Visual feedback
         this.elements.restartButton.style.background = 'linear-gradient(45deg, #00aa00, #00ff00)';

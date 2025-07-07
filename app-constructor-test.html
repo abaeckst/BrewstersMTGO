@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>App Constructor Test</title>
+    
+    <!-- Load actual CSS -->
+    <link rel="stylesheet" href="css/main.css">
+    
+    <style>
+        body {
+            background: #000;
+            color: #00ff00;
+            font-family: monospace;
+            margin: 0;
+            padding: 20px;
+            font-size: 16px;
+        }
+        
+        #debug-container {
+            background: #001100;
+            border: 2px solid #00ff00;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        
+        #debug-output {
+            background: #000;
+            color: #00ff00;
+            font-family: monospace;
+            font-size: 14px;
+            padding: 15px;
+            border: 1px solid #00ff00;
+            white-space: pre-wrap;
+            max-height: 400px;
+            overflow-y: auto;
+            user-select: all;
+            -webkit-user-select: all;
+            -moz-user-select: all;
+            word-break: break-all;
+        }
+        
+        .copy-button {
+            background: #00ff00;
+            color: #000;
+            border: none;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            margin: 10px 0;
+            font-family: monospace;
+        }
+        
+        .copy-button:hover {
+            background: #00cc00;
+        }
+        
+        h1, h2 {
+            color: #00ff00;
+            margin: 20px 0 10px 0;
+        }
+        
+        .status {
+            padding: 10px;
+            margin: 10px 0;
+            border-left: 4px solid #00ff00;
+            background: #002200;
+        }
+        
+        .status.error {
+            border-left-color: #ff0000;
+            color: #ff0000;
+            background: #220000;
+        }
+        
+        .status.success {
+            border-left-color: #00ff00;
+            color: #00ff00;
+        }
+        
+        .status.warning {
+            border-left-color: #ffff00;
+            color: #ffff00;
+            background: #222200;
+        }
+    </style>
+</head>
+<body>
+    <h1>🔍 App Constructor Test</h1>
+    
+    <div id="status" class="status warning">
+        Initializing test...
+    </div>
+    
+    <div id="debug-container">
+        <h2>Debug Output</h2>
+        <button class="copy-button" onclick="copyDebugOutput()">📋 Copy All Output</button>
+        <div id="debug-output"></div>
+    </div>
+
+    <!-- Include the same HTML structure as the real app -->
+    <div id="app" class="app-container">
+        <div class="security-banner" id="security-banner">
+            <div class="auth-text-sm security-notice">AUTHORIZED PERSONNEL ONLY</div>
+        </div>
+        
+        <div id="wake-screen" class="screen active wake-screen-dormant">
+            <div class="dormant-terminal-container">
+                <div class="wake-trigger-area" id="wake-trigger">
+                    <div class="wake-instruction wake-stage-1-hidden">
+                        <span class="wake-text">[WAKE SYSTEM]</span>
+                        <div class="wake-hint">TAP TO ACTIVATE</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div id="boot-sequence-screen" class="screen hidden boot-screen-fullscreen">
+            <div class="boot-sequence-container"></div>
+        </div>
+        
+        <div id="auth-screen" class="screen hidden screen-isolated">
+            <header class="screen-header">
+                <div class="mission-title">CLASSIFIED TERMINAL ACCESS</div>
+            </header>
+            <main class="screen-content">
+                <form id="auth-form" class="auth-form">
+                    <input type="text" id="operative-name" placeholder="OPERATIVE NAME" class="auth-input-lg">
+                    <input type="password" id="access-code" placeholder="ACCESS CODE" class="auth-input-lg">
+                    <button type="submit" class="button button-primary">AUTHENTICATE</button>
+                </form>
+            </main>
+        </div>
+        
+        <div id="mission-screen" class="screen hidden screen-isolated"></div>
+        <div id="briefing-screen" class="screen hidden"></div>
+        <div id="countdown-screen" class="screen hidden"></div>
+        <div id="credits-screen" class="screen hidden"></div>
+        <div id="declined-screen" class="screen hidden"></div>
+    </div>
+
+    <script>
+        // Copy function (needs to be global)
+        function copyDebugOutput() {
+            const output = document.getElementById('debug-output');
+            const text = output.textContent;
+            
+            if (navigator.clipboard) {
+                navigator.clipboard.writeText(text).then(() => {
+                    updateStatus('✅ Copied to clipboard!', 'success');
+                }).catch(() => {
+                    fallbackCopy(text);
+                });
+            } else {
+                fallbackCopy(text);
+            }
+        }
+        
+        function fallbackCopy(text) {
+            const textArea = document.createElement('textarea');
+            textArea.value = text;
+            textArea.style.position = 'fixed';
+            textArea.style.opacity = '0';
+            document.body.appendChild(textArea);
+            textArea.select();
+            try {
+                document.execCommand('copy');
+                updateStatus('✅ Copied to clipboard!', 'success');
+            } catch (err) {
+                updateStatus('❌ Copy failed - select text manually', 'error');
+            }
+            document.body.removeChild(textArea);
+        }
+        
+        function updateStatus(message, type = 'info') {
+            const status = document.getElementById('status');
+            status.textContent = message;
+            status.className = `status ${type}`;
+        }
+    </script>
+    
+    <script type="module">
+        const debugOutput = document.getElementById('debug-output');
+        let logText = '';
+        
+        function log(message, type = 'info') {
+            const timestamp = new Date().toISOString().substring(11, 23);
+            const line = `[${timestamp}] ${type.toUpperCase()}: ${message}\n`;
+            
+            logText += line;
+            debugOutput.textContent = logText;
+            debugOutput.scrollTop = debugOutput.scrollHeight;
+            
+            console.log(`${type.toUpperCase()}: ${message}`);
+        }
+        
+        // Track errors
+        window.addEventListener('error', (e) => {
+            const errorMsg = `GLOBAL ERROR: ${e.error?.message || e.message}`;
+            const stackMsg = e.error?.stack ? `\nSTACK: ${e.error.stack}` : '';
+            log(errorMsg + stackMsg, 'error');
+            updateStatus('❌ Error occurred - check debug output', 'error');
+        });
+        
+        window.addEventListener('unhandledrejection', (e) => {
+            log(`PROMISE ERROR: ${e.reason}`, 'error');
+            updateStatus('❌ Promise error - check debug output', 'error');
+        });
+        
+        try {
+            log('Starting App constructor test...', 'info');
+            
+            // Step 1: Import all dependencies
+            log('Step 1: Importing dependencies...', 'info');
+            const { AppState } = await import('./js/state.js');
+            log('✓ AppState imported', 'success');
+            
+            const { CinematicEngine } = await import('./js/cinematic.js');
+            log('✓ CinematicEngine imported', 'success');
+            
+            const { AudioEngine } = await import('./js/audio-engine.js');
+            log('✓ AudioEngine imported', 'success');
+            
+            const { viewport } = await import('./js/viewport.js');
+            log('✓ viewport imported', 'success');
+            
+            const WakeScreen = (await import('./js/wake-screen.js')).default;
+            log('✓ WakeScreen imported', 'success');
+            
+            const { MissionScreen } = await import('./js/mission-screen.js');
+            log('✓ MissionScreen imported', 'success');
+            
+            const BriefingScreen = (await import('./js/briefing-screen.js')).default;
+            log('✓ BriefingScreen imported', 'success');
+            
+            const CountdownScreen = (await import('./js/countdown-screen.js')).default;
+            log('✓ CountdownScreen imported', 'success');
+            
+            const CreditsScreen = (await import('./js/credits-screen.js')).default;
+            log('✓ CreditsScreen imported', 'success');
+            
+            const DeclinedScreen = (await import('./js/declined-screen.js')).default;
+            log('✓ DeclinedScreen imported', 'success');
+            
+            const IOSPolyfills = (await import('./js/ios-polyfills.js')).default;
+            log('✓ IOSPolyfills imported', 'success');
+            
+            log('All imports successful!', 'success');
+            
+            // Step 2: Create the App class manually (copy from app.js)
+            log('Step 2: Defining App class...', 'info');
+            
+            class App {
+                constructor() {
+                    log('App constructor started...', 'info');
+                    
+                    try {
+                        log('Creating AppState...', 'info');
+                        this.state = new AppState();
+                        log('✓ AppState created', 'success');
+                        
+                        log('Creating CinematicEngine...', 'info');
+                        this.cinematic = new CinematicEngine();
+                        log('✓ CinematicEngine created', 'success');
+                        
+                        log('Assigning AudioEngine...', 'info');
+                        this.audio = AudioEngine;
+                        log('✓ AudioEngine assigned', 'success');
+                        
+                        log('Assigning viewport...', 'info');
+                        this.viewport = viewport;
+                        log('✓ viewport assigned', 'success');
+                        
+                        this.screens = {};
+                        log('✓ screens object created', 'success');
+                        
+                        // Initialize screen controllers
+                        log('Creating screen controllers...', 'info');
+                        
+                        log('Creating WakeScreen...', 'info');
+                        this.wakeScreen = new WakeScreen();
+                        log('✓ WakeScreen created', 'success');
+                        
+                        log('Creating MissionScreen...', 'info');
+                        this.missionScreen = new MissionScreen();
+                        log('✓ MissionScreen created', 'success');
+                        
+                        log('Creating BriefingScreen...', 'info');
+                        this.briefingScreen = new BriefingScreen();
+                        log('✓ BriefingScreen created', 'success');
+                        
+                        log('Creating CountdownScreen...', 'info');
+                        this.countdownScreen = new CountdownScreen();
+                        log('✓ CountdownScreen created', 'success');
+                        
+                        log('Creating CreditsScreen...', 'info');
+                        this.creditsScreen = new CreditsScreen();
+                        log('✓ CreditsScreen created', 'success');
+                        
+                        log('Creating DeclinedScreen...', 'info');
+                        this.declinedScreen = new DeclinedScreen();
+                        log('✓ DeclinedScreen created', 'success');
+                        
+                        // Development mode flag
+                        this.debug = window.location.search.includes('debug');
+                        log(`✓ Debug mode: ${this.debug}`, 'success');
+                        
+                        log('App constructor completed successfully!', 'success');
+                        
+                    } catch (error) {
+                        log(`ERROR in App constructor: ${error.message}`, 'error');
+                        log(`Error stack: ${error.stack}`, 'error');
+                        throw error;
+                    }
+                }
+                
+                getCurrentState() {
+                    return this.state ? this.state.current : 'unknown';
+                }
+                
+                async init() {
+                    log('App.init() called...', 'info');
+                    // Don't actually initialize, just test construction
+                    return true;
+                }
+            }
+            
+            log('App class defined successfully', 'success');
+            
+            // Step 3: Create App instance
+            log('Step 3: Creating App instance...', 'info');
+            const app = new App();
+            log('✓ App instance created!', 'success');
+            log(`App type: ${typeof app}`, 'info');
+            log(`App constructor: ${app.constructor.name}`, 'info');
+            log(`getCurrentState method: ${typeof app.getCurrentState}`, 'info');
+            
+            // Step 4: Test the method
+            if (typeof app.getCurrentState === 'function') {
+                const state = app.getCurrentState();
+                log(`✓ getCurrentState() works: ${state}`, 'success');
+            } else {
+                log('✗ getCurrentState method missing!', 'error');
+            }
+            
+            // Step 5: Assign to window.app
+            log('Step 4: Assigning to window.app...', 'info');
+            window.app = app;
+            log('✓ window.app assigned', 'success');
+            
+            // Verify assignment
+            log(`window.app type: ${typeof window.app}`, 'info');
+            log(`window.app constructor: ${window.app.constructor.name}`, 'info');
+            
+            log('🎉 SUCCESS: App created and assigned correctly!', 'success');
+            updateStatus('✅ SUCCESS: App created and assigned correctly!', 'success');
+            
+        } catch (error) {
+            log(`FATAL ERROR: ${error.message}`, 'error');
+            log(`Error stack: ${error.stack}`, 'error');
+            updateStatus(`❌ FATAL ERROR: ${error.message}`, 'error');
+        }
+    </script>
+</body>
+</html>

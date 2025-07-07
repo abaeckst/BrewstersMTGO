@@ -41,8 +41,10 @@ class App {
         // Clear any cached state and reset UI
         this.resetApplicationState();
         
-        // Initialize audio engine
-        await this.audio.init();
+        // Initialize audio engine (non-blocking for mobile compatibility)
+        this.audio.init().catch(error => {
+            console.warn('⚠️ Audio initialization failed (continuing without audio):', error);
+        });
         
         // Cache screen elements
         this.cacheScreenElements();

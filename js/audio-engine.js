@@ -27,16 +27,16 @@ export const AudioEngine = {
         
         // Terminal & system sounds
         terminalBeep: {
-            url: 'assets/sounds/beep.wav',
+            url: 'assets/sounds/terminal-beep.wav',
             volume: 0.5
         },
         terminalTextBeep: {
-            url: 'assets/sounds/beep.wav',
+            url: 'assets/sounds/terminal-text-beep.wav',
             volume: 0.3,
             useGenerated: true // Prefer generated for unique sound
         },
         typingSound: {
-            url: 'assets/sounds/beep.wav',
+            url: 'assets/sounds/typing-sounds.wav',
             volume: 0.2,
             useGenerated: true // Prefer generated for unique sound
         },
@@ -311,6 +311,7 @@ export const AudioEngine = {
     // Preload all audio files with iOS-safe timeout
     async preloadSoundsWithTimeout() {
         console.log('📥 Preloading audio files with timeout...');
+        console.log(`📱 Device info: iOS=${this.isIOS()}, UserAgent=${navigator.userAgent.substring(0, 50)}...`);
         
         const promises = Object.entries(this.soundMap).map(([key, config]) => {
             return new Promise((resolve) => {
@@ -322,25 +323,50 @@ export const AudioEngine = {
                     audio.loop = true;
                 }
                 
-                // iOS-specific: Set timeout for each file
+                // iOS-specific: Set timeout for each file (longer for theme files)
+                const isThemeFile = key.toLowerCase().includes('theme');
+                const timeoutDuration = this.isIOS() ? (isThemeFile ? 10000 : 3000) : 5000;
+                
+                console.log(`📥 Loading ${key} with ${timeoutDuration}ms timeout (iOS: ${this.isIOS()}, Theme: ${isThemeFile})`);
+                console.log(`📂 File URL: ${config.url}`);
+                
                 const timeout = setTimeout(() => {
-                    console.log(`⏰ Timeout loading ${key} - using generated fallback`);
+                    console.log(`⏰ TIMEOUT loading ${key} after ${timeoutDuration}ms - using generated fallback`);
                     this.sounds[key] = { audio: null, config, useGenerated: true };
                     resolve();
-                }, this.isIOS() ? 3000 : 5000); // Shorter timeout for iOS
+                }, timeoutDuration);
                 
                 audio.addEventListener('canplaythrough', () => {
                     clearTimeout(timeout);
                     this.sounds[key] = { audio, config };
-                    console.log(`✅ Loaded: ${key}`);
+                    console.log(`✅ Successfully loaded: ${key}`);
                     resolve();
                 });
                 
                 audio.addEventListener('error', (e) => {
                     clearTimeout(timeout);
-                    console.log(`❌ Failed to load ${key} - using generated fallback`);
+                    console.log(`❌ ERROR loading ${key}:`, e.type, e.message || 'Unknown error');
+                    console.log(`❌ Error details:`, { 
+                        src: audio.src, 
+                        readyState: audio.readyState, 
+                        networkState: audio.networkState,
+                        error: audio.error ? audio.error.code : 'none'
+                    });
                     this.sounds[key] = { audio: null, config, useGenerated: true };
                     resolve(); // Still resolve to not block initialization
+                });
+                
+                // Add additional debugging events
+                audio.addEventListener('loadstart', () => {
+                    console.log(`📥 Load started: ${key}`);
+                });
+                
+                audio.addEventListener('loadeddata', () => {
+                    console.log(`📊 Data loaded: ${key}`);
+                });
+                
+                audio.addEventListener('canplay', () => {
+                    console.log(`▶️ Can play: ${key}`);
                 });
                 
                 audio.src = config.url;
@@ -364,6 +390,8 @@ export const AudioEngine = {
     
     // Play sound with fallback to generated audio
     async play(soundKey, options = {}) {
+        console.log(`🎵 Playing sound: ${soundKey}`, options);
+        
         if (!this.loaded) {
             console.log('🔊 Audio engine not loaded - attempting to play generated sound anyway');
             // Try generated sound even if not loaded
@@ -378,25 +406,76 @@ export const AudioEngine = {
         
         // Check if audio context needs to be unlocked (iOS Safari)
         if (this.context && this.context.state === 'suspended' && !this.unlocked) {
+            console.log('🔓 Audio context suspended - attempting unlock');
             await this.unlockAudioContext();
         }
         
         try {
             // Check if we should prefer generated sound for this key
-            const shouldUseGenerated = config.useGenerated || 
-                                     (this.sounds[soundKey] && this.sounds[soundKey].useGenerated);
+            const configUseGenerated = config.useGenerated;
+            const soundUseGenerated = this.sounds[soundKey] && this.sounds[soundKey].useGenerated;
+            const shouldUseGenerated = configUseGenerated || soundUseGenerated;
+            
+            console.log(`🎵 Generated sound check for ${soundKey}:`);
+            console.log(`  - config.useGenerated: ${configUseGenerated}`);
+            console.log(`  - sound.useGenerated: ${soundUseGenerated}`);
+            console.log(`  - shouldUseGenerated: ${shouldUseGenerated}`);
             
             if (shouldUseGenerated) {
+                console.log(`🎵 Using generated sound for: ${soundKey} (reason: ${configUseGenerated ? 'config' : 'timeout/error'})`);
                 return this.playGeneratedSound(soundKey, options);
             }
             
             // Try file-based audio first
             if (this.sounds[soundKey] && this.sounds[soundKey].audio) {
+                console.log(`🎵 Playing file-based audio for: ${soundKey}`);
                 const audio = this.sounds[soundKey].audio.cloneNode();
                 audio.volume = (options.volume || config.volume || 0.5) * this.volume;
                 
                 if (options.loop !== undefined) {
                     audio.loop = options.loop;
+                    console.log(`🎵 Loop set to: ${options.loop}`);
+                }
+                
+                // Mobile-specific handling for long audio files
+                const isMobile = this.isIOS() || /Android/i.test(navigator.userAgent);
+                const isLongAudio = soundKey.includes('Theme') || soundKey.includes('theme');
+                
+                if (isMobile && isLongAudio) {
+                    console.log('📱 Mobile device detected with long audio - applying mobile-specific handling');
+                    
+                    // Set additional mobile-friendly properties
+                    audio.preload = 'auto';
+                    audio.crossOrigin = 'anonymous';
+                    
+                    // Add comprehensive event listeners for mobile debugging
+                    audio.addEventListener('loadstart', () => console.log('🎵 Load started'));
+                    audio.addEventListener('loadeddata', () => console.log('🎵 Data loaded'));
+                    audio.addEventListener('canplay', () => console.log('🎵 Can play'));
+                    audio.addEventListener('canplaythrough', () => console.log('🎵 Can play through'));
+                    audio.addEventListener('play', () => console.log('🎵 Play event fired'));
+                    audio.addEventListener('playing', () => console.log('🎵 Playing event fired'));
+                    audio.addEventListener('pause', () => console.log('⏸️ Pause event fired'));
+                    audio.addEventListener('ended', () => console.log('🏁 Ended event fired'));
+                    audio.addEventListener('error', (e) => {
+                        console.error('❌ Audio error event:', e);
+                        console.error('❌ Audio error code:', audio.error ? audio.error.code : 'unknown');
+                        console.error('❌ Audio error message:', audio.error ? audio.error.message : 'unknown');
+                    });
+                    audio.addEventListener('stalled', () => console.log('⏸️ Audio stalled'));
+                    audio.addEventListener('waiting', () => console.log('⏳ Audio waiting'));
+                    audio.addEventListener('suspend', () => console.log('⏸️ Audio suspended'));
+                    audio.addEventListener('abort', () => console.log('❌ Audio aborted'));
+                    audio.addEventListener('emptied', () => console.log('🗑️ Audio emptied'));
+                    
+                    // For looping audio on mobile, set up manual loop handling
+                    if (options.loop) {
+                        audio.addEventListener('ended', () => {
+                            console.log('🔄 Audio ended - restarting for loop');
+                            audio.currentTime = 0;
+                            audio.play().catch(e => console.error('❌ Loop restart failed:', e));
+                        });
+                    }
                 }
                 
                 // iOS Safari specific handling
@@ -404,20 +483,25 @@ export const AudioEngine = {
                 if (playPromise !== undefined) {
                     try {
                         await playPromise;
+                        console.log(`✅ Audio playing successfully: ${soundKey}`);
                         return audio;
                     } catch (error) {
-                        // Silent fallback to generated sound
+                        console.error(`❌ Audio play failed for ${soundKey}:`, error);
+                        console.log('🔄 Falling back to generated sound');
                         return this.playGeneratedSound(soundKey, options);
                     }
                 }
                 
+                console.log(`✅ Audio started (legacy): ${soundKey}`);
                 return audio;
             }
             
             // Fallback to generated sound
+            console.log(`🎵 No file-based audio found for ${soundKey} - using generated sound`);
             return this.playGeneratedSound(soundKey, options);
             
         } catch (error) {
+            console.error(`❌ Audio play error for ${soundKey}:`, error);
             // Silent fallback to generated sound
             return this.playGeneratedSound(soundKey, options);
         }
@@ -425,6 +509,14 @@ export const AudioEngine = {
     
     // Generate synthesized audio fallback with enhanced envelopes
     playGeneratedSound(soundKey, options = {}) {
+        console.log(`🎵 Playing generated sound: ${soundKey}`, options);
+        
+        // Special handling for Mission Impossible theme
+        if (soundKey === 'missionThemeFull') {
+            console.log('🎵 Playing generated Mission Impossible theme');
+            return this.playGeneratedMissionTheme(options);
+        }
+        
         // If no audio context, try to create one
         if (!this.context) {
             console.log('🎵 No audio context for generated sound - attempting to create one');
@@ -626,6 +718,131 @@ export const AudioEngine = {
         }
     },
     
+    // Generate comprehensive Mission Impossible theme for mobile fallback
+    playGeneratedMissionTheme(options = {}) {
+        console.log('🎵 Playing generated Mission Impossible theme with looping');
+        
+        if (!this.context) {
+            console.log('🎵 No audio context for generated Mission theme');
+            return null;
+        }
+        
+        try {
+            // Main Mission Impossible theme notes (simplified 8-bit style)
+            const themeNotes = [
+                // Main melody - iconic opening
+                { freq: 659.25, duration: 0.25, delay: 0.0 },     // E5
+                { freq: 659.25, duration: 0.25, delay: 0.5 },     // E5
+                { freq: 698.46, duration: 0.25, delay: 1.0 },     // F#5
+                { freq: 698.46, duration: 0.25, delay: 1.5 },     // F#5
+                { freq: 784.00, duration: 0.5, delay: 2.0 },      // G5
+                { freq: 784.00, duration: 0.5, delay: 3.0 },      // G5
+                { freq: 659.25, duration: 0.25, delay: 4.0 },     // E5
+                { freq: 659.25, duration: 0.25, delay: 4.5 },     // E5
+                { freq: 698.46, duration: 0.25, delay: 5.0 },     // F#5
+                { freq: 698.46, duration: 0.25, delay: 5.5 },     // F#5
+                { freq: 784.00, duration: 0.5, delay: 6.0 },      // G5
+                { freq: 784.00, duration: 0.5, delay: 7.0 },      // G5
+                
+                // Secondary melody
+                { freq: 880.00, duration: 0.5, delay: 8.0 },      // A5
+                { freq: 987.77, duration: 0.25, delay: 9.0 },     // B5
+                { freq: 1046.50, duration: 0.5, delay: 9.5 },     // C6
+                { freq: 880.00, duration: 0.5, delay: 10.5 },     // A5
+                { freq: 784.00, duration: 0.5, delay: 11.5 },     // G5
+                { freq: 698.46, duration: 0.5, delay: 12.5 },     // F#5
+                { freq: 659.25, duration: 1.0, delay: 13.5 },     // E5 (extended)
+                
+                // Bass line accompaniment
+                { freq: 164.81, duration: 0.5, delay: 2.0 },      // E3
+                { freq: 196.00, duration: 0.5, delay: 4.0 },      // G3
+                { freq: 220.00, duration: 0.5, delay: 6.0 },      // A3
+                { freq: 246.94, duration: 0.5, delay: 8.0 },      // B3
+                { freq: 261.63, duration: 0.5, delay: 10.0 },     // C4
+                { freq: 196.00, duration: 0.5, delay: 12.0 },     // G3
+                { freq: 164.81, duration: 1.0, delay: 14.0 },     // E3 (extended)
+            ];
+            
+            const playThemeOnce = () => {
+                themeNotes.forEach(note => {
+                    setTimeout(() => {
+                        this.generateThemeNote(note.freq, note.duration, note.freq > 400 ? 'triangle' : 'sine');
+                    }, note.delay * 1000);
+                });
+            };
+            
+            // Play immediately
+            playThemeOnce();
+            
+            // Set up looping if requested
+            if (options.loop) {
+                const loopInterval = setInterval(() => {
+                    console.log('🔄 Looping generated Mission Impossible theme');
+                    playThemeOnce();
+                }, 16000); // 16 seconds per loop
+                
+                // Return a mock audio element with stop functionality
+                return {
+                    stop: () => {
+                        console.log('🛑 Stopping generated Mission Impossible theme loop');
+                        clearInterval(loopInterval);
+                    },
+                    pause: () => {
+                        console.log('⏸️ Pausing generated Mission Impossible theme loop');
+                        clearInterval(loopInterval);
+                    },
+                    addEventListener: () => {}, // Mock for compatibility
+                    volume: options.volume || 0.8,
+                    loop: options.loop || false
+                };
+            }
+            
+            return { stop: () => {}, pause: () => {}, addEventListener: () => {} };
+            
+        } catch (error) {
+            console.error('❌ Generated Mission Impossible theme failed:', error);
+            return null;
+        }
+    },
+    
+    // Generate individual theme note with enhanced sound
+    generateThemeNote(frequency, duration, waveType = 'triangle') {
+        if (!this.context) return;
+        
+        try {
+            const oscillator = this.context.createOscillator();
+            const gainNode = this.context.createGain();
+            const filterNode = this.context.createBiquadFilter();
+            
+            // Set up oscillator
+            oscillator.type = waveType;
+            oscillator.frequency.setValueAtTime(frequency, this.context.currentTime);
+            
+            // Set up filter for 8-bit sound
+            filterNode.type = 'lowpass';
+            filterNode.frequency.setValueAtTime(frequency * 2, this.context.currentTime);
+            filterNode.Q.setValueAtTime(1, this.context.currentTime);
+            
+            // Set up gain envelope
+            const finalVolume = 0.3 * this.volume;
+            gainNode.gain.setValueAtTime(0, this.context.currentTime);
+            gainNode.gain.linearRampToValueAtTime(finalVolume, this.context.currentTime + 0.02);
+            gainNode.gain.exponentialRampToValueAtTime(finalVolume * 0.7, this.context.currentTime + duration * 0.7);
+            gainNode.gain.exponentialRampToValueAtTime(0.001, this.context.currentTime + duration);
+            
+            // Connect nodes
+            oscillator.connect(filterNode);
+            filterNode.connect(gainNode);
+            gainNode.connect(this.context.destination);
+            
+            oscillator.start(this.context.currentTime);
+            oscillator.stop(this.context.currentTime + duration);
+            
+        } catch (error) {
+            console.warn('⚠️ Theme note generation failed:', error);
+        }
+    },
+    
     // Start ambient audio system
     startAmbientSystem() {
         if (this.ambientSystemActive) return;
@@ -633,8 +850,7 @@ export const AudioEngine = {
         this.ambientSystemActive = true;
         console.log('🌊 Starting ambient audio system');
         
-        // Play ambient hum if available
-        this.play('ambientHum', { volume: 0.1, loop: true });
+        // Ambient hum removed - not needed for the experience
         
         // Start generated ambient oscillators
         this.createAmbientOscillators();
@@ -793,11 +1009,20 @@ export const AudioEngine = {
         const fileBasedSounds = Object.values(this.sounds).filter(s => s.audio).length;
         const generatedSounds = Object.values(this.sounds).filter(s => s.useGenerated).length;
         
+        // Check Mission Impossible theme specifically
+        const missionThemeStatus = this.sounds.missionThemeFull ? {
+            exists: true,
+            hasAudio: !!this.sounds.missionThemeFull.audio,
+            useGenerated: this.sounds.missionThemeFull.useGenerated,
+            config: this.sounds.missionThemeFull.config
+        } : { exists: false };
+        
         return {
             loaded: this.loaded,
             unlocked: this.unlocked,
             volume: this.volume,
             ambientActive: this.ambientSystemActive,
+            missionTheme: missionThemeStatus,
             contextState: this.context ? this.context.state : 'none',
             soundsLoaded: Object.keys(this.sounds).length,
             fileBasedSounds,

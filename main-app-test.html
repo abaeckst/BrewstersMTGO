@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Main App Loading Test</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: #000;
+            color: #00ff00;
+            font-size: 18px;
+        }
+        
+        .test-result {
+            margin: 10px 0;
+            padding: 15px;
+            background: #002200;
+            border-left: 4px solid #00ff00;
+            font-size: 16px;
+        }
+        
+        .error {
+            border-left-color: #ff0000;
+            color: #ff0000;
+            background: #220000;
+        }
+        
+        .success {
+            border-left-color: #00ff00;
+            color: #00ff00;
+        }
+        
+        .warning {
+            border-left-color: #ffff00;
+            color: #ffff00;
+            background: #222200;
+        }
+        
+        #console {
+            background: #000;
+            color: #00ff00;
+            padding: 15px;
+            font-family: monospace;
+            font-size: 14px;
+            height: 400px;
+            overflow-y: auto;
+            border: 2px solid #00ff00;
+            margin-top: 20px;
+            white-space: pre-wrap;
+        }
+        
+        .app-container {
+            border: 2px solid #ffff00;
+            padding: 20px;
+            margin: 20px 0;
+            min-height: 200px;
+            background: #001122;
+        }
+    </style>
+</head>
+<body>
+    <h1>🎯 Main App Loading Test</h1>
+    <p><strong>Purpose:</strong> Test the exact main app loading sequence</p>
+    
+    <div class="test-result warning">
+        <strong>Status:</strong> <span id="loading-status">Initializing...</span>
+    </div>
+    
+    <div class="app-container">
+        <h3>App Container</h3>
+        <div id="app-status">Waiting for app initialization...</div>
+        <div id="app-elements">No app elements detected yet</div>
+    </div>
+    
+    <div id="console"></div>
+
+    <script>
+        // Console capture
+        const consoleDiv = document.getElementById('console');
+        const statusDiv = document.getElementById('loading-status');
+        const appStatusDiv = document.getElementById('app-status');
+        const appElementsDiv = document.getElementById('app-elements');
+        
+        const originalConsole = {
+            log: console.log,
+            error: console.error,
+            warn: console.warn,
+            info: console.info
+        };
+        
+        function logToConsole(type, ...args) {
+            const timestamp = new Date().toISOString().substring(11, 23);
+            const message = args.map(arg => 
+                typeof arg === 'object' ? JSON.stringify(arg, null, 2) : String(arg)
+            ).join(' ');
+            const logEntry = `[${timestamp}] ${type.toUpperCase()}: ${message}\n`;
+            consoleDiv.textContent += logEntry;
+            consoleDiv.scrollTop = consoleDiv.scrollHeight;
+            
+            // Also log to browser console
+            originalConsole[type](...args);
+        }
+        
+        console.log = (...args) => logToConsole('log', ...args);
+        console.error = (...args) => logToConsole('error', ...args);
+        console.warn = (...args) => logToConsole('warn', ...args);
+        console.info = (...args) => logToConsole('info', ...args);
+        
+        // Track all errors
+        window.addEventListener('error', (event) => {
+            console.error('GLOBAL ERROR:', event.error?.message || event.message, 'at', event.filename + ':' + event.lineno);
+            statusDiv.textContent = 'ERROR: ' + (event.error?.message || event.message);
+            statusDiv.parentElement.className = 'test-result error';
+        });
+        
+        window.addEventListener('unhandledrejection', (event) => {
+            console.error('UNHANDLED PROMISE REJECTION:', event.reason);
+            statusDiv.textContent = 'PROMISE ERROR: ' + event.reason;
+            statusDiv.parentElement.className = 'test-result error';
+        });
+        
+        console.log('🚀 Main App Loading Test Started');
+        statusDiv.textContent = 'Starting app loading test...';
+        
+        // Copy the exact detection logic from index.html
+        function supportsES6Modules() {
+            var script = document.createElement('script');
+            return 'noModule' in script;
+        }
+        
+        function supportsDynamicImports() {
+            try {
+                new Function('import("")');
+                return true;
+            } catch (e) {
+                return false;
+            }
+        }
+        
+        // Test the detection
+        const es6Support = supportsES6Modules();
+        const dynamicSupport = supportsDynamicImports();
+        const shouldUseModules = es6Support && dynamicSupport;
+        
+        console.log('📱 Feature Detection Result:', {
+            es6Support,
+            dynamicSupport,
+            shouldUseModules,
+            willLoad: shouldUseModules ? 'js/app.js (ES6 modules)' : 'js/ios-module-bridge.js (iOS bridge)'
+        });
+        
+        statusDiv.textContent = `Will load: ${shouldUseModules ? 'ES6 modules' : 'iOS bridge'}`;
+        
+        // Function to check for app elements
+        function checkAppElements() {
+            const elements = {
+                app: document.getElementById('app'),
+                wakeScreen: document.getElementById('wake-screen'),
+                authScreen: document.getElementById('auth-screen'),
+                missionScreen: document.getElementById('mission-screen'),
+                windowApp: typeof window.app,
+                windowAudioEngine: typeof window.AudioEngine,
+                windowAppState: typeof window.AppState
+            };
+            
+            const foundElements = Object.entries(elements).filter(([key, value]) => 
+                value !== null && value !== 'undefined'
+            );
+            
+            if (foundElements.length > 0) {
+                appElementsDiv.innerHTML = `Found: ${foundElements.map(([key]) => key).join(', ')}`;
+                appStatusDiv.textContent = 'App elements detected!';
+                appStatusDiv.className = 'success';
+                return true;
+            } else {
+                appElementsDiv.textContent = 'No app elements found yet';
+                return false;
+            }
+        }
+        
+        // Function to load the app using the exact same logic
+        async function loadMainApp() {
+            try {
+                statusDiv.textContent = 'Loading app script...';
+                console.log('Loading app with detection result...');
+                
+                const script = document.createElement('script');
+                
+                if (shouldUseModules) {
+                    console.log('📱 Loading modern ES6 module system...');
+                    script.type = 'module';
+                    script.src = 'js/app.js';
+                } else {
+                    console.log('📱 Loading iOS compatibility bridge...');
+                    script.src = 'js/ios-module-bridge.js';
+                }
+                
+                // Add detailed loading tracking
+                script.onload = () => {
+                    console.log('✅ Script loaded successfully');
+                    statusDiv.textContent = 'Script loaded, checking for app initialization...';
+                    statusDiv.parentElement.className = 'test-result success';
+                    
+                    // Check if app initialized
+                    setTimeout(() => {
+                        if (checkAppElements()) {
+                            appStatusDiv.textContent = 'App initialized successfully!';
+                            statusDiv.textContent = 'SUCCESS: App loaded and initialized';
+                        } else {
+                            appStatusDiv.textContent = 'Script loaded but app not initialized';
+                            statusDiv.textContent = 'PARTIAL: Script loaded but no app detected';
+                            statusDiv.parentElement.className = 'test-result warning';
+                        }
+                    }, 2000);
+                };
+                
+                script.onerror = (error) => {
+                    console.error('❌ Script failed to load:', error);
+                    statusDiv.textContent = 'FAILED: Script failed to load';
+                    statusDiv.parentElement.className = 'test-result error';
+                    appStatusDiv.textContent = 'Script loading failed';
+                };
+                
+                // Add timeout
+                setTimeout(() => {
+                    if (statusDiv.textContent.includes('Loading')) {
+                        console.warn('⚠️ Script loading timeout (10s)');
+                        statusDiv.textContent = 'TIMEOUT: Script took too long to load';
+                        statusDiv.parentElement.className = 'test-result error';
+                    }
+                }, 10000);
+                
+                console.log('Adding script to document head...');
+                document.head.appendChild(script);
+                
+            } catch (error) {
+                console.error('❌ App loading failed:', error);
+                statusDiv.textContent = 'ERROR: ' + error.message;
+                statusDiv.parentElement.className = 'test-result error';
+            }
+        }
+        
+        // Start loading the app
+        setTimeout(() => {
+            loadMainApp();
+        }, 1000);
+        
+        // Periodic check for app elements
+        const checkInterval = setInterval(() => {
+            if (checkAppElements()) {
+                clearInterval(checkInterval);
+            }
+        }, 1000);
+        
+        // Stop checking after 30 seconds
+        setTimeout(() => {
+            clearInterval(checkInterval);
+            if (!checkAppElements()) {
+                console.warn('⚠️ App elements never appeared after 30 seconds');
+                if (statusDiv.textContent.includes('SUCCESS') || statusDiv.textContent.includes('Script loaded')) {
+                    statusDiv.textContent = 'ISSUE: Script loaded but app never initialized';
+                    statusDiv.parentElement.className = 'test-result warning';
+                }
+            }
+        }, 30000);
+        
+        console.log('Main app loading test initialized');
+    </script>
+</body>
+</html>
