@@ -239,6 +239,9 @@ class App {
         // Make sure wake screen is active
         this.showScreen('wake-screen');
         
+        // Reset wake screen controller to ensure fresh restart
+        this.wakeScreen.reset();
+        
         // Initialize wake screen controller
         await this.wakeScreen.init();
         
