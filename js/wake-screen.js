@@ -143,13 +143,14 @@ export class WakeScreen {
         await this.loadAudioAfterInteraction();
 
         // Initialize audio context on first user interaction (critical for iOS)
-        if (window.AudioEngine && !window.AudioEngine.unlocked) {
-            await window.AudioEngine.unlockAudioContext();
+        const audioEngine = window.app?.audio;
+        if (audioEngine && !audioEngine.unlocked) {
+            await audioEngine.unlockAudioContext();
         }
 
         // Audio feedback - immediate beep to confirm interaction
-        if (window.AudioEngine) {
-            window.AudioEngine.play('terminalBeep', { volume: 0.3 });
+        if (audioEngine) {
+            audioEngine.play('terminalBeep', { volume: 0.3 });
         }
 
         // Visual feedback - immediate activation state
@@ -185,13 +186,14 @@ export class WakeScreen {
         console.log('💤 Wake interaction detected (passive), starting activation...', event.type);
 
         // Initialize audio context on first user interaction (critical for iOS)
-        if (window.AudioEngine && !window.AudioEngine.unlocked) {
-            await window.AudioEngine.unlockAudioContext();
+        const audioEngine = window.app?.audio;
+        if (audioEngine && !audioEngine.unlocked) {
+            await audioEngine.unlockAudioContext();
         }
 
         // Audio feedback - immediate beep to confirm interaction
-        if (window.AudioEngine) {
-            window.AudioEngine.play('terminalBeep', { volume: 0.3 });
+        if (audioEngine) {
+            audioEngine.play('terminalBeep', { volume: 0.3 });
         }
 
         // Visual feedback - immediate activation state
@@ -318,9 +320,11 @@ export class WakeScreen {
     async loadAudioAfterInteraction() {
         console.log('📱 Attempting to load audio after user interaction...');
         
-        if (window.AudioEngine && window.AudioEngine.loadAudioAfterInteraction) {
+        // Access AudioEngine through window.app.audio (correct path)
+        const audioEngine = window.app?.audio;
+        if (audioEngine && audioEngine.loadAudioAfterInteraction) {
             try {
-                const success = await window.AudioEngine.loadAudioAfterInteraction();
+                const success = await audioEngine.loadAudioAfterInteraction();
                 console.log('📱 Audio loading result:', success);
                 return success;
             } catch (error) {
@@ -328,7 +332,12 @@ export class WakeScreen {
                 return false;
             }
         } else {
-            console.log('📱 AudioEngine or loadAudioAfterInteraction method not available');
+            console.log('📱 AudioEngine not available via window.app.audio or method missing');
+            console.log('📱 Available:', { 
+                app: !!window.app, 
+                audio: !!window.app?.audio, 
+                method: !!window.app?.audio?.loadAudioAfterInteraction 
+            });
             return false;
         }
     }
