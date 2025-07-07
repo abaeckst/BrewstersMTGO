@@ -315,22 +315,22 @@ class App {
     }
 }
 
-// Initialize app when DOM is ready - iOS compatibility: reduced global pollution
+// Initialize app when DOM is ready - iOS compatibility: balanced global exposure
 if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', () => {
         const app = new App();
-        // Only expose app globally for debugging - remove AudioEngine global
+        // Always expose app globally for screen controllers - debug-only state access
+        window.app = app;
         if (window.location.search.includes('debug')) {
-            window.app = app;
             window.appState = app.state;
         }
         app.init();
     });
 } else {
     const app = new App();
-    // Only expose app globally for debugging - remove AudioEngine global
+    // Always expose app globally for screen controllers - debug-only state access
+    window.app = app;
     if (window.location.search.includes('debug')) {
-        window.app = app;
         window.appState = app.state;
     }
     app.init();

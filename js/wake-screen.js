@@ -73,7 +73,7 @@ export class WakeScreen {
         // Add secondary events (passive) for additional interaction coverage
         secondaryEvents.forEach(eventType => {
             this.wakeContainer.addEventListener(eventType, (e) => {
-                this.handleWakeInteraction(e);
+                this.handleWakeInteractionPassive(e);
             }, { passive: true });
         });
 
@@ -138,6 +138,48 @@ export class WakeScreen {
         
         this.isActivating = true;
         console.log('💤 Wake interaction detected, starting activation...', event.type);
+
+        // Initialize audio context on first user interaction (critical for iOS)
+        if (window.AudioEngine && !window.AudioEngine.unlocked) {
+            await window.AudioEngine.unlockAudioContext();
+        }
+
+        // Audio feedback - immediate beep to confirm interaction
+        if (window.AudioEngine) {
+            window.AudioEngine.play('terminalBeep', { volume: 0.3 });
+        }
+
+        // Visual feedback - immediate activation state
+        this.wakeContainer.classList.add('wake-activating');
+
+        // Start wake-up sequence
+        await this.startWakeUpSequence();
+    }
+
+    /**
+     * Handle wake interactions for passive event listeners (no preventDefault)
+     */
+    async handleWakeInteractionPassive(event) {
+        // Skip if already activating or not ready
+        if (this.isActivating || !this.isReady) {
+            console.log('💤 Wake activation already in progress');
+            return;
+        }
+
+        // Debounce rapid interactions
+        const now = Date.now();
+        if (this.lastInteractionTime && (now - this.lastInteractionTime) < 300) {
+            console.log('💤 Debouncing rapid wake interactions');
+            return;
+        }
+        this.lastInteractionTime = now;
+
+        // NO preventDefault() call for passive events
+        // Stop event propagation to prevent duplicate handling
+        event.stopPropagation();
+        
+        this.isActivating = true;
+        console.log('💤 Wake interaction detected (passive), starting activation...', event.type);
 
         // Initialize audio context on first user interaction (critical for iOS)
         if (window.AudioEngine && !window.AudioEngine.unlocked) {
