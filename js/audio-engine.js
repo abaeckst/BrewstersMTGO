@@ -113,6 +113,7 @@ export const AudioEngine = {
     async init() {
         console.log('🔊 V2 Audio Engine initializing...');
         console.log('📱 iOS Detection:', this.isIOS());
+        console.log('📱 isMobile method exists:', typeof this.isMobile === 'function');
         console.log('🎵 AudioContext Support:', !!(window.AudioContext || window.webkitAudioContext));
         
         try {
