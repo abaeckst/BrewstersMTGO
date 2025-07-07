@@ -2,7 +2,7 @@
    Utilities: Screen Management System
    ========================================================================== */
 
-@layer utilities {
+/* @layer - iOS compatibility: removed layer wrapper */
     /* Screen Isolation Container */
     .screen-isolator {
         position: relative;
@@ -140,4 +140,4 @@
     .screen-base {
         animation: none;
     }
-}
+/* End section */

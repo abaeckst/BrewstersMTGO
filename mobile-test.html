@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>iOS Compatibility Test - Brewster's MTGO</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+            background: #000;
+            color: #00ff00;
+            padding: 20px;
+            font-size: 16px; /* iOS zoom prevention */
+        }
+        
+        .test-section {
+            margin-bottom: 30px;
+            padding: 15px;
+            border: 1px solid #00ff00;
+            border-radius: 5px;
+        }
+        
+        .test-result {
+            font-weight: bold;
+            margin: 10px 0;
+        }
+        
+        .success { color: #00ff00; }
+        .error { color: #ff0000; }
+        .warning { color: #ffff00; }
+        
+        button {
+            background: #003300;
+            color: #00ff00;
+            border: 1px solid #00ff00;
+            padding: 15px 30px;
+            font-size: 16px;
+            margin: 10px;
+            border-radius: 5px;
+            min-height: 44px; /* iOS touch target */
+        }
+        
+        #touchTest {
+            width: 100%;
+            height: 100px;
+            background: #001100;
+            border: 2px dashed #00ff00;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <h1>iOS Compatibility Test</h1>
+    
+    <div class="test-section">
+        <h2>1. Basic Device Detection</h2>
+        <div id="deviceInfo"></div>
+    </div>
+    
+    <div class="test-section">
+        <h2>2. ES6 Module Support Test</h2>
+        <div id="moduleTest"></div>
+        <script type="module">
+            document.getElementById('moduleTest').innerHTML = 
+                '<div class="test-result success">✅ ES6 Modules: WORKING</div>';
+        </script>
+        <script>
+            // Fallback for non-module support
+            if (!document.getElementById('moduleTest').innerHTML) {
+                document.getElementById('moduleTest').innerHTML = 
+                    '<div class="test-result error">❌ ES6 Modules: NOT SUPPORTED</div>';
+            }
+        </script>
+    </div>
+    
+    <div class="test-section">
+        <h2>3. Touch Event Test</h2>
+        <div id="touchTest">Touch/Click this area</div>
+        <div id="touchResults"></div>
+    </div>
+    
+    <div class="test-section">
+        <h2>4. Audio Context Test</h2>
+        <button id="audioTest">Test Audio Context</button>
+        <div id="audioResults"></div>
+    </div>
+    
+    <div class="test-section">
+        <h2>5. CSS Features Test</h2>
+        <div id="cssTest"></div>
+    </div>
+    
+    <div class="test-section">
+        <h2>6. Console Log Test</h2>
+        <div id="consoleTest">Check Safari console for detailed logs</div>
+    </div>
+
+    <script>
+        console.log('🚀 Mobile Test Started');
+        
+        // 1. Device Detection
+        function detectDevice() {
+            const deviceInfo = {
+                userAgent: navigator.userAgent,
+                platform: navigator.platform,
+                isIOS: /iPad|iPhone|iPod/.test(navigator.userAgent),
+                isSafari: /Safari/.test(navigator.userAgent) && !/Chrome/.test(navigator.userAgent),
+                viewportWidth: window.innerWidth,
+                viewportHeight: window.innerHeight,
+                devicePixelRatio: window.devicePixelRatio,
+                touchSupport: 'ontouchstart' in window,
+                orientation: screen.orientation ? screen.orientation.angle : 'unknown'
+            };
+            
+            console.log('📱 Device Info:', deviceInfo);
+            
+            document.getElementById('deviceInfo').innerHTML = `
+                <div class="test-result ${deviceInfo.isIOS ? 'success' : 'warning'}">
+                    iOS Device: ${deviceInfo.isIOS ? 'YES' : 'NO'}
+                </div>
+                <div class="test-result ${deviceInfo.isSafari ? 'success' : 'warning'}">
+                    Safari Browser: ${deviceInfo.isSafari ? 'YES' : 'NO'}
+                </div>
+                <div class="test-result ${deviceInfo.touchSupport ? 'success' : 'error'}">
+                    Touch Support: ${deviceInfo.touchSupport ? 'YES' : 'NO'}
+                </div>
+                <div>Viewport: ${deviceInfo.viewportWidth}x${deviceInfo.viewportHeight}</div>
+                <div>Pixel Ratio: ${deviceInfo.devicePixelRatio}</div>
+            `;
+        }
+        
+        // 3. Touch Event Testing
+        function setupTouchTest() {
+            const touchArea = document.getElementById('touchTest');
+            const results = document.getElementById('touchResults');
+            let touchCount = 0;
+            
+            function logTouch(type, event) {
+                touchCount++;
+                const result = `${touchCount}. ${type} detected`;
+                console.log('👆 Touch Event:', type, event);
+                results.innerHTML += `<div class="test-result success">${result}</div>`;
+                
+                if (event.preventDefault) {
+                    event.preventDefault();
+                }
+            }
+            
+            // Touch events
+            touchArea.addEventListener('touchstart', (e) => logTouch('touchstart', e), {passive: false});
+            touchArea.addEventListener('touchend', (e) => logTouch('touchend', e), {passive: false});
+            touchArea.addEventListener('touchmove', (e) => logTouch('touchmove', e), {passive: false});
+            
+            // Mouse events (fallback)
+            touchArea.addEventListener('mousedown', (e) => logTouch('mousedown', e));
+            touchArea.addEventListener('mouseup', (e) => logTouch('mouseup', e));
+            touchArea.addEventListener('click', (e) => logTouch('click', e));
+        }
+        
+        // 4. Audio Context Testing
+        function setupAudioTest() {
+            const button = document.getElementById('audioTest');
+            const results = document.getElementById('audioResults');
+            
+            button.addEventListener('click', async function() {
+                try {
+                    console.log('🔊 Testing Audio Context...');
+                    
+                    // Test AudioContext creation
+                    const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+                    if (!AudioContextClass) {
+                        throw new Error('AudioContext not supported');
+                    }
+                    
+                    const audioContext = new AudioContextClass();
+                    console.log('🎵 AudioContext created:', audioContext.state);
+                    
+                    // Try to unlock audio context (iOS requirement)
+                    if (audioContext.state === 'suspended') {
+                        await audioContext.resume();
+                        console.log('🔓 AudioContext resumed:', audioContext.state);
+                    }
+                    
+                    // Test simple tone generation
+                    const oscillator = audioContext.createOscillator();
+                    const gainNode = audioContext.createGain();
+                    
+                    oscillator.connect(gainNode);
+                    gainNode.connect(audioContext.destination);
+                    
+                    oscillator.frequency.setValueAtTime(440, audioContext.currentTime);
+                    gainNode.gain.setValueAtTime(0.1, audioContext.currentTime);
+                    gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.5);
+                    
+                    oscillator.start();
+                    oscillator.stop(audioContext.currentTime + 0.5);
+                    
+                    results.innerHTML = `
+                        <div class="test-result success">✅ AudioContext: WORKING</div>
+                        <div class="test-result success">State: ${audioContext.state}</div>
+                        <div class="test-result success">Sample Rate: ${audioContext.sampleRate}</div>
+                    `;
+                    
+                } catch (error) {
+                    console.error('❌ Audio Context Error:', error);
+                    results.innerHTML = `
+                        <div class="test-result error">❌ AudioContext: FAILED</div>
+                        <div class="test-result error">Error: ${error.message}</div>
+                    `;
+                }
+            });
+        }
+        
+        // 5. CSS Features Testing
+        function testCSSFeatures() {
+            const features = {
+                cssLayers: CSS.supports('@layer'),
+                cssSafeArea: CSS.supports('padding', 'env(safe-area-inset-top)'),
+                cssClamp: CSS.supports('font-size', 'clamp(1rem, 2vw, 2rem)'),
+                cssGrid: CSS.supports('display', 'grid'),
+                cssFlex: CSS.supports('display', 'flex'),
+                cssTransform: CSS.supports('transform', 'translateX(10px)'),
+                cssTransition: CSS.supports('transition', 'all 1s ease')
+            };
+            
+            console.log('🎨 CSS Features:', features);
+            
+            let html = '';
+            for (const [feature, supported] of Object.entries(features)) {
+                const status = supported ? '✅' : '❌';
+                const className = supported ? 'success' : 'error';
+                html += `<div class="test-result ${className}">${status} ${feature}: ${supported ? 'SUPPORTED' : 'NOT SUPPORTED'}</div>`;
+            }
+            
+            document.getElementById('cssTest').innerHTML = html;
+        }
+        
+        // Initialize all tests
+        function runAllTests() {
+            console.log('🧪 Starting comprehensive iOS compatibility tests...');
+            
+            detectDevice();
+            setupTouchTest();
+            setupAudioTest();
+            testCSSFeatures();
+            
+            console.log('✅ All tests initialized. Interact with elements to test functionality.');
+        }
+        
+        // Run tests when DOM is ready
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', runAllTests);
+        } else {
+            runAllTests();
+        }
+        
+        // Global error handler
+        window.addEventListener('error', function(e) {
+            console.error('💥 Global Error:', e.error);
+            document.body.insertAdjacentHTML('beforeend', 
+                `<div class="test-section"><div class="test-result error">❌ Global Error: ${e.message}</div></div>`
+            );
+        });
+        
+        // Unhandled promise rejections
+        window.addEventListener('unhandledrejection', function(e) {
+            console.error('💥 Unhandled Promise Rejection:', e.reason);
+            document.body.insertAdjacentHTML('beforeend', 
+                `<div class="test-section"><div class="test-result error">❌ Promise Rejection: ${e.reason}</div></div>`
+            );
+        });
+    </script>
+</body>
+</html>

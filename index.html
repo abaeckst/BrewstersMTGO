@@ -441,7 +441,27 @@
         
     </div>
     
-    <!-- Scripts -->
-    <script type="module" src="js/app.js"></script>
+    <!-- Scripts - iOS Compatibility: Feature Detection -->
+    <script>
+        // Feature detection for ES6 modules
+        function supportsES6Modules() {
+            var script = document.createElement('script');
+            return 'noModule' in script;
+        }
+        
+        // Load appropriate initialization system
+        if (supportsES6Modules()) {
+            // Modern browsers - load ES6 module system
+            const script = document.createElement('script');
+            script.type = 'module';
+            script.src = 'js/app.js';
+            document.head.appendChild(script);
+        } else {
+            // iOS Safari fallback - load compatibility bridge
+            const script = document.createElement('script');
+            script.src = 'js/ios-module-bridge.js';
+            document.head.appendChild(script);
+        }
+    </script>
 </body>
 </html>

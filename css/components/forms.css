@@ -2,7 +2,7 @@
    Components: Form Elements
    ========================================================================== */
 
-@layer components {
+/* @layer components - iOS compatibility: removed layer wrapper */
     /* Auth Form Components */
     .auth-form {
         display: flex;
@@ -30,10 +30,14 @@
         border: var(--border-normal) solid var(--color-secondary);
         color: var(--color-primary);
         font-family: inherit;
-        font-size: var(--text-base);
+        font-size: max(16px, var(--text-base)); /* Prevent iOS zoom on focus */
         padding: var(--space-md);
         border-radius: var(--radius-sm);
         transition: all var(--timing-normal) ease;
+        /* iOS-specific fixes */
+        -webkit-appearance: none;
+        appearance: none;
+        -webkit-border-radius: var(--radius-sm);
     }
 
     .terminal-input:focus {
@@ -53,4 +57,4 @@
         font-style: italic;
         margin-top: var(--space-xs);
     }
-}
+/* End forms section */

@@ -1,0 +1,266 @@
+================================================================================
+                    iOS DEVICE TESTING GUIDE FOR BREWSTER'S MTGO
+                          Mobile Compatibility Investigation
+================================================================================
+
+OVERVIEW:
+This guide will walk you through testing 6 diagnostic files on your iPhone to 
+identify the root cause of mobile compatibility issues. Follow each step and 
+report back the results.
+
+PREPARATION STEPS:
+1. Ensure your iPhone is connected to the same WiFi as your computer
+2. Open Safari on your iPhone (NOT Chrome or other browsers)
+3. Make sure you have the project running locally OR use the GitHub Pages URL
+4. Have a way to take screenshots or notes
+
+================================================================================
+                                TEST SEQUENCE
+================================================================================
+
+TEST 1: BASIC COMPATIBILITY CHECK
+================================================================================
+File: mobile-test.html
+Purpose: Overall iOS compatibility assessment
+
+STEPS:
+1. Open: [your-local-server]/mobile-test.html
+   OR: https://abaeckst.github.io/BrewstersMTGO/mobile-test.html
+
+2. Wait for page to load completely (10 seconds)
+
+3. OBSERVE AND REPORT:
+   - Does "ES6 Modules: WORKING" appear in green?
+   - What does "iOS Device" show (YES/NO)?
+   - What does "Touch Support" show (YES/NO)?
+   - Are there any red error messages?
+
+4. INTERACT:
+   - Touch the "Touch/Click this area" box
+   - Press "Test Audio Context" button
+   - Look for any error messages or failures
+
+5. REPORT BACK:
+   "TEST 1 RESULTS:
+   - ES6 Modules: [WORKING/NOT SUPPORTED]
+   - iOS Device: [YES/NO] 
+   - Touch Support: [YES/NO]
+   - Touch test: [WORKED/FAILED]
+   - Audio test: [WORKED/FAILED]
+   - Any errors: [LIST ANY RED ERROR MESSAGES]"
+
+================================================================================
+
+TEST 2: DETAILED BROWSER ANALYSIS
+================================================================================
+File: ios-compatibility-test.html
+Purpose: Identify specific iOS/Safari version issues
+
+STEPS:
+1. Open: [your-local-server]/ios-compatibility-test.html
+   OR: https://abaeckst.github.io/BrewstersMTGO/ios-compatibility-test.html
+
+2. Wait for page to load and scroll through all sections
+
+3. REPORT BACK:
+   "TEST 2 RESULTS:
+   - iOS Version: [Look for 'iOSVersion: X.X' in browser info]
+   - Safari Version: [Look for 'safariVersion: X.X']
+   - ES6 Module Support: [Check the ES6 Module Support section]
+   - CSS @layer support: [Look for '@layer: SUPPORTED/NOT SUPPORTED']
+   - AudioContext: [SUPPORTED/NOT AVAILABLE]
+   - Any critical features marked as NOT SUPPORTED: [LIST THEM]"
+
+================================================================================
+
+TEST 3: TOUCH EVENT TESTING
+================================================================================
+File: touch-test.html
+Purpose: Verify touch interactions work correctly
+
+STEPS:
+1. Open: [your-local-server]/touch-test.html
+   OR: https://abaeckst.github.io/BrewstersMTGO/touch-test.html
+
+2. INTERACT WITH EACH TEST AREA:
+   - Touch "Basic Touch Test" area several times
+   - Try multi-touch on "Multi-Touch Test" area (use 2+ fingers)
+   - Touch "Passive Event Listener Test" area
+   - Touch "Wake Screen Simulation" area
+
+3. OBSERVE:
+   - Do green circles appear when you touch areas?
+   - Do the event counters increase?
+   - Does the Wake Screen change from "DORMANT" to "AWAKE"?
+
+4. REPORT BACK:
+   "TEST 3 RESULTS:
+   - Basic touch: [WORKING/NOT WORKING]
+   - Multi-touch detected: [YES/NO - how many fingers?]
+   - Passive listeners: [WORKING/NOT WORKING]
+   - Wake simulation: [CHANGED TO AWAKE/STAYED DORMANT]
+   - Touch indicators (green circles): [APPEARED/DID NOT APPEAR]"
+
+================================================================================
+
+TEST 4: AUDIO SYSTEM TESTING
+================================================================================
+File: audio-isolation-test.html
+Purpose: Test audio capabilities and restrictions
+
+STEPS:
+1. Open: [your-local-server]/audio-isolation-test.html
+   OR: https://abaeckst.github.io/BrewstersMTGO/audio-isolation-test.html
+
+2. TEST EACH BUTTON IN ORDER:
+   a) Press "Test AudioContext Creation"
+   b) Press "Unlock Audio Context (iOS)" 
+   c) Press "Play Test Tone" (you should hear a beep)
+   d) Press "Test Audio File Load"
+   e) Press "Test Mission Impossible Theme"
+
+3. IMPORTANT: Turn up your volume and listen for sounds!
+
+4. REPORT BACK:
+   "TEST 4 RESULTS:
+   - AudioContext Creation: [SUCCESS/FAILED]
+   - Audio Unlock: [SUCCESS/FAILED] 
+   - Test Tone: [HEARD SOUND/NO SOUND/ERROR]
+   - Audio File Load: [SUCCESS/FAILED]
+   - Mission Theme: [SUCCESS/TIMEOUT/FAILED]
+   - Any audio played: [YES/NO]"
+
+================================================================================
+
+TEST 5: SIMPLIFIED CSS TESTING
+================================================================================
+File: css-simplified-test.html
+Purpose: Test if simplified CSS works better than complex version
+
+STEPS:
+1. Open: [your-local-server]/css-simplified-test.html
+   OR: https://abaeckst.github.io/BrewstersMTGO/css-simplified-test.html
+
+2. OBSERVE:
+   - Does the page look like a terminal/spy interface?
+   - Is text green on black background?
+   - Are there buttons in the top-right corner?
+
+3. INTERACT:
+   - Wait 2 seconds - does "[WAKE SYSTEM]" text appear?
+   - Touch the center area - does it change to mission screen?
+   - Use the colored buttons in top-right to switch between screens
+   - Press "Test CSS Features" button
+
+4. REPORT BACK:
+   "TEST 5 RESULTS:
+   - Visual appearance: [LOOKS CORRECT/BROKEN LAYOUT]
+   - Wake text appeared: [YES AFTER 2 SECONDS/NO/IMMEDIATE]
+   - Screen transitions: [WORKING/NOT WORKING]
+   - CSS test results: [Look for percentages like 'CSS Support: X/Y (Z%)']"
+
+================================================================================
+
+TEST 6: MODULE FALLBACK TESTING
+================================================================================
+File: no-module-fallback.html
+Purpose: Test fallback for browsers without ES6 module support
+
+STEPS:
+1. Open: [your-local-server]/no-module-fallback.html
+   OR: https://abaeckst.github.io/BrewstersMTGO/no-module-fallback.html
+
+2. OBSERVE:
+   - Does the page load at all?
+   - Is there a "SYSTEM ERROR" message?
+   - Does it look like the normal app interface?
+
+3. IF IT LOADS:
+   - Try the wake screen interaction
+   - See if you can get to the mission screen
+
+4. REPORT BACK:
+   "TEST 6 RESULTS:
+   - Page loaded: [YES/NO/ERROR MESSAGE]
+   - Shows system error: [YES/NO]
+   - Fallback app working: [YES/NO/PARTIALLY]
+   - Got past wake screen: [YES/NO]"
+
+================================================================================
+
+COMPARING WITH MAIN APP:
+================================================================================
+
+After completing all tests above, also test the main application:
+
+MAIN APP TEST:
+1. Open: [your-local-server]/index.html
+   OR: https://abaeckst.github.io/BrewstersMTGO/
+
+2. Compare with the test results above
+
+3. REPORT:
+   "MAIN APP RESULTS:
+   - Loads at all: [YES/NO]
+   - Gets past wake screen: [YES/NO] 
+   - How far does it work: [WAKE ONLY/MISSION/BRIEFING/COUNTDOWN/COMPLETE]
+   - Any differences from test files: [DESCRIBE]"
+
+================================================================================
+
+IF YOU ENCOUNTER PROBLEMS:
+================================================================================
+
+GENERAL TROUBLESHOOTING:
+- Clear Safari cache: Settings > Safari > Clear History and Website Data
+- Try force-refreshing pages (pull down on page to refresh)
+- Check WiFi connection
+- Try both local server and GitHub Pages URLs
+
+SCREENSHOT REQUESTS:
+If any test shows interesting results (errors, partial functionality, etc.), 
+take a screenshot and describe what you see.
+
+CONSOLE LOGS (ADVANCED):
+If you're comfortable with it:
+1. Connect iPhone to Mac via USB
+2. Enable Safari Web Inspector on Mac
+3. In Safari on Mac: Develop > [Your iPhone] > [Page Name]
+4. Look at Console tab for error messages
+
+================================================================================
+
+SUMMARY REPORT FORMAT:
+================================================================================
+
+When you're done, provide this summary:
+
+"iOS TESTING COMPLETE:
+
+Device Info:
+- iPhone model: [e.g., iPhone 13]
+- iOS version: [from Settings > General > About]
+- Safari findings: [from Test 2]
+
+Test Results Summary:
+- ES6 Modules: [WORKING/NOT WORKING]
+- Touch Events: [WORKING/NOT WORKING]
+- Audio System: [WORKING/NOT WORKING]
+- CSS Rendering: [WORKING/BROKEN]
+- Simplified CSS: [BETTER/SAME/WORSE]
+- Module Fallback: [WORKING/NOT WORKING]
+
+Main App Status:
+- Current functionality: [NONE/WAKE ONLY/PARTIAL/FULL]
+- Biggest issue seems to be: [YOUR ASSESSMENT]
+
+Most Successful Test File: [WHICH ONE WORKED BEST]
+Least Successful: [WHICH ONE FAILED MOST]
+
+Additional Notes: [ANYTHING ELSE YOU NOTICED]"
+
+================================================================================
+
+This testing will help identify exactly what's preventing the mobile app from 
+working and provide a clear path to fix the issues. Take your time with each 
+test and report back what you observe!

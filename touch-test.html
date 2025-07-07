@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>iOS Touch Event Test</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+            background: #000;
+            color: #00ff00;
+            padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+            padding: 20px;
+            font-size: 16px;
+            line-height: 1.6;
+            min-height: 100vh;
+            overflow-x: hidden;
+            /* Ensure iOS scrolling works */
+            -webkit-overflow-scrolling: touch;
+            overflow-y: auto;
+        }
+        
+        .test-section {
+            margin-bottom: 20px;
+            padding: 15px;
+            border: 1px solid #00ff00;
+            border-radius: 5px;
+        }
+        
+        .success { color: #00ff00; }
+        .error { color: #ff0000; }
+        .warning { color: #ffff00; }
+        .info { color: #00aaff; }
+        
+        .touch-area {
+            width: 100%;
+            height: 120px;
+            background: #001100;
+            border: 2px dashed #00ff00;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 10px 0;
+            font-size: 18px;
+            text-align: center;
+            border-radius: 5px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .touch-area.active {
+            background: #003300;
+            border-color: #00ff00;
+            border-style: solid;
+        }
+        
+        .wake-test-area {
+            width: 100%;
+            height: 200px;
+            background: #000;
+            border: 1px solid #333;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 10px 0;
+            font-size: 16px;
+            text-align: center;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        
+        .wake-instruction {
+            opacity: 0;
+            transition: opacity 1s ease-out;
+        }
+        
+        .wake-instruction.revealed {
+            opacity: 1;
+        }
+        
+        .log-container {
+            background: #001100;
+            padding: 10px;
+            border-radius: 5px;
+            height: 200px;
+            overflow-y: scroll;
+            font-family: monospace;
+            font-size: 12px;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+        
+        .event-counter {
+            background: #002200;
+            padding: 10px;
+            border-radius: 3px;
+            margin: 5px 0;
+            font-family: monospace;
+        }
+        
+        button {
+            background: #003300;
+            color: #00ff00;
+            border: 1px solid #00ff00;
+            padding: 15px 20px;
+            font-size: 16px;
+            margin: 5px;
+            border-radius: 5px;
+            min-height: 44px;
+            cursor: pointer;
+        }
+        
+        .touch-indicator {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            background: rgba(0, 255, 0, 0.7);
+            border-radius: 50%;
+            pointer-events: none;
+            animation: touchPulse 0.3s ease-out;
+        }
+        
+        @keyframes touchPulse {
+            0% { transform: scale(0.5); opacity: 1; }
+            100% { transform: scale(2); opacity: 0; }
+        }
+    </style>
+</head>
+<body>
+    <h1>iOS Touch Event Test</h1>
+    
+    <div class="test-section">
+        <h2>Device Information</h2>
+        <div id="deviceInfo"></div>
+    </div>
+    
+    <div class="test-section">
+        <h2>Basic Touch Test</h2>
+        <div class="touch-area" id="basicTouchArea">
+            Touch/Click Here for Basic Test
+        </div>
+        <div id="basicTouchStats" class="event-counter"></div>
+    </div>
+    
+    <div class="test-section">
+        <h2>Multi-Touch Test</h2>
+        <div class="touch-area" id="multiTouchArea">
+            Multi-Touch Test Area
+        </div>
+        <div id="multiTouchStats" class="event-counter"></div>
+    </div>
+    
+    <div class="test-section">
+        <h2>Passive Listener Test</h2>
+        <div class="touch-area" id="passiveTestArea">
+            Passive Event Listener Test
+        </div>
+        <div id="passiveTestStats" class="event-counter"></div>
+    </div>
+    
+    <div class="test-section">
+        <h2>Wake Screen Simulation</h2>
+        <div class="wake-test-area" id="wakeTestArea">
+            <div class="wake-instruction" id="wakeInstruction">
+                [WAKE SYSTEM] - TAP TO ACTIVATE
+            </div>
+        </div>
+        <div id="wakeTestStats" class="event-counter"></div>
+    </div>
+    
+    <div class="test-section">
+        <h2>Touch Event Log</h2>
+        <div id="touchLog" class="log-container"></div>
+        <button id="clearLog">Clear Log</button>
+        <button id="exportLog">Export Log</button>
+    </div>
+    
+    <div class="test-section">
+        <h2>Event Statistics</h2>
+        <div id="eventStats" class="event-counter"></div>
+    </div>
+
+    <script>
+        let logContainer = null;
+        let eventCounts = {
+            touchstart: 0,
+            touchmove: 0,
+            touchend: 0,
+            touchcancel: 0,
+            click: 0,
+            mousedown: 0,
+            mouseup: 0,
+            mousemove: 0
+        };
+        
+        function log(message, type = 'info') {
+            const timestamp = new Date().toLocaleTimeString();
+            const prefix = type === 'error' ? '❌' : type === 'warning' ? '⚠️' : type === 'success' ? '✅' : 'ℹ️';
+            const logMessage = `[${timestamp}] ${prefix} ${message}\n`;
+            
+            console.log(logMessage.trim());
+            
+            if (logContainer) {
+                logContainer.textContent += logMessage;
+                logContainer.scrollTop = logContainer.scrollHeight;
+            }
+        }
+        
+        function updateStats() {
+            const statsContainer = document.getElementById('eventStats');
+            if (statsContainer) {
+                statsContainer.innerHTML = `
+                    <strong>Touch Events:</strong><br>
+                    touchstart: ${eventCounts.touchstart} | 
+                    touchmove: ${eventCounts.touchmove} | 
+                    touchend: ${eventCounts.touchend} | 
+                    touchcancel: ${eventCounts.touchcancel}<br>
+                    <strong>Mouse Events:</strong><br>
+                    mousedown: ${eventCounts.mousedown} | 
+                    mouseup: ${eventCounts.mouseup} | 
+                    mousemove: ${eventCounts.mousemove} | 
+                    click: ${eventCounts.click}
+                `;
+            }
+        }
+        
+        function createTouchIndicator(x, y, container) {
+            const indicator = document.createElement('div');
+            indicator.className = 'touch-indicator';
+            indicator.style.left = (x - 10) + 'px';
+            indicator.style.top = (y - 10) + 'px';
+            container.appendChild(indicator);
+            
+            setTimeout(() => {
+                if (indicator.parentNode) {
+                    indicator.parentNode.removeChild(indicator);
+                }
+            }, 300);
+        }
+        
+        function getDeviceInfo() {
+            const info = {
+                userAgent: navigator.userAgent,
+                platform: navigator.platform,
+                touchSupport: 'ontouchstart' in window,
+                maxTouchPoints: navigator.maxTouchPoints || 0,
+                pointerEnabled: 'PointerEvent' in window,
+                msPointerEnabled: 'MSPointerEvent' in window,
+                isIOS: /iPad|iPhone|iPod/.test(navigator.userAgent),
+                isSafari: /Safari/.test(navigator.userAgent) && !/Chrome/.test(navigator.userAgent),
+                viewportWidth: window.innerWidth,
+                viewportHeight: window.innerHeight,
+                devicePixelRatio: window.devicePixelRatio,
+                orientation: screen.orientation ? screen.orientation.angle : window.orientation || 'unknown',
+                safeAreaSupport: CSS.supports('padding', 'env(safe-area-inset-top)')
+            };
+            
+            log('Device Info:', 'info');
+            for (const [key, value] of Object.entries(info)) {
+                log(`  ${key}: ${value}`);
+            }
+            
+            return info;
+        }
+        
+        function setupBasicTouchTest() {
+            const area = document.getElementById('basicTouchArea');
+            const stats = document.getElementById('basicTouchStats');
+            let localCounts = { touchstart: 0, touchend: 0, click: 0 };
+            
+            function updateLocalStats() {
+                stats.innerHTML = `touchstart: ${localCounts.touchstart} | touchend: ${localCounts.touchend} | click: ${localCounts.click}`;
+            }
+            
+            function handleEvent(eventType, event) {
+                eventCounts[eventType]++;
+                localCounts[eventType]++;
+                
+                const touch = event.touches ? event.touches[0] || event.changedTouches[0] : event;
+                const rect = area.getBoundingClientRect();
+                const x = (touch.clientX || touch.pageX) - rect.left;
+                const y = (touch.clientY || touch.pageY) - rect.top;
+                
+                log(`Basic Touch - ${eventType}: (${Math.round(x)}, ${Math.round(y)})`);
+                
+                if (eventType === 'touchstart' || eventType === 'mousedown') {
+                    area.classList.add('active');
+                    createTouchIndicator(x, y, area);
+                } else if (eventType === 'touchend' || eventType === 'mouseup') {
+                    area.classList.remove('active');
+                }
+                
+                updateLocalStats();
+                updateStats();
+            }
+            
+            // Touch events - allow scrolling
+            area.addEventListener('touchstart', (e) => handleEvent('touchstart', e), {passive: true});
+            area.addEventListener('touchend', (e) => handleEvent('touchend', e), {passive: true});
+            area.addEventListener('touchmove', (e) => {
+                eventCounts.touchmove++;
+                updateStats();
+            }, {passive: true});
+            
+            // Mouse events (fallback)
+            area.addEventListener('mousedown', (e) => handleEvent('mousedown', e));
+            area.addEventListener('mouseup', (e) => handleEvent('mouseup', e));
+            area.addEventListener('click', (e) => handleEvent('click', e));
+            
+            updateLocalStats();
+        }
+        
+        function setupMultiTouchTest() {
+            const area = document.getElementById('multiTouchArea');
+            const stats = document.getElementById('multiTouchStats');
+            let activeTouches = 0;
+            let maxTouches = 0;
+            
+            function updateMultiStats() {
+                stats.innerHTML = `Active touches: ${activeTouches} | Max simultaneous: ${maxTouches}`;
+            }
+            
+            area.addEventListener('touchstart', (e) => {
+                activeTouches = e.touches.length;
+                maxTouches = Math.max(maxTouches, activeTouches);
+                
+                log(`Multi-Touch Start: ${activeTouches} touches`);
+                
+                for (let i = 0; i < e.touches.length; i++) {
+                    const touch = e.touches[i];
+                    const rect = area.getBoundingClientRect();
+                    const x = touch.clientX - rect.left;
+                    const y = touch.clientY - rect.top;
+                    createTouchIndicator(x, y, area);
+                }
+                
+                area.classList.add('active');
+                updateMultiStats();
+                // Only prevent default for multi-touch, allow single touch scrolling
+                if (e.touches.length > 1) {
+                    e.preventDefault();
+                }
+            }, {passive: false});
+            
+            area.addEventListener('touchmove', (e) => {
+                activeTouches = e.touches.length;
+                log(`Multi-Touch Move: ${activeTouches} touches`);
+                updateMultiStats();
+                // Only prevent default for multi-touch
+                if (e.touches.length > 1) {
+                    e.preventDefault();
+                }
+            }, {passive: false});
+            
+            area.addEventListener('touchend', (e) => {
+                activeTouches = e.touches.length;
+                log(`Multi-Touch End: ${activeTouches} touches remaining`);
+                
+                if (activeTouches === 0) {
+                    area.classList.remove('active');
+                }
+                
+                updateMultiStats();
+                // Allow normal single-touch interactions
+            }, {passive: true});
+            
+            updateMultiStats();
+        }
+        
+        function setupPassiveListenerTest() {
+            const area = document.getElementById('passiveTestArea');
+            const stats = document.getElementById('passiveTestStats');
+            let passiveCount = 0;
+            let activeCount = 0;
+            
+            function updatePassiveStats() {
+                stats.innerHTML = `Passive events: ${passiveCount} | Active events: ${activeCount}`;
+            }
+            
+            // Passive listeners
+            area.addEventListener('touchstart', (e) => {
+                passiveCount++;
+                log('Passive touchstart detected');
+                updatePassiveStats();
+            }, {passive: true});
+            
+            area.addEventListener('touchend', (e) => {
+                passiveCount++;
+                log('Passive touchend detected');
+                updatePassiveStats();
+            }, {passive: true});
+            
+            // Active listeners (without preventDefault for scrolling)
+            area.addEventListener('touchstart', (e) => {
+                activeCount++;
+                log('Active touchstart detected');
+                area.classList.add('active');
+                updatePassiveStats();
+                // Allow scrolling - don't preventDefault
+            }, {passive: false});
+            
+            area.addEventListener('touchend', (e) => {
+                activeCount++;
+                log('Active touchend detected');
+                area.classList.remove('active');
+                updatePassiveStats();
+            }, {passive: true});
+            
+            updatePassiveStats();
+        }
+        
+        function setupWakeScreenTest() {
+            const area = document.getElementById('wakeTestArea');
+            const instruction = document.getElementById('wakeInstruction');
+            const stats = document.getElementById('wakeTestStats');
+            let wakeCount = 0;
+            let isAwake = false;
+            
+            function updateWakeStats() {
+                stats.innerHTML = `Wake attempts: ${wakeCount} | Status: ${isAwake ? 'AWAKE' : 'DORMANT'}`;
+            }
+            
+            // Simulate the wake screen delay
+            setTimeout(() => {
+                instruction.classList.add('revealed');
+                log('Wake instruction revealed (simulating 2s delay)');
+            }, 2000);
+            
+            function handleWakeInteraction(eventType, event) {
+                wakeCount++;
+                log(`Wake interaction: ${eventType}`);
+                
+                if (!isAwake) {
+                    isAwake = true;
+                    area.style.background = '#001100';
+                    instruction.textContent = 'SYSTEM AWAKENED';
+                    log('System wake successful!', 'success');
+                }
+                
+                updateWakeStats();
+                
+                // No preventDefault - allow normal scrolling behavior
+            }
+            
+            // Universal wake triggers (allow scrolling)
+            area.addEventListener('touchstart', (e) => handleWakeInteraction('touchstart', e), {passive: true});
+            area.addEventListener('touchend', (e) => handleWakeInteraction('touchend', e), {passive: true});
+            area.addEventListener('click', (e) => handleWakeInteraction('click', e));
+            area.addEventListener('keydown', (e) => handleWakeInteraction('keydown', e));
+            
+            updateWakeStats();
+        }
+        
+        function initializePage() {
+            logContainer = document.getElementById('touchLog');
+            
+            log('iOS Touch Event Test Started', 'success');
+            
+            // Get and display device info
+            const deviceInfo = getDeviceInfo();
+            const deviceInfoContainer = document.getElementById('deviceInfo');
+            deviceInfoContainer.innerHTML = `
+                <div class="${deviceInfo.isIOS ? 'success' : 'warning'}">iOS Device: ${deviceInfo.isIOS ? 'YES' : 'NO'}</div>
+                <div class="${deviceInfo.touchSupport ? 'success' : 'error'}">Touch Support: ${deviceInfo.touchSupport ? 'YES' : 'NO'}</div>
+                <div class="info">Max Touch Points: ${deviceInfo.maxTouchPoints}</div>
+                <div class="info">Viewport: ${deviceInfo.viewportWidth}x${deviceInfo.viewportHeight}</div>
+                <div class="info">Device Pixel Ratio: ${deviceInfo.devicePixelRatio}</div>
+                <div class="info">Orientation: ${deviceInfo.orientation}</div>
+                <div class="${deviceInfo.safeAreaSupport ? 'success' : 'warning'}">Safe Area Support: ${deviceInfo.safeAreaSupport ? 'YES' : 'NO'}</div>
+            `;
+            
+            // Setup all touch tests
+            setupBasicTouchTest();
+            setupMultiTouchTest();
+            setupPassiveListenerTest();
+            setupWakeScreenTest();
+            
+            // Setup utility buttons
+            document.getElementById('clearLog').addEventListener('click', () => {
+                logContainer.textContent = '';
+                log('Log cleared');
+            });
+            
+            document.getElementById('exportLog').addEventListener('click', () => {
+                const logData = logContainer.textContent;
+                const blob = new Blob([logData], {type: 'text/plain'});
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'touch-test-log.txt';
+                a.click();
+                URL.revokeObjectURL(url);
+                log('Log exported');
+            });
+            
+            updateStats();
+            log('All touch tests initialized. Start interacting with test areas.');
+        }
+        
+        // Global touch event monitoring
+        document.addEventListener('touchstart', () => {
+            log('Global touchstart detected');
+        }, {passive: true});
+        
+        document.addEventListener('touchend', () => {
+            log('Global touchend detected');
+        }, {passive: true});
+        
+        // Allow normal scrolling - only prevent default on test areas
+        // Removed global touchmove preventDefault to allow page scrolling
+        
+        // Initialize when ready
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initializePage);
+        } else {
+            initializePage();
+        }
+        
+        // Global error handlers
+        window.addEventListener('error', function(e) {
+            log(`Global Error: ${e.message} at ${e.filename}:${e.lineno}`, 'error');
+        });
+        
+        window.addEventListener('unhandledrejection', function(e) {
+            log(`Unhandled Promise Rejection: ${e.reason}`, 'error');
+        });
+    </script>
+</body>
+</html>

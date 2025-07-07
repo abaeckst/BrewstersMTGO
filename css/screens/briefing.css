@@ -2,7 +2,7 @@
    Screens: Briefing Screen Styles
    ========================================================================== */
 
-@layer screens {
+/* @layer - iOS compatibility: removed layer wrapper */
     /* Briefing Screen Layout */
     #briefing-screen {
         background: linear-gradient(135deg, #001100 0%, #002200 100%);
@@ -259,4 +259,4 @@
 @keyframes staticNoise {
     0% { transform: translateY(0); }
     100% { transform: translateY(-4px); }
-}
+/* End section */

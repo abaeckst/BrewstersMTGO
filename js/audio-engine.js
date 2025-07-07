@@ -163,6 +163,47 @@ export const AudioEngine = {
         document.addEventListener('focusin', unlock, { once: true });
     },
     
+    // Manual unlock method for iOS compatibility
+    async unlockAudioContext() {
+        if (this.unlocked) {
+            console.log('🔓 Audio context already unlocked');
+            return true;
+        }
+        
+        if (!this.context) {
+            console.warn('⚠️ No audio context available to unlock');
+            return false;
+        }
+        
+        try {
+            // For iOS Safari, we need to resume the context on user interaction
+            if (this.context.state === 'suspended') {
+                await this.context.resume();
+                console.log('🔓 Audio context resumed');
+            }
+            
+            // Test audio playback with a silent tone
+            const oscillator = this.context.createOscillator();
+            const gainNode = this.context.createGain();
+            
+            oscillator.connect(gainNode);
+            gainNode.connect(this.context.destination);
+            
+            gainNode.gain.value = 0; // Silent
+            oscillator.frequency.value = 440;
+            oscillator.start();
+            oscillator.stop(this.context.currentTime + 0.01);
+            
+            this.unlocked = true;
+            console.log('🔓 Audio context unlocked successfully');
+            
+            return true;
+        } catch (error) {
+            console.error('❌ Failed to unlock audio context:', error);
+            return false;
+        }
+    },
+    
     // Preload all audio files
     async preloadSounds() {
         console.log('📥 Preloading audio files...');
@@ -210,6 +251,12 @@ export const AudioEngine = {
             return null;
         }
         
+        // Check if audio context needs to be unlocked (iOS Safari)
+        if (this.context && this.context.state === 'suspended' && !this.unlocked) {
+            console.log('🔓 Attempting to unlock audio context...');
+            await this.unlockAudioContext();
+        }
+        
         try {
             // Try file-based audio first
             if (this.sounds[soundKey] && this.sounds[soundKey].audio) {
@@ -220,7 +267,19 @@ export const AudioEngine = {
                     audio.loop = options.loop;
                 }
                 
-                await audio.play();
+                // iOS Safari specific handling
+                const playPromise = audio.play();
+                if (playPromise !== undefined) {
+                    try {
+                        await playPromise;
+                        return audio;
+                    } catch (error) {
+                        console.warn(`⚠️ Audio play failed for ${soundKey}:`, error);
+                        // Fallback to generated sound
+                        return this.playGeneratedSound(soundKey, options);
+                    }
+                }
+                
                 return audio;
             }
             
@@ -495,16 +554,7 @@ export const AudioEngine = {
     }
 };
 
-// Auto-initialize when imported
-if (typeof window !== 'undefined') {
-    // Initialize audio engine when DOM is ready
-    if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', () => {
-            AudioEngine.init();
-        });
-    } else {
-        AudioEngine.init();
-    }
-}
+// Auto-initialization removed for iOS compatibility
+// AudioEngine will be initialized by main app.js to prevent circular dependencies
 
 export default AudioEngine;

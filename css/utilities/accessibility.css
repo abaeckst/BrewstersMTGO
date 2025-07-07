@@ -2,7 +2,7 @@
    Utilities: Accessibility & Mobile Responsiveness
    ========================================================================== */
 
-@layer accessibility {
+/* @layer - iOS compatibility: removed layer wrapper */
     /* Accessibility */
     @media (prefers-reduced-motion: reduce) {
         * {
@@ -15,4 +15,4 @@
     html {
         scroll-behavior: auto;
     }
-}
+/* End section */

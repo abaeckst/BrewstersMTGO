@@ -423,15 +423,58 @@ YOU HAVE EARNED THE RIGHT TO CHOOSE YOUR FINAL MISSION:`;
         const acceptButton = document.querySelector('.accept-button');
         const declineButton = document.querySelector('.decline-button');
         
+        // Detect touch support for mobile compatibility
+        const hasTouch = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+        
         if (acceptButton) {
-            acceptButton.addEventListener('click', () => this.handleMissionChoice(true));
+            // Primary interaction handlers
+            acceptButton.addEventListener('click', (e) => {
+                e.preventDefault();
+                this.handleMissionChoice(true);
+            });
+            
+            // Touch support for mobile
+            if (hasTouch) {
+                acceptButton.addEventListener('touchstart', (e) => {
+                    e.preventDefault();
+                    AudioEngine.play('beep', { volume: 0.3 });
+                }, { passive: false });
+                
+                acceptButton.addEventListener('touchend', (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    this.handleMissionChoice(true);
+                }, { passive: false });
+            }
+            
+            // Desktop hover feedback
             acceptButton.addEventListener('mouseenter', () => {
                 AudioEngine.play('beep', { volume: 0.3 });
             });
         }
         
         if (declineButton) {
-            declineButton.addEventListener('click', () => this.handleMissionChoice(false));
+            // Primary interaction handlers
+            declineButton.addEventListener('click', (e) => {
+                e.preventDefault();
+                this.handleMissionChoice(false);
+            });
+            
+            // Touch support for mobile
+            if (hasTouch) {
+                declineButton.addEventListener('touchstart', (e) => {
+                    e.preventDefault();
+                    AudioEngine.play('beep', { volume: 0.3 });
+                }, { passive: false });
+                
+                declineButton.addEventListener('touchend', (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    this.handleMissionChoice(false);
+                }, { passive: false });
+            }
+            
+            // Desktop hover feedback
             declineButton.addEventListener('mouseenter', () => {
                 AudioEngine.play('beep', { volume: 0.3 });
             });

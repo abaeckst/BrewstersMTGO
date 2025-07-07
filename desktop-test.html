@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Desktop Regression Test</title>
+    <style>
+        body {
+            font-family: monospace;
+            background: #000;
+            color: #00ff00;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        .header {
+            border: 2px solid #00ff00;
+            padding: 20px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        .status {
+            border: 1px solid #00ff00;
+            padding: 15px;
+            margin: 10px 0;
+        }
+        .pass { color: #00ff00; }
+        .fail { color: #ff0000; }
+        .warn { color: #ffff00; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🖥️ DESKTOP REGRESSION TEST</h1>
+        <p>Verifying iOS fixes don't break desktop functionality</p>
+    </div>
+    
+    <div class="status">
+        <h2>📊 Test Status</h2>
+        <div id="test-status">Running tests... Please check browser console for detailed results.</div>
+    </div>
+    
+    <div class="status">
+        <h2>🔗 Quick Links</h2>
+        <p><a href="/" style="color: #00ff00;">← Main Application</a></p>
+        <p><a href="/ios-compatibility-test.html" style="color: #00ff00;">→ iOS Compatibility Test</a></p>
+    </div>
+    
+    <div class="status">
+        <h2>📋 Test Checklist</h2>
+        <div id="checklist">
+            <div>⏳ ES6 Module Loading</div>
+            <div>⏳ CSS Architecture</div>
+            <div>⏳ iOS Polyfill Isolation</div>
+            <div>⏳ Audio System</div>
+            <div>⏳ Screen Transitions</div>
+            <div>⏳ Performance Impact</div>
+            <div>⏳ Network Requests</div>
+        </div>
+    </div>
+
+    <!-- Load the main application CSS and JS to test compatibility -->
+    <link rel="stylesheet" href="css/main.css">
+    
+    <!-- Create a minimal app structure for testing -->
+    <div id="app" class="app-container" style="position: fixed; top: 0; left: 0; width: 1px; height: 1px; opacity: 0; pointer-events: none;">
+        <div id="wake-screen" class="screen active wake-screen-dormant">
+            <div class="wake-instruction">Test</div>
+        </div>
+        <div id="auth-screen" class="screen hidden"></div>
+        <div id="mission-screen" class="screen hidden"></div>
+    </div>
+    
+    <!-- Load iOS polyfills and module bridge -->
+    <script src="js/ios-polyfills.js"></script>
+    <script src="js/ios-module-bridge.js"></script>
+    
+    <!-- Load and run the regression test -->
+    <script src="desktop-regression-test.js"></script>
+    
+    <script>
+        // Update UI based on test results
+        let testResults = {
+            total: 7,
+            passed: 0,
+            failed: 0,
+            warnings: 0
+        };
+        
+        // Override console.log to capture test results
+        const originalLog = console.log;
+        console.log = function(...args) {
+            originalLog.apply(console, args);
+            
+            // Parse test results from console output
+            const message = args.join(' ');
+            if (message.includes('✅')) {
+                testResults.passed++;
+            } else if (message.includes('❌')) {
+                testResults.failed++;
+            } else if (message.includes('⚠️')) {
+                testResults.warnings++;
+            }
+            
+            // Update status after tests complete
+            if (message.includes('Desktop Regression Tests Complete')) {
+                updateTestStatus();
+            }
+        };
+        
+        function updateTestStatus() {
+            const statusDiv = document.getElementById('test-status');
+            const { passed, failed, warnings, total } = testResults;
+            
+            let statusClass = 'pass';
+            let statusText = '✅ ALL TESTS PASSED - Desktop functionality preserved';
+            
+            if (failed > 0) {
+                statusClass = 'fail';
+                statusText = `❌ ${failed} TESTS FAILED - Desktop regression detected`;
+            } else if (warnings > 0) {
+                statusClass = 'warn';
+                statusText = `⚠️ ${warnings} WARNINGS - Review recommended`;
+            }
+            
+            statusDiv.className = statusClass;
+            statusDiv.innerHTML = `
+                <strong>${statusText}</strong><br>
+                <small>Passed: ${passed} | Failed: ${failed} | Warnings: ${warnings}</small><br>
+                <small>Check browser console for detailed results</small>
+            `;
+            
+            // Update checklist
+            const checklist = document.getElementById('checklist');
+            const items = checklist.querySelectorAll('div');
+            items.forEach((item, index) => {
+                if (index < passed) {
+                    item.innerHTML = item.innerHTML.replace('⏳', '✅');
+                } else if (index < passed + failed) {
+                    item.innerHTML = item.innerHTML.replace('⏳', '❌');
+                } else if (index < passed + failed + warnings) {
+                    item.innerHTML = item.innerHTML.replace('⏳', '⚠️');
+                }
+            });
+        }
+        
+        // Auto-refresh status
+        setTimeout(() => {
+            if (document.getElementById('test-status').textContent.includes('Running tests')) {
+                document.getElementById('test-status').innerHTML = `
+                    <span class="warn">⚠️ Tests may still be running...</span><br>
+                    <small>Check browser console for progress</small>
+                `;
+            }
+        }, 5000);
+    </script>
+</body>
+</html>

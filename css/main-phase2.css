@@ -5,13 +5,13 @@
    ========================================================================== */
 
 /* CSS Cascade Layers - Defines specificity order */
-@layer base, components, screens, stages, utilities, accessibility;
+/* @layer base, components, screens, stages, utilities, accessibility; - iOS compatibility: removed layer declarations */
 
 /* ==========================================================================
    1. Reset & Base
    ========================================================================== */
 
-@layer base {
+/* @layer - iOS compatibility: removed layer wrapper */
     *,
     *::before,
     *::after {
@@ -173,7 +173,7 @@
 .text-2xl { font-size: var(--text-2xl); }
 .text-3xl { font-size: var(--text-3xl); }
 
-@layer utilities {
+/* @layer - iOS compatibility: removed layer wrapper */
     /* Mobile Word Break Prevention - Universal Application */
     .text-xs, .text-sm, .text-base, .text-lg, .text-xl, .text-2xl, .text-3xl,
     h1, h2, h3, h4, h5, h6,
@@ -755,7 +755,7 @@
 }
 
 /* Sequential Revelation System for Auth Screen - Layer-based Architecture */
-@layer stages {
+/* @layer - iOS compatibility: removed layer wrapper */
     /* Stage 1: Status Bar */
     #auth-screen .auth-stage-1-hidden {
         opacity: 0;
@@ -1088,7 +1088,7 @@
    9. Utilities
    ========================================================================== */
 
-@layer utilities {
+/* @layer - iOS compatibility: removed layer wrapper */
     /* Text Color Utilities */
     .text-yellow {
         color: var(--color-warning);
@@ -1107,7 +1107,7 @@
     }
 }
 
-@layer accessibility {
+/* @layer - iOS compatibility: removed layer wrapper */
     /* Accessibility */
     @media (prefers-reduced-motion: reduce) {
         * {
@@ -1585,7 +1585,7 @@
 }
 
 /* Audio Sync Indicators */
-@layer utilities {
+/* @layer - iOS compatibility: removed layer wrapper */
     .audio-sync-active {
         color: var(--color-primary);
         animation: syncPulse 1s ease-in-out infinite;
@@ -2094,7 +2094,7 @@
 }
 
 /* Boot Sequence Staging */
-@layer stages {
+/* @layer - iOS compatibility: removed layer wrapper */
     #boot-sequence-screen .boot-stage-1-hidden,
     #boot-sequence-screen .boot-stage-2-hidden,
     #boot-sequence-screen .boot-stage-3-hidden {

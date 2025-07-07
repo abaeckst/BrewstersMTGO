@@ -5,7 +5,7 @@
 
 /* Wake Screen Container */
 .wake-screen-dormant {
-    background: var(--color-dark);
+    background: var(--color-background);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -83,7 +83,7 @@
 .wake-hint {
     font-family: var(--font-mono);
     font-size: 0.9rem;
-    color: var(--color-text-secondary);
+    color: var(--color-secondary);
     letter-spacing: 0.05em;
     opacity: 0.7;
     animation: wakeHintFade 3s ease-in-out infinite;

@@ -3,8 +3,8 @@
    Maintains CSS cascade layers and import order for modular architecture
    ========================================================================== */
 
-/* CSS Cascade Layers - Defines specificity order */
-@layer base, components, screens, stages, utilities, accessibility;
+/* CSS Cascade Layers - Disabled for iOS compatibility */
+/* @layer base, components, screens, stages, utilities, accessibility; */
 
 /* ==========================================================================
    Base Foundation
@@ -43,6 +43,8 @@
 @import url('utilities/screen-positioning.css');
 @import url('utilities/responsive.css');
 @import url('utilities/accessibility.css');
+@import url('utilities/ios-mobile.css');
+@import url('utilities/desktop-restore.css');
 
 /* ==========================================================================
    V2 Architecture Summary

@@ -2,7 +2,7 @@
    Screens: Countdown Screen V2 - 14-Day Mission Timer
    ========================================================================== */
 
-@layer screens {
+/* @layer screens - iOS compatibility: removed layer wrapper */
     /* Main Countdown Screen Layout */
     #countdown-screen {
         background: radial-gradient(circle at center, #000 0%, #001100 50%, #000 100%);
@@ -232,10 +232,9 @@
             opacity: 1;
         }
     }
-}
 
 /* Additional Animations for Enhanced Cinematic Effect */
-@layer screens {
+/* @layer screens - iOS compatibility: removed layer wrapper */
     /* Subtle background pulse during countdown */
     #countdown-screen.timer-active {
         animation: background-pulse 10s ease-in-out infinite;
@@ -263,4 +262,4 @@
             box-shadow: inset 0 0 40px rgba(0, 255, 0, 0.2);
         }
     }
-}
+/* End countdown screen section */

@@ -2,7 +2,7 @@
    Screens: Mission Screen Styles
    ========================================================================== */
 
-@layer screens {
+/* @layer screens - iOS compatibility: removed layer wrapper */
     /* Mission Screen Content Container - Browser-level scrolling */
     #mission-screen .scrollable-content {
         height: auto;
@@ -297,7 +297,6 @@
             width: 10px;
         }
     }
-}
 
 /* Signal Animation Keyframes */
 @keyframes signalBounce {

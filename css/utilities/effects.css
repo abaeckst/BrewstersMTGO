@@ -2,7 +2,7 @@
    Utilities: Visual Effects & Data Animations
    ========================================================================== */
 
-@layer utilities {
+/* @layer - iOS compatibility: removed layer wrapper */
     /* Data Animation Effects */
     .data-flash {
         animation: dataFlash 0.5s ease-out;
@@ -23,4 +23,4 @@
         color: var(--color-primary);
         text-shadow: var(--glow-primary);
     }
-}
+/* End section */

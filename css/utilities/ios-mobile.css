@@ -1,0 +1,261 @@
+/* ==========================================================================
+   Utilities: iOS Mobile Compatibility
+   ========================================================================== */
+
+/* @layer utilities - iOS compatibility: removed layer wrapper */
+    /* CSS Layer Support Detection and Fallback */
+    @supports not (animation-timeline: auto) {
+        /* Fallback for browsers without full CSS support */
+        .ios-fallback-mode {
+            /* Enable fallback mode for older iOS versions */
+            display: block;
+        }
+    }
+    
+    /* Progressive Enhancement for @layer support */
+    @supports not (background: revert-layer) {
+        /* Older iOS versions that don't support @layer properly */
+        /* Apply critical styles with higher specificity */
+        
+        html.ios-legacy * {
+            /* Prevent iOS tap highlights */
+            -webkit-tap-highlight-color: transparent !important;
+            -webkit-touch-callout: none !important;
+        }
+        
+        html.ios-legacy .app-container {
+            /* iOS Safe Area Support without @layer */
+            padding-top: constant(safe-area-inset-top) !important;
+            padding-top: env(safe-area-inset-top) !important;
+            padding-right: constant(safe-area-inset-right) !important;
+            padding-right: env(safe-area-inset-right) !important;
+            padding-bottom: constant(safe-area-inset-bottom) !important;
+            padding-bottom: env(safe-area-inset-bottom) !important;
+            padding-left: constant(safe-area-inset-left) !important;
+            padding-left: env(safe-area-inset-left) !important;
+            
+            /* Prevent iOS rubber-band scrolling */
+            overflow-x: hidden !important;
+            position: relative !important;
+            min-height: 100vh !important;
+            min-height: -webkit-fill-available !important;
+        }
+        
+        html.ios-legacy button, 
+        html.ios-legacy .button, 
+        html.ios-legacy .action-button, 
+        html.ios-legacy .mission-button {
+            /* Prevent iOS double-tap zoom */
+            touch-action: manipulation !important;
+            /* Fix iOS button appearance */
+            -webkit-appearance: none !important;
+            appearance: none !important;
+            /* Prevent iOS text size adjustment */
+            -webkit-text-size-adjust: 100% !important;
+            text-size-adjust: 100% !important;
+        }
+        
+        html.ios-legacy input, 
+        html.ios-legacy textarea, 
+        html.ios-legacy select {
+            /* Remove iOS styling */
+            -webkit-appearance: none !important;
+            appearance: none !important;
+            /* Prevent zoom on focus (iOS requires 16px+ font size) */
+            font-size: 16px !important;
+            /* Fix iOS border radius */
+            border-radius: 0 !important;
+        }
+    }
+    /* Apply iOS fixes only on touch devices and iOS-specific environments */
+    @media (hover: none) and (pointer: coarse) {
+        /* iOS Safari Safe Area Support - Touch devices only */
+        .app-container {
+            /* Support iPhone notch and home indicator */
+            padding-top: var(--safe-padding-top);
+            padding-right: var(--safe-padding-right);
+            padding-bottom: var(--safe-padding-bottom);
+            padding-left: var(--safe-padding-left);
+            
+            /* Prevent iOS rubber-band scrolling */
+            overflow-x: hidden;
+            position: relative;
+            min-height: 100vh;
+            min-height: -webkit-fill-available;
+        }
+    }
+    
+    /* iOS-specific styles for actual touch devices */
+    @supports (-webkit-touch-callout: none) {
+        /* Only apply on webkit browsers (Safari) */
+        @media (hover: none) and (pointer: coarse) {
+            /* Prevent iOS tap highlights */
+            * {
+                -webkit-tap-highlight-color: transparent;
+                -webkit-touch-callout: none;
+            }
+            
+            /* Prevent text selection on touch devices */
+            body {
+                -webkit-user-select: none;
+                user-select: none;
+            }
+            
+            /* Allow text selection for specific elements */
+            input, textarea, .selectable {
+                -webkit-user-select: text;
+                user-select: text;
+            }
+        }
+    }
+    
+    /* iOS-specific touch handling */
+    button, .button, .action-button, .mission-button {
+        /* Prevent iOS double-tap zoom */
+        touch-action: manipulation;
+        /* Fix iOS button appearance */
+        -webkit-appearance: none;
+        appearance: none;
+        /* Prevent iOS text size adjustment */
+        -webkit-text-size-adjust: 100%;
+        text-size-adjust: 100%;
+    }
+    
+    /* iOS form input fixes */
+    input, textarea, select {
+        /* Remove iOS styling */
+        -webkit-appearance: none;
+        appearance: none;
+        /* Prevent zoom on focus (iOS requires 16px+ font size) */
+        font-size: max(16px, var(--text-base));
+        /* Fix iOS border radius */
+        border-radius: 0;
+    }
+    
+    /* iOS-specific input styling for terminal theme */
+    input[type="text"], input[type="password"] {
+        background: var(--color-surface);
+        border: var(--border-normal) solid var(--color-primary);
+        color: var(--color-primary);
+        font-family: var(--font-mono);
+        padding: var(--space-sm);
+        /* Prevent iOS zoom */
+        font-size: max(16px, var(--text-base));
+        /* Remove iOS shadow */
+        box-shadow: none;
+        -webkit-box-shadow: none;
+    }
+    
+    /* iOS-specific scrolling fixes */
+    .scrollable-content, .screen-content {
+        /* Enable momentum scrolling */
+        -webkit-overflow-scrolling: touch;
+        /* Prevent overscroll bounce */
+        overscroll-behavior: none;
+        -webkit-overscroll-behavior: none;
+    }
+    
+    /* Prevent iOS viewport scaling on orientation change */
+    html {
+        -webkit-text-size-adjust: 100%;
+        text-size-adjust: 100%;
+    }
+    
+    /* iOS-specific animation fixes */
+    @media (prefers-reduced-motion: no-preference) {
+        /* Ensure animations work on iOS */
+        * {
+            will-change: auto;
+        }
+        
+        .reveal-element, .stage-reveal {
+            transform: translateZ(0);
+            -webkit-transform: translateZ(0);
+        }
+    }
+    
+    /* iOS dark mode support */
+    @media (prefers-color-scheme: dark) {
+        /* iOS already matches our dark theme */
+    }
+    
+    /* iPhone specific fixes */
+    @media screen and (max-device-width: 428px) {
+        /* iPhone Pro Max and smaller */
+        
+        /* Prevent text inflation */
+        body {
+            -webkit-text-size-adjust: none;
+            text-size-adjust: none;
+        }
+        
+        /* Enhanced touch targets */
+        button, .button, .mission-button {
+            min-height: 44px;
+            min-width: 44px;
+        }
+        
+        /* Better spacing for iPhone */
+        .screen {
+            padding: var(--safe-padding-top) var(--safe-padding-right) var(--safe-padding-bottom) var(--safe-padding-left);
+        }
+        
+        /* Wake screen iPhone-specific styling */
+        .wake-screen-dormant {
+            /* Full screen including safe areas */
+            height: 100vh;
+            height: -webkit-fill-available;
+        }
+    }
+    
+    /* iPhone landscape mode fixes */
+    @media screen and (max-device-height: 428px) and (orientation: landscape) {
+        .app-container {
+            /* Reduce top padding in landscape */
+            padding-top: max(10px, var(--safe-area-inset-top));
+        }
+        
+        /* Adjust text size for landscape */
+        .text-2xl, .text-3xl {
+            font-size: clamp(24px, 5vw, 36px);
+        }
+    }
+    
+    /* iOS keyboard handling */
+    @supports (-webkit-touch-callout: none) {
+        /* iOS-specific styles */
+        
+        /* Handle iOS keyboard appearance */
+        .form-group {
+            margin-bottom: var(--space-lg);
+        }
+        
+        /* Ensure form visibility when keyboard is open */
+        .auth-form {
+            padding-bottom: calc(var(--space-2xl) + var(--safe-area-inset-bottom));
+        }
+    }
+    
+    /* iOS PWA-specific fixes - only for actual iOS devices in standalone mode */
+    @supports (-webkit-touch-callout: none) {
+        @media (display-mode: standalone) and (hover: none) and (pointer: coarse) {
+            /* When added to home screen on iOS */
+            
+            .app-container {
+                /* Full screen PWA support */
+                height: 100vh;
+                height: -webkit-fill-available;
+            }
+            
+            /* Hide address bar completely on iOS PWA */
+            body {
+                overflow: hidden;
+            }
+            
+            .screen {
+                overflow-y: auto;
+                -webkit-overflow-scrolling: touch;
+            }
+        }
+    }
+/* End iOS compatibility section */

@@ -9,6 +9,7 @@ export class WakeScreen {
         this.isActivating = false;
         this.wakeListenersAdded = false;
         this.activationTimeout = null;
+        this.lastInteractionTime = null;
     }
 
     /**
@@ -53,16 +54,24 @@ export class WakeScreen {
 
         console.log('💤 Setting up wake triggers...');
 
-        // Multiple interaction methods for reliability
-        const wakeEvents = [
-            'click',
-            'touchstart',
-            'touchend',
-            'keydown',
-            'mousedown'
-        ];
+        // Detect touch support for iOS compatibility
+        const hasTouch = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+        
+        // Primary interaction events - non-passive for preventDefault support
+        const primaryEvents = ['click', 'touchstart', 'keydown'];
+        
+        // Secondary events - passive for performance
+        const secondaryEvents = ['touchend', 'mousedown'];
 
-        wakeEvents.forEach(eventType => {
+        // Add primary events (non-passive) for preventDefault support
+        primaryEvents.forEach(eventType => {
+            this.wakeContainer.addEventListener(eventType, (e) => {
+                this.handleWakeInteraction(e);
+            }, { passive: false });
+        });
+
+        // Add secondary events (passive) for additional interaction coverage
+        secondaryEvents.forEach(eventType => {
             this.wakeContainer.addEventListener(eventType, (e) => {
                 this.handleWakeInteraction(e);
             }, { passive: true });
@@ -73,10 +82,19 @@ export class WakeScreen {
             if (this.wakeScreen?.classList.contains('active')) {
                 this.handleWakeInteraction(e);
             }
-        }, { passive: true });
+        }, { passive: false });
+
+        // iOS-specific touch handling for full-screen wake
+        if (hasTouch) {
+            document.addEventListener('touchstart', (e) => {
+                if (this.wakeScreen?.classList.contains('active')) {
+                    this.handleWakeInteraction(e);
+                }
+            }, { passive: false });
+        }
 
         this.wakeListenersAdded = true;
-        console.log('✅ Wake triggers setup complete');
+        console.log('✅ Wake triggers setup complete with iOS compatibility');
     }
 
     /**
@@ -102,11 +120,29 @@ export class WakeScreen {
             return;
         }
 
-        // Prevent default behavior
-        event.preventDefault();
+        // Debounce rapid touch events (iOS can fire multiple events)
+        const now = Date.now();
+        if (this.lastInteractionTime && (now - this.lastInteractionTime) < 300) {
+            console.log('💤 Debouncing rapid wake interactions');
+            return;
+        }
+        this.lastInteractionTime = now;
+
+        // Prevent default behavior for non-passive events
+        if (event.cancelable) {
+            event.preventDefault();
+        }
+        
+        // Stop event propagation to prevent duplicate handling
+        event.stopPropagation();
         
         this.isActivating = true;
-        console.log('💤 Wake interaction detected, starting activation...');
+        console.log('💤 Wake interaction detected, starting activation...', event.type);
+
+        // Initialize audio context on first user interaction (critical for iOS)
+        if (window.AudioEngine && !window.AudioEngine.unlocked) {
+            await window.AudioEngine.unlockAudioContext();
+        }
 
         // Audio feedback - immediate beep to confirm interaction
         if (window.AudioEngine) {

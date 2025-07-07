@@ -61,17 +61,39 @@ class BriefingScreen {
     }
     
     initializeEventListeners() {
+        // Detect touch support for mobile compatibility
+        const hasTouch = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+        
         // Mission acceptance button
-        this.elements.acceptButton.addEventListener('click', () => {
+        this.elements.acceptButton.addEventListener('click', (e) => {
+            e.preventDefault();
             window.AudioEngine.play('confirmationBeep');
             this.acceptMission();
         });
         
         // Mission decline button
-        this.elements.declineButton.addEventListener('click', () => {
+        this.elements.declineButton.addEventListener('click', (e) => {
+            e.preventDefault();
             window.AudioEngine.play('errorBeep');
             this.declineMission();
         });
+        
+        // Touch support for mobile
+        if (hasTouch) {
+            this.elements.acceptButton.addEventListener('touchend', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                window.AudioEngine.play('confirmationBeep');
+                this.acceptMission();
+            }, { passive: false });
+            
+            this.elements.declineButton.addEventListener('touchend', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                window.AudioEngine.play('errorBeep');
+                this.declineMission();
+            }, { passive: false });
+        }
         
         // Audio feedback for hover interactions
         [this.elements.acceptButton, this.elements.declineButton].forEach(button => {
@@ -79,12 +101,12 @@ class BriefingScreen {
                 window.AudioEngine.play('beep');
             });
             
-            button.addEventListener('touchstart', () => {
+            button.addEventListener('touchstart', (e) => {
                 window.AudioEngine.play('beep');
             }, { passive: true });
         });
         
-        console.log('🎮 Briefing screen event listeners initialized');
+        console.log('🎮 Briefing screen event listeners initialized with mobile support');
     }
     
     acceptMission() {

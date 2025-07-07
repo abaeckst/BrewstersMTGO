@@ -2,7 +2,7 @@
    Components: Terminal UI & Layout
    ========================================================================== */
 
-@layer components {
+/* @layer components - iOS compatibility: removed layer wrapper */
     /* Global Security Banner - Persistent contextual element */
     .security-banner {
         position: fixed;
@@ -155,4 +155,4 @@
     .info-text {
         color: var(--color-secondary);
     }
-}
+/* End terminal components section */

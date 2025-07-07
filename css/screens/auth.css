@@ -2,7 +2,7 @@
    Screens: Auth Screen Sequential Revelation System
    ========================================================================== */
 
-@layer screens {
+/* @layer screens - iOS compatibility: removed layer wrapper */
     /* Auth Screen Layout */
     #auth-screen {
         padding: var(--space-lg);
@@ -35,10 +35,9 @@
         max-width: var(--container-width);
         margin-top: var(--space-xl);
     }
-}
 
 /* Sequential Revelation System for Auth Screen - Layer-based Architecture */
-@layer stages {
+/* @layer stages - iOS compatibility: removed layer wrapper */
     /* Stage 1: Status Bar */
     #auth-screen .auth-stage-1-hidden {
         opacity: 0;
@@ -136,4 +135,4 @@
         max-width: 600px;
         transform: scale(1);
     }
-}
+/* End auth screen section */

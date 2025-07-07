@@ -2,7 +2,7 @@
    Utilities: Text & Typography
    ========================================================================== */
 
-@layer utilities {
+/* @layer utilities - iOS compatibility: removed layer wrapper */
     /* Text Color Utilities */
     .text-yellow {
         color: var(--color-warning);
@@ -19,4 +19,4 @@
     .text-danger {
         color: var(--color-danger);
     }
-}
+/* End text utilities section */

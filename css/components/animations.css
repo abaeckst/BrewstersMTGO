@@ -2,7 +2,7 @@
    Components: CRT Effects & Animations
    ========================================================================== */
 
-@layer components {
+/* @layer components - iOS compatibility: removed layer wrapper */
     /* CRT Effects */
     .crt-effects {
         position: fixed;
@@ -71,10 +71,9 @@
     .screen {
         will-change: opacity, transform;
     }
-}
 
 /* Screen Transitions & Reveal Animations */
-@layer screens {
+/* @layer screens - iOS compatibility: removed layer wrapper */
     /* Screen transition states */
     .screen {
         opacity: 1;
@@ -110,7 +109,7 @@
     .screen.transitioning-in {
         animation: screenIn 600ms ease-out forwards;
     }
-}
+/* End screen animations section */
 
 /* Keyframes */
 @keyframes fadeInUp {

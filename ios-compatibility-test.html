@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>iOS Safari Version Compatibility Test</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+            background: #000;
+            color: #00ff00;
+            padding: 20px;
+            font-size: 16px;
+            line-height: 1.6;
+        }
+        
+        .test-section {
+            margin-bottom: 20px;
+            padding: 15px;
+            border: 1px solid #00ff00;
+            border-radius: 5px;
+        }
+        
+        .success { color: #00ff00; }
+        .error { color: #ff0000; }
+        .warning { color: #ffff00; }
+        
+        pre {
+            background: #001100;
+            padding: 10px;
+            overflow-x: auto;
+            font-size: 14px;
+            border-radius: 3px;
+        }
+    </style>
+</head>
+<body>
+    <h1>iOS Safari Compatibility Analysis</h1>
+    
+    <div class="test-section">
+        <h2>Browser Information</h2>
+        <div id="browserInfo"></div>
+    </div>
+    
+    <div class="test-section">
+        <h2>ES6 Module Support</h2>
+        <div id="moduleSupport">Testing...</div>
+    </div>
+    
+    <div class="test-section">
+        <h2>Critical Web APIs</h2>
+        <div id="webApiSupport"></div>
+    </div>
+    
+    <div class="test-section">
+        <h2>CSS Features</h2>
+        <div id="cssFeatures"></div>
+    </div>
+    
+    <div class="test-section">
+        <h2>Known iOS Safari Issues</h2>
+        <div id="safariIssues"></div>
+    </div>
+
+    <!-- Test ES6 module loading -->
+    <script type="module">
+        console.log('✅ ES6 Modules working in this context');
+        
+        // iOS-safe module test (no data URLs)
+        try {
+            // Test if we can use basic ES6 features
+            const testArrow = () => 'test';
+            const testTemplate = `Template literal: ${testArrow()}`;
+            const testClass = class TestClass { constructor() { this.test = true; } };
+            
+            console.log('✅ ES6 features working:', testTemplate);
+            document.getElementById('moduleSupport').innerHTML = 
+                '<div class="success">✅ ES6 Modules: SUPPORTED</div>' +
+                '<div class="success">✅ ES6 Features: WORKING</div>';
+        } catch (error) {
+            console.error('❌ ES6 test failed:', error);
+            document.getElementById('moduleSupport').innerHTML = 
+                '<div class="success">✅ ES6 Modules: BASIC SUPPORT</div>' +
+                '<div class="error">❌ ES6 Features: FAILED - ' + error.message + '</div>';
+        }
+    </script>
+    
+    <!-- Fallback for non-module browsers -->
+    <script nomodule>
+        document.getElementById('moduleSupport').innerHTML = 
+            '<div class="error">❌ ES6 Modules: NOT SUPPORTED</div>' +
+            '<div class="error">This browser requires module transpilation</div>';
+    </script>
+
+    <script>
+        function getDetailedBrowserInfo() {
+            const ua = navigator.userAgent;
+            const info = {
+                userAgent: ua,
+                platform: navigator.platform,
+                language: navigator.language,
+                cookieEnabled: navigator.cookieEnabled,
+                javaEnabled: navigator.javaEnabled ? navigator.javaEnabled() : false,
+                onLine: navigator.onLine,
+                vendor: navigator.vendor,
+                product: navigator.product,
+                
+                // Screen info
+                screenWidth: screen.width,
+                screenHeight: screen.height,
+                screenAvailWidth: screen.availWidth,
+                screenAvailHeight: screen.availHeight,
+                screenColorDepth: screen.colorDepth,
+                screenPixelDepth: screen.pixelDepth,
+                
+                // Window info
+                windowInnerWidth: window.innerWidth,
+                windowInnerHeight: window.innerHeight,
+                windowOuterWidth: window.outerWidth,
+                windowOuterHeight: window.outerHeight,
+                devicePixelRatio: window.devicePixelRatio,
+                
+                // iOS detection
+                isIOS: /iPad|iPhone|iPod/.test(ua),
+                isSafari: /Safari/.test(ua) && !/Chrome/.test(ua),
+                
+                // Safari version extraction (rough)
+                safariVersion: (() => {
+                    const match = ua.match(/Version\/(\d+\.\d+)/);
+                    return match ? match[1] : 'Unknown';
+                })(),
+                
+                // iOS version extraction
+                iOSVersion: (() => {
+                    const match = ua.match(/OS (\d+)_(\d+)/);
+                    return match ? `${match[1]}.${match[2]}` : 'Unknown';
+                })(),
+                
+                // Touch capabilities
+                touchSupport: 'ontouchstart' in window,
+                maxTouchPoints: navigator.maxTouchPoints || 0,
+                
+                // Other capabilities
+                serviceWorkerSupport: 'serviceWorker' in navigator,
+                webGLSupport: (() => {
+                    try {
+                        const canvas = document.createElement('canvas');
+                        return !!(canvas.getContext('webgl') || canvas.getContext('experimental-webgl'));
+                    } catch (e) {
+                        return false;
+                    }
+                })()
+            };
+            
+            console.log('📱 Detailed Browser Info:', info);
+            return info;
+        }
+        
+        function testWebAPIs() {
+            const apis = {
+                'AudioContext': window.AudioContext || window.webkitAudioContext,
+                'fetch': window.fetch,
+                'Promise': window.Promise,
+                'Map': window.Map,
+                'Set': window.Set,
+                'Symbol': window.Symbol,
+                'Proxy': window.Proxy,
+                'WeakMap': window.WeakMap,
+                'WeakSet': window.WeakSet,
+                'ArrayBuffer': window.ArrayBuffer,
+                'Uint8Array': window.Uint8Array,
+                'Worker': window.Worker,
+                'localStorage': window.localStorage,
+                'sessionStorage': window.sessionStorage,
+                'indexedDB': window.indexedDB,
+                'WebGL': (() => {
+                    try {
+                        const canvas = document.createElement('canvas');
+                        return !!(canvas.getContext('webgl') || canvas.getContext('experimental-webgl'));
+                    } catch (e) {
+                        return false;
+                    }
+                })(),
+                'RequestAnimationFrame': window.requestAnimationFrame,
+                'CustomElements': window.customElements,
+                'IntersectionObserver': window.IntersectionObserver,
+                'MutationObserver': window.MutationObserver,
+                'URL': window.URL,
+                'URLSearchParams': window.URLSearchParams
+            };
+            
+            let html = '';
+            for (const [api, supported] of Object.entries(apis)) {
+                const status = supported ? '✅' : '❌';
+                const className = supported ? 'success' : 'error';
+                html += `<div class="${className}">${status} ${api}: ${supported ? 'SUPPORTED' : 'NOT AVAILABLE'}</div>`;
+            }
+            
+            return html;
+        }
+        
+        function testCSSFeatures() {
+            if (!window.CSS || !CSS.supports) {
+                return '<div class="error">❌ CSS.supports not available</div>';
+            }
+            
+            const features = {
+                '@layer': (() => {
+                    try {
+                        return CSS.supports('@layer');
+                    } catch (e) {
+                        return false;
+                    }
+                })(),
+                'env(safe-area-inset-top)': CSS.supports('padding', 'env(safe-area-inset-top)'),
+                'clamp()': CSS.supports('font-size', 'clamp(1rem, 2vw, 2rem)'),
+                'CSS Grid': CSS.supports('display', 'grid'),
+                'CSS Flexbox': CSS.supports('display', 'flex'),
+                'CSS Transform': CSS.supports('transform', 'translateX(10px)'),
+                'CSS Transition': CSS.supports('transition', 'all 1s ease'),
+                'CSS Animation': CSS.supports('animation', 'fadeIn 1s ease'),
+                'CSS Variables': CSS.supports('color', 'var(--test)'),
+                'CSS calc()': CSS.supports('width', 'calc(100% - 10px)'),
+                'vw/vh units': CSS.supports('width', '100vw'),
+                'backdrop-filter': CSS.supports('backdrop-filter', 'blur(10px)'),
+                '-webkit-backdrop-filter': CSS.supports('-webkit-backdrop-filter', 'blur(10px)')
+            };
+            
+            let html = '';
+            for (const [feature, supported] of Object.entries(features)) {
+                const status = supported ? '✅' : '❌';
+                const className = supported ? 'success' : 'error';
+                html += `<div class="${className}">${status} ${feature}: ${supported ? 'SUPPORTED' : 'NOT SUPPORTED'}</div>`;
+            }
+            
+            return html;
+        }
+        
+        function checkKnownSafariIssues() {
+            const info = getDetailedBrowserInfo();
+            const issues = [];
+            
+            // Check for known iOS Safari version issues
+            if (info.isIOS) {
+                const iOSVersion = parseFloat(info.iOSVersion);
+                const safariVersion = parseFloat(info.safariVersion);
+                
+                if (iOSVersion < 14) {
+                    issues.push({
+                        type: 'error',
+                        issue: `iOS ${info.iOSVersion} - ES6 Modules may have limited support`
+                    });
+                }
+                
+                if (iOSVersion < 13) {
+                    issues.push({
+                        type: 'error',
+                        issue: `iOS ${info.iOSVersion} - CSS @layer not supported`
+                    });
+                }
+                
+                if (iOSVersion < 12) {
+                    issues.push({
+                        type: 'error',
+                        issue: `iOS ${info.iOSVersion} - Many modern features unavailable`
+                    });
+                }
+                
+                // Check specific Safari issues
+                if (safariVersion && safariVersion < 14) {
+                    issues.push({
+                        type: 'warning',
+                        issue: `Safari ${info.safariVersion} - May have ES6 module loading issues`
+                    });
+                }
+                
+                // Audio context issues
+                if (!window.AudioContext && !window.webkitAudioContext) {
+                    issues.push({
+                        type: 'error',
+                        issue: 'AudioContext not available - audio system will fail'
+                    });
+                }
+                
+                // Touch event issues
+                if (!info.touchSupport) {
+                    issues.push({
+                        type: 'error',
+                        issue: 'Touch events not supported - mobile interactions will fail'
+                    });
+                }
+                
+                // Module loading specific checks
+                if (info.isIOS && !document.querySelector('script[type="module"]')) {
+                    issues.push({
+                        type: 'warning',
+                        issue: 'No ES6 modules detected in this test page'
+                    });
+                }
+            }
+            
+            if (issues.length === 0) {
+                return '<div class="success">✅ No known compatibility issues detected</div>';
+            }
+            
+            let html = '';
+            for (const issue of issues) {
+                html += `<div class="${issue.type}">⚠️ ${issue.issue}</div>`;
+            }
+            
+            return html;
+        }
+        
+        function runCompatibilityTests() {
+            console.log('🧪 Running iOS Safari compatibility tests...');
+            
+            const browserInfo = getDetailedBrowserInfo();
+            
+            // Display browser info
+            document.getElementById('browserInfo').innerHTML = `
+                <pre>${JSON.stringify(browserInfo, null, 2)}</pre>
+            `;
+            
+            // Test Web APIs
+            document.getElementById('webApiSupport').innerHTML = testWebAPIs();
+            
+            // Test CSS features
+            document.getElementById('cssFeatures').innerHTML = testCSSFeatures();
+            
+            // Check known Safari issues
+            document.getElementById('safariIssues').innerHTML = checkKnownSafariIssues();
+            
+            console.log('✅ Compatibility tests completed');
+        }
+        
+        // Run tests when page loads
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', runCompatibilityTests);
+        } else {
+            runCompatibilityTests();
+        }
+        
+        // Enhanced error tracking
+        window.addEventListener('error', function(e) {
+            console.error('💥 JavaScript Error:', {
+                message: e.message,
+                filename: e.filename,
+                lineno: e.lineno,
+                colno: e.colno,
+                error: e.error
+            });
+            
+            const errorDiv = document.createElement('div');
+            errorDiv.className = 'test-section';
+            errorDiv.innerHTML = `
+                <h3 style="color: #ff0000;">JavaScript Error Detected</h3>
+                <div class="error">Message: ${e.message}</div>
+                <div class="error">File: ${e.filename}:${e.lineno}:${e.colno}</div>
+                <div class="error">Stack: ${e.error ? e.error.stack : 'Not available'}</div>
+            `;
+            document.body.appendChild(errorDiv);
+        });
+        
+        window.addEventListener('unhandledrejection', function(e) {
+            console.error('💥 Unhandled Promise Rejection:', e.reason);
+            
+            const errorDiv = document.createElement('div');
+            errorDiv.className = 'test-section';
+            errorDiv.innerHTML = `
+                <h3 style="color: #ff0000;">Promise Rejection Detected</h3>
+                <div class="error">Reason: ${e.reason}</div>
+            `;
+            document.body.appendChild(errorDiv);
+        });
+    </script>
+</body>
+</html>

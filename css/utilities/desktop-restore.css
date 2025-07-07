@@ -1,0 +1,73 @@
+/* ==========================================================================
+   Utilities: Desktop Restore - Ensures normal desktop behavior
+   ========================================================================== */
+
+/* @layer utilities - iOS compatibility: removed layer wrapper */
+    /* Desktop-specific overrides to counteract any mobile styles */
+    @media (hover: hover) and (pointer: fine) {
+        /* Restore normal desktop behavior */
+        .app-container {
+            /* Remove mobile constraints */
+            overflow-x: visible !important;
+            overflow-y: visible !important;
+            min-height: 100vh;
+            height: auto !important;
+            /* Remove mobile padding if not needed */
+            padding: 0;
+        }
+        
+        /* Restore normal body overflow */
+        body {
+            overflow: visible !important;
+            overscroll-behavior: auto !important;
+            -webkit-overscroll-behavior: auto !important;
+            height: auto !important;
+        }
+        
+        /* Restore normal HTML overflow */
+        html {
+            overflow: visible !important;
+            height: auto !important;
+        }
+        
+        /* Ensure screens can expand naturally */
+        .screen {
+            overflow: visible !important;
+            height: auto !important;
+            min-height: 100vh;
+        }
+        
+        /* Restore text selection on desktop */
+        * {
+            -webkit-user-select: auto !important;
+            user-select: auto !important;
+        }
+        
+        /* Specific text selection for inputs */
+        input, textarea, .selectable {
+            -webkit-user-select: text !important;
+            user-select: text !important;
+        }
+        
+        /* Remove touch-specific styles */
+        button, .button, .action-button, .mission-button {
+            touch-action: auto !important;
+        }
+    }
+    
+    /* High-specificity desktop overrides for stubborn mobile styles */
+    @media screen and (min-width: 1024px) {
+        /* Force normal scrolling on large screens */
+        html, body {
+            overflow: visible !important;
+            height: auto !important;
+        }
+        
+        .app-container {
+            overflow: visible !important;
+            position: relative !important;
+            height: auto !important;
+            min-height: 100vh !important;
+        }
+    }
+/* End desktop restore section */

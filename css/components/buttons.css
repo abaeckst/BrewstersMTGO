@@ -2,8 +2,8 @@
    Components: Button Systems
    ========================================================================== */
 
-@layer components {
-    /* Base Action Button */
+/* @layer components - iOS compatibility: removed layer wrapper */
+/* Base Action Button */
     .action-button {
         background: var(--gradient-button-base);
         border: var(--border-normal) solid var(--color-secondary);
@@ -63,4 +63,3 @@
             padding: var(--space-sm) var(--space-lg);
         }
     }
-}

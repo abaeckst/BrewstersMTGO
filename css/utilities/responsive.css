@@ -2,7 +2,7 @@
    Utilities: Responsive Design System
    ========================================================================== */
 
-@layer utilities {
+/* @layer - iOS compatibility: removed layer wrapper */
     /* Viewport-based scaling */
     .viewport-mobile {
         --viewport-scale: 1;
@@ -79,4 +79,4 @@
         overflow: hidden;
         text-overflow: ellipsis;
     }
-}
+/* End section */

@@ -11,7 +11,7 @@
 .text-2xl { font-size: var(--text-2xl); }
 .text-3xl { font-size: var(--text-3xl); }
 
-@layer utilities {
+/* @layer utilities - iOS compatibility: removed layer wrapper */
     /* Mobile Word Break Prevention - Universal Application */
     .text-xs, .text-sm, .text-base, .text-lg, .text-xl, .text-2xl, .text-3xl,
     h1, h2, h3, h4, h5, h6,
@@ -45,7 +45,7 @@
         /* Performance optimizations */
         text-rendering: optimizeLegibility;
     }
-}
+/* End utilities section */
 
 /* Terminal Text Styling */
 .terminal-title {

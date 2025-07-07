@@ -2,7 +2,7 @@
    Screens: Mission Declined Screen Styles
    ========================================================================== */
 
-@layer screens {
+/* @layer - iOS compatibility: removed layer wrapper */
     /* Mission Declined Screen Layout */
     #declined-screen {
         background: linear-gradient(135deg, #330000 0%, #001100 50%, #000 100%);
@@ -212,4 +212,4 @@
         transform: scale(1.05);
         opacity: 0.9;
     }
-}
+/* End section */

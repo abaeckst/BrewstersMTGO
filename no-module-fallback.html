@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>CLASSIFIED TERMINAL - AUTHORIZED ACCESS ONLY</title>
+    
+    <!-- Single CSS file for clean architecture -->
+    <link rel="stylesheet" href="css/main.css">
+</head>
+<body>
+    <!-- Application Container -->
+    <div id="app" class="app-container">
+        
+        <!-- Global Security Banner -->
+        <div class="security-banner" id="security-banner">
+            <div class="auth-text-sm security-notice">AUTHORIZED PERSONNEL ONLY</div>
+        </div>
+        
+        <!-- Wake Screen - Dormant Terminal (First Screen) -->
+        <div id="wake-screen" class="screen active wake-screen-dormant">
+            <div class="dormant-terminal-container">
+                <div class="wake-trigger-area" id="wake-trigger">
+                    <div class="wake-instruction wake-stage-1-hidden">
+                        <span class="wake-text">[WAKE SYSTEM]</span>
+                        <div class="wake-hint">TAP TO ACTIVATE</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Boot Sequence Screen -->
+        <div id="boot-sequence-screen" class="screen hidden boot-screen-fullscreen">
+            <div class="boot-sequence-container">
+                <!-- Boot messages will be dynamically added here -->
+            </div>
+        </div>
+        
+        <!-- Auth Screen -->
+        <div id="auth-screen" class="screen hidden screen-isolated">
+            <header class="screen-header">
+                <div class="terminal-line">
+                    <span class="terminal-prompt">system@classified:~$</span>
+                    <span class="terminal-text">SECURITY CLEARANCE VERIFICATION</span>
+                </div>
+            </header>
+            
+            <main class="screen-content">
+                <div class="auth-container">
+                    <div class="auth-title auth-stage-1-hidden">
+                        <div class="terminal-text-lg glow-green">OPERATIVE IDENTIFICATION</div>
+                        <div class="auth-subtitle">Enter your designated call sign</div>
+                    </div>
+                    
+                    <form class="auth-form auth-stage-2-hidden" id="auth-form">
+                        <div class="form-group">
+                            <label for="operative-name" class="form-label">OPERATIVE NAME:</label>
+                            <input type="text" 
+                                   id="operative-name" 
+                                   name="operativeName"
+                                   class="form-input terminal-input" 
+                                   placeholder="Enter call sign..."
+                                   autocomplete="off"
+                                   spellcheck="false"
+                                   required>
+                        </div>
+                        
+                        <button type="submit" class="btn btn-primary auth-submit auth-stage-3-hidden">
+                            <span class="btn-text">VERIFY IDENTITY</span>
+                        </button>
+                    </form>
+                </div>
+            </main>
+        </div>
+        
+        <!-- Mission Screen -->
+        <div id="mission-screen" class="screen hidden screen-isolated">
+            <header class="screen-header">
+                <div class="terminal-line">
+                    <span class="terminal-prompt">mission@classified:~$</span>
+                    <span class="terminal-text">ASSIGNMENT PROTOCOL ACTIVE</span>
+                </div>
+            </header>
+            
+            <main class="screen-content">
+                <div class="mission-container">
+                    <div class="mission-title mission-stage-1-hidden">
+                        <div class="mission-classification">CLASSIFICATION: TOP SECRET</div>
+                        <h1 class="mission-header glow-amber">EMERGENCY DIRECTIVE</h1>
+                        <div class="mission-urgency">IMMEDIATE ACTION REQUIRED</div>
+                    </div>
+                    
+                    <div class="mission-briefing mission-stage-2-hidden">
+                        <p class="mission-text">
+                            Operative <span class="operative-name-display" id="operative-display">[CLASSIFIED]</span>, 
+                            a critical situation has developed requiring immediate intervention.
+                        </p>
+                        
+                        <p class="mission-text">
+                            Time-sensitive intelligence indicates a compromised operation. 
+                            Your specialized skills are required for mission success.
+                        </p>
+                        
+                        <div class="mission-warning">
+                            <div class="warning-text">⚠️ WARNING: MISSION PARAMETERS CLASSIFIED ⚠️</div>
+                            <div class="warning-subtext">Full briefing available only upon acceptance</div>
+                        </div>
+                    </div>
+                    
+                    <div class="mission-options mission-stage-3-hidden">
+                        <button class="btn btn-accept mission-accept" id="mission-accept">
+                            <span class="btn-text">ACCEPT MISSION</span>
+                            <span class="btn-subtitle">Proceed to briefing</span>
+                        </button>
+                        
+                        <button class="btn btn-decline mission-decline" id="mission-decline">
+                            <span class="btn-text">DECLINE MISSION</span>
+                            <span class="btn-subtitle">Return to standby</span>
+                        </button>
+                    </div>
+                </div>
+            </main>
+        </div>
+        
+        <!-- Briefing Screen -->
+        <div id="briefing-screen" class="screen hidden screen-isolated">
+            <header class="screen-header">
+                <div class="terminal-line">
+                    <span class="terminal-prompt">briefing@classified:~$</span>
+                    <span class="terminal-text">MISSION DETAILS AUTHORIZED</span>
+                </div>
+            </header>
+            
+            <main class="screen-content">
+                <div class="briefing-container">
+                    <div class="briefing-title briefing-stage-1-hidden">
+                        <h1 class="briefing-header glow-orange">OPERATION: MTGO RECOVERY</h1>
+                        <div class="briefing-classification">EYES ONLY - COMPARTMENTALIZED</div>
+                    </div>
+                    
+                    <div class="briefing-content briefing-stage-2-hidden">
+                        <div class="briefing-section">
+                            <h2 class="briefing-section-title">MISSION PARAMETERS</h2>
+                            <div class="briefing-text">
+                                <p><strong>OBJECTIVE:</strong> Secure and recover MTGO digital assets compromised in recent security breach.</p>
+                                <p><strong>TARGET:</strong> High-value Magic: The Gathering Online collection requiring immediate extraction.</p>
+                                <p><strong>THREAT LEVEL:</strong> ELEVATED - Hostile actors actively pursuing same assets.</p>
+                            </div>
+                        </div>
+                        
+                        <div class="briefing-section">
+                            <h2 class="briefing-section-title">OPERATIONAL DETAILS</h2>
+                            <div class="briefing-text">
+                                <p><strong>RECOVERY METHOD:</strong> Secure giveaway protocol to trusted operative (YOU).</p>
+                                <p><strong>ASSET VALUE:</strong> Estimated 5,000+ tickets worth of premium MTGO cards and currency.</p>
+                                <p><strong>TIMELINE:</strong> 14-day operational window for secure transfer completion.</p>
+                            </div>
+                        </div>
+                        
+                        <div class="briefing-section">
+                            <h2 class="briefing-section-title">AUTHORIZATION</h2>
+                            <div class="briefing-text">
+                                <p><strong>CONTACT PROTOCOL:</strong> Initiate secure communication via Discord: <code>abaeckst</code></p>
+                                <p><strong>VERIFICATION CODE:</strong> Reference "Terminal Mission" for immediate asset transfer.</p>
+                                <p><strong>EXTRACTION POINT:</strong> Private MTGO account transfer upon identity verification.</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="briefing-actions briefing-stage-3-hidden">
+                        <div class="briefing-notice">
+                            <div class="notice-text">Mission briefing complete. Proceed to countdown for operational timeline.</div>
+                        </div>
+                        
+                        <button class="btn btn-primary briefing-continue" id="briefing-continue">
+                            <span class="btn-text">BEGIN COUNTDOWN</span>
+                            <span class="btn-subtitle">Start 14-day mission timer</span>
+                        </button>
+                    </div>
+                </div>
+            </main>
+        </div>
+        
+        <!-- Countdown Screen -->
+        <div id="countdown-screen" class="screen hidden screen-isolated">
+            <div class="countdown-container">
+                <div class="countdown-congratulations countdown-stage-1-hidden">
+                    <div class="congratulations-text" id="congratulations-text"></div>
+                </div>
+                
+                <div class="countdown-activation countdown-stage-2-hidden">
+                    <div class="activation-text">YOUR TIME STARTS NOW</div>
+                </div>
+                
+                <div class="countdown-timer countdown-stage-3-hidden">
+                    <div class="timer-display" id="timer-display">14:00:00:00</div>
+                    <audio id="mission-theme" loop>
+                        <source src="audio/mission-theme-full.wav" type="audio/wav">
+                        <source src="audio/mission-theme-full.mp3" type="audio/mpeg">
+                    </audio>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Mission Declined Screen -->
+        <div id="mission-declined-screen" class="screen hidden screen-isolated">
+            <div class="declined-container">
+                <div class="declined-title">
+                    <h1 class="declined-header">MISSION DECLINED</h1>
+                    <div class="declined-subtitle">Operative status: STANDBY</div>
+                </div>
+                
+                <div class="declined-content">
+                    <p>Your decision has been logged in the system.</p>
+                    <p>You may return to active duty when ready.</p>
+                    
+                    <button class="btn btn-secondary declined-restart" id="declined-restart">
+                        <span class="btn-text">RETURN TO WAKE</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Module loading with fallback -->
+    <script type="module" src="js/app.js"></script>
+    <script nomodule>
+        console.log('ES6 modules not supported - loading fallback implementation');
+        
+        // Create fallback namespace
+        window.BrewsterApp = {};
+        
+        // Load fallback scripts in order
+        const scripts = [
+            'js/ios-polyfills-compiled.js',
+            'js/viewport-compiled.js', 
+            'js/audio-engine-compiled.js',
+            'js/state-compiled.js',
+            'js/cinematic-compiled.js',
+            'js/wake-screen-compiled.js',
+            'js/briefing-screen-compiled.js',
+            'js/countdown-screen-compiled.js',
+            'js/credits-screen-compiled.js',
+            'js/declined-screen-compiled.js',
+            'js/app-compiled.js'
+        ];
+        
+        function loadScriptSequentially(index) {
+            if (index >= scripts.length) {
+                // All scripts loaded, initialize app
+                if (window.BrewsterApp && window.BrewsterApp.init) {
+                    console.log('Initializing fallback app...');
+                    window.BrewsterApp.init();
+                } else {
+                    console.error('Fallback app initialization failed');
+                    // Show basic error message
+                    document.body.innerHTML = `
+                        <div style="color: #ff0000; text-align: center; padding: 50px; font-family: monospace;">
+                            <h1>SYSTEM ERROR</h1>
+                            <p>Your browser does not support the required features for this application.</p>
+                            <p>Please update to a modern browser or try accessing from a different device.</p>
+                        </div>
+                    `;
+                }
+                return;
+            }
+            
+            const script = document.createElement('script');
+            script.src = scripts[index];
+            script.onload = () => {
+                console.log(`Loaded fallback script: ${scripts[index]}`);
+                loadScriptSequentially(index + 1);
+            };
+            script.onerror = () => {
+                console.warn(`Failed to load fallback script: ${scripts[index]}`);
+                // Continue loading next script
+                loadScriptSequentially(index + 1);
+            };
+            document.head.appendChild(script);
+        }
+        
+        // Start loading fallback scripts
+        loadScriptSequentially(0);
+    </script>
+    
+    <!-- iOS compatibility detection -->
+    <script>
+        // Early iOS detection and compatibility warnings
+        (function() {
+            const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+            const isSafari = /Safari/.test(navigator.userAgent) && !/Chrome/.test(navigator.userAgent);
+            
+            if (isIOS) {
+                console.log('iOS device detected - applying compatibility measures');
+                
+                // Check for critical iOS incompatibilities
+                const issues = [];
+                
+                if (!window.AudioContext && !window.webkitAudioContext) {
+                    issues.push('AudioContext not available');
+                }
+                
+                if (!('ontouchstart' in window)) {
+                    issues.push('Touch events not supported');
+                }
+                
+                if (!CSS.supports('padding', 'env(safe-area-inset-top)')) {
+                    issues.push('Safe area not supported');
+                }
+                
+                if (issues.length > 0) {
+                    console.warn('iOS compatibility issues detected:', issues);
+                }
+                
+                // Add iOS-specific error handling
+                window.addEventListener('error', function(e) {
+                    console.error('iOS Error:', e.message, 'at', e.filename, e.lineno);
+                });
+                
+                window.addEventListener('unhandledrejection', function(e) {
+                    console.error('iOS Promise Rejection:', e.reason);
+                });
+            }
+        })();
+    </script>
+</body>
+</html>

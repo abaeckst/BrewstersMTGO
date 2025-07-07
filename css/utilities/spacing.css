@@ -2,7 +2,7 @@
    Utilities: Spacing & Layout
    ========================================================================== */
 
-@layer utilities {
+/* @layer utilities - iOS compatibility: removed layer wrapper */
     /* Container Queries for future use */
     @supports (container-type: inline-size) {
         .terminal-container {
@@ -21,4 +21,4 @@
     .debug * {
         outline: 1px solid rgba(255, 0, 0, 0.3);
     }
-}
+/* End spacing utilities section */

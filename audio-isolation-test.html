@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>iOS Audio System Isolation Test</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+            background: #000;
+            color: #00ff00;
+            padding: 20px;
+            font-size: 16px;
+            line-height: 1.6;
+        }
+        
+        .test-section {
+            margin-bottom: 20px;
+            padding: 15px;
+            border: 1px solid #00ff00;
+            border-radius: 5px;
+        }
+        
+        .success { color: #00ff00; }
+        .error { color: #ff0000; }
+        .warning { color: #ffff00; }
+        
+        button {
+            background: #003300;
+            color: #00ff00;
+            border: 1px solid #00ff00;
+            padding: 15px 30px;
+            font-size: 16px;
+            margin: 10px;
+            border-radius: 5px;
+            min-height: 44px;
+            cursor: pointer;
+        }
+        
+        button:hover {
+            background: #006600;
+        }
+        
+        button:disabled {
+            background: #333;
+            color: #666;
+            cursor: not-allowed;
+        }
+        
+        .log-container {
+            background: #001100;
+            padding: 10px;
+            border-radius: 5px;
+            height: 200px;
+            overflow-y: scroll;
+            font-family: monospace;
+            font-size: 14px;
+            white-space: pre-wrap;
+        }
+        
+        .status {
+            font-weight: bold;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <h1>iOS Audio System Test</h1>
+    
+    <div class="test-section">
+        <h2>Audio Context Basic Test</h2>
+        <button id="basicAudioTest">Test AudioContext Creation</button>
+        <div id="basicAudioResult" class="status"></div>
+    </div>
+    
+    <div class="test-section">
+        <h2>iOS Audio Unlock Test</h2>
+        <button id="unlockAudioTest">Unlock Audio Context (iOS)</button>
+        <div id="unlockAudioResult" class="status"></div>
+    </div>
+    
+    <div class="test-section">
+        <h2>Simple Tone Generation</h2>
+        <button id="toneTest">Play Test Tone</button>
+        <div id="toneResult" class="status"></div>
+    </div>
+    
+    <div class="test-section">
+        <h2>Audio File Loading Test</h2>
+        <button id="audioFileTest">Test Audio File Load</button>
+        <div id="audioFileResult" class="status"></div>
+    </div>
+    
+    <div class="test-section">
+        <h2>Mission Theme Test</h2>
+        <button id="missionThemeTest">Test Mission Impossible Theme</button>
+        <div id="missionThemeResult" class="status"></div>
+    </div>
+    
+    <div class="test-section">
+        <h2>Audio Log</h2>
+        <div id="audioLog" class="log-container"></div>
+        <button id="clearLog">Clear Log</button>
+    </div>
+
+    <script>
+        let audioContext = null;
+        let logContainer = null;
+        
+        function log(message, type = 'info') {
+            const timestamp = new Date().toLocaleTimeString();
+            const prefix = type === 'error' ? '❌' : type === 'warning' ? '⚠️' : type === 'success' ? '✅' : 'ℹ️';
+            const logMessage = `[${timestamp}] ${prefix} ${message}\n`;
+            
+            console.log(logMessage.trim());
+            
+            if (logContainer) {
+                logContainer.textContent += logMessage;
+                logContainer.scrollTop = logContainer.scrollHeight;
+            }
+        }
+        
+        function updateStatus(elementId, message, type = 'info') {
+            const element = document.getElementById(elementId);
+            if (element) {
+                element.textContent = message;
+                element.className = `status ${type}`;
+            }
+        }
+        
+        // Test 1: Basic AudioContext creation
+        async function testBasicAudio() {
+            log('Testing basic AudioContext creation...');
+            
+            try {
+                const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+                
+                if (!AudioContextClass) {
+                    throw new Error('AudioContext not supported in this browser');
+                }
+                
+                audioContext = new AudioContextClass();
+                log(`AudioContext created successfully. State: ${audioContext.state}`, 'success');
+                log(`Sample rate: ${audioContext.sampleRate} Hz`, 'info');
+                log(`Base latency: ${audioContext.baseLatency || 'Not available'}`, 'info');
+                
+                updateStatus('basicAudioResult', `✅ Created (${audioContext.state})`, 'success');
+                return true;
+                
+            } catch (error) {
+                log(`AudioContext creation failed: ${error.message}`, 'error');
+                updateStatus('basicAudioResult', `❌ Failed: ${error.message}`, 'error');
+                return false;
+            }
+        }
+        
+        // Test 2: iOS Audio unlock
+        async function testAudioUnlock() {
+            log('Testing iOS audio context unlock...');
+            
+            if (!audioContext) {
+                log('No AudioContext available for unlock test', 'error');
+                updateStatus('unlockAudioResult', '❌ No AudioContext', 'error');
+                return false;
+            }
+            
+            try {
+                log(`Current state before unlock: ${audioContext.state}`);
+                
+                if (audioContext.state === 'suspended') {
+                    log('Attempting to resume suspended AudioContext...');
+                    await audioContext.resume();
+                    log(`AudioContext resumed. New state: ${audioContext.state}`, 'success');
+                } else {
+                    log(`AudioContext already in ${audioContext.state} state`);
+                }
+                
+                // Test if we can actually use the context
+                const testOscillator = audioContext.createOscillator();
+                const testGain = audioContext.createGain();
+                testGain.gain.value = 0; // Silent test
+                
+                testOscillator.connect(testGain);
+                testGain.connect(audioContext.destination);
+                
+                testOscillator.start();
+                testOscillator.stop(audioContext.currentTime + 0.001);
+                
+                log('Silent audio test successful', 'success');
+                updateStatus('unlockAudioResult', `✅ Unlocked (${audioContext.state})`, 'success');
+                return true;
+                
+            } catch (error) {
+                log(`Audio unlock failed: ${error.message}`, 'error');
+                updateStatus('unlockAudioResult', `❌ Failed: ${error.message}`, 'error');
+                return false;
+            }
+        }
+        
+        // Test 3: Simple tone generation
+        async function testToneGeneration() {
+            log('Testing simple tone generation...');
+            
+            if (!audioContext) {
+                log('No AudioContext available for tone test', 'error');
+                updateStatus('toneResult', '❌ No AudioContext', 'error');
+                return false;
+            }
+            
+            try {
+                // Ensure context is running
+                if (audioContext.state === 'suspended') {
+                    await audioContext.resume();
+                }
+                
+                const oscillator = audioContext.createOscillator();
+                const gainNode = audioContext.createGain();
+                
+                oscillator.connect(gainNode);
+                gainNode.connect(audioContext.destination);
+                
+                // 440Hz A note, quiet volume
+                oscillator.frequency.setValueAtTime(440, audioContext.currentTime);
+                gainNode.gain.setValueAtTime(0.1, audioContext.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.5);
+                
+                log('Playing 440Hz tone for 0.5 seconds...');
+                oscillator.start();
+                oscillator.stop(audioContext.currentTime + 0.5);
+                
+                updateStatus('toneResult', '✅ Tone played successfully', 'success');
+                log('Tone generation successful', 'success');
+                return true;
+                
+            } catch (error) {
+                log(`Tone generation failed: ${error.message}`, 'error');
+                updateStatus('toneResult', `❌ Failed: ${error.message}`, 'error');
+                return false;
+            }
+        }
+        
+        // Test 4: Audio file loading
+        async function testAudioFileLoading() {
+            log('Testing audio file loading capabilities...');
+            
+            if (!audioContext) {
+                log('No AudioContext available for file test', 'error');
+                updateStatus('audioFileResult', '❌ No AudioContext', 'error');
+                return false;
+            }
+            
+            try {
+                // Create a simple audio element test
+                const audio = new Audio();
+                
+                // Test basic HTML5 audio support
+                if (!audio.canPlayType) {
+                    throw new Error('HTML5 Audio not supported');
+                }
+                
+                log('HTML5 Audio element created successfully');
+                
+                // Check supported formats
+                const formats = {
+                    'MP3': audio.canPlayType('audio/mpeg'),
+                    'WAV': audio.canPlayType('audio/wav'),
+                    'OGG': audio.canPlayType('audio/ogg'),
+                    'AAC': audio.canPlayType('audio/aac'),
+                    'M4A': audio.canPlayType('audio/mp4')
+                };
+                
+                log('Supported audio formats:');
+                for (const [format, support] of Object.entries(formats)) {
+                    log(`  ${format}: ${support || 'Not supported'}`);
+                }
+                
+                // Test fetch capability for audio files
+                if (window.fetch) {
+                    log('Fetch API available for audio file loading', 'success');
+                } else {
+                    log('Fetch API not available', 'warning');
+                }
+                
+                updateStatus('audioFileResult', '✅ Audio loading supported', 'success');
+                return true;
+                
+            } catch (error) {
+                log(`Audio file loading test failed: ${error.message}`, 'error');
+                updateStatus('audioFileResult', `❌ Failed: ${error.message}`, 'error');
+                return false;
+            }
+        }
+        
+        // Test 5: Mission theme loading (simulate real app behavior)
+        async function testMissionTheme() {
+            log('Testing Mission Impossible theme loading...');
+            
+            try {
+                // Test if the actual mission theme file exists
+                const missionThemeUrl = './audio/mission-theme-full.wav';
+                
+                log(`Attempting to load: ${missionThemeUrl}`);
+                
+                // Try to fetch the file
+                if (window.fetch) {
+                    try {
+                        const response = await fetch(missionThemeUrl, { method: 'HEAD' });
+                        if (response.ok) {
+                            log('Mission theme file found and accessible', 'success');
+                        } else {
+                            log(`Mission theme file not found (${response.status})`, 'warning');
+                        }
+                    } catch (fetchError) {
+                        log(`Fetch test failed: ${fetchError.message}`, 'warning');
+                    }
+                }
+                
+                // Test audio element loading
+                const audio = new Audio();
+                
+                audio.addEventListener('loadstart', () => log('Audio load started'));
+                audio.addEventListener('loadeddata', () => log('Audio data loaded', 'success'));
+                audio.addEventListener('canplay', () => log('Audio can play', 'success'));
+                audio.addEventListener('error', (e) => log(`Audio error: ${e.message}`, 'error'));
+                
+                // Try to load the mission theme
+                audio.src = missionThemeUrl;
+                audio.load();
+                
+                // Give it a moment to load
+                setTimeout(() => {
+                    if (audio.readyState >= 2) {
+                        log('Mission theme loaded successfully', 'success');
+                        updateStatus('missionThemeResult', '✅ Mission theme accessible', 'success');
+                    } else {
+                        log('Mission theme did not load within timeout', 'warning');
+                        updateStatus('missionThemeResult', '⚠️ Mission theme load timeout', 'warning');
+                    }
+                }, 3000);
+                
+                return true;
+                
+            } catch (error) {
+                log(`Mission theme test failed: ${error.message}`, 'error');
+                updateStatus('missionThemeResult', `❌ Failed: ${error.message}`, 'error');
+                return false;
+            }
+        }
+        
+        // Initialize page
+        function initializePage() {
+            logContainer = document.getElementById('audioLog');
+            
+            log('iOS Audio Isolation Test Started');
+            log(`User Agent: ${navigator.userAgent}`);
+            log(`Platform: ${navigator.platform}`);
+            log(`Is iOS: ${/iPad|iPhone|iPod/.test(navigator.userAgent)}`);
+            
+            // Set up event listeners
+            document.getElementById('basicAudioTest').addEventListener('click', testBasicAudio);
+            document.getElementById('unlockAudioTest').addEventListener('click', testAudioUnlock);
+            document.getElementById('toneTest').addEventListener('click', testToneGeneration);
+            document.getElementById('audioFileTest').addEventListener('click', testAudioFileLoading);
+            document.getElementById('missionThemeTest').addEventListener('click', testMissionTheme);
+            
+            document.getElementById('clearLog').addEventListener('click', () => {
+                logContainer.textContent = '';
+                log('Log cleared');
+            });
+            
+            log('Page initialized. Click buttons to run audio tests.');
+        }
+        
+        // Start when DOM is ready
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initializePage);
+        } else {
+            initializePage();
+        }
+        
+        // Global error handlers
+        window.addEventListener('error', function(e) {
+            log(`Global Error: ${e.message} at ${e.filename}:${e.lineno}`, 'error');
+        });
+        
+        window.addEventListener('unhandledrejection', function(e) {
+            log(`Unhandled Promise Rejection: ${e.reason}`, 'error');
+        });
+    </script>
+</body>
+</html>

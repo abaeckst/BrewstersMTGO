@@ -1,0 +1,121 @@
+================================================================================
+                           NEXT SESSION PROMPT FOR SENIOR DEVELOPER
+================================================================================
+
+CONTEXT:
+Mobile compatibility investigation completed for Brewster's MTGO Mission Terminal. 
+Testing reveals main app fails completely on iOS (black screen) while individual 
+components work perfectly. Comprehensive analysis and implementation plan prepared.
+
+SESSION OBJECTIVE:
+Senior developer review of mobile compatibility analysis and strategic 
+implementation planning.
+
+================================================================================
+                                 SESSION PROMPT
+================================================================================
+
+Please review the mobile compatibility analysis in `mobile-compatibility-analysis.md` 
+and provide senior developer assessment.
+
+Key points for your review:
+
+1. ANALYSIS VALIDATION
+   - Test results showing component compatibility vs main app failure
+   - Root cause hypothesis: module dependency chain failure vs iOS incompatibility
+   - Evidence evaluation: ES6 works individually, fails in complex chain
+
+2. IMPLEMENTATION STRATEGY REVIEW
+   - Evaluation of proposed 3-tier approach (6-44 hour effort range)
+   - Risk assessment: CSS simplification vs module system replacement
+   - Implementation sequence: Tier 1 quick wins vs comprehensive rebuild
+
+3. TECHNICAL DECISION POINTS
+   - Is CSS architecture simplification the right starting point?
+   - Should we pursue module dependency audit or deeper architecture changes?
+   - How to balance iOS compatibility with desktop functionality preservation?
+
+4. RESOURCE PLANNING
+   - Effort estimation validation (6-9 hours Tier 1 vs 36-44 hours Tier 3)
+   - Risk tolerance for architecture modifications
+   - Timeline expectations for mobile compatibility restoration
+
+SPECIFIC QUESTIONS FOR SENIOR REVIEW:
+
+A) ROOT CAUSE ASSESSMENT
+   Testing shows 90% iOS compatibility with simplified CSS vs 0% with main app.
+   Is module dependency chain failure the correct diagnosis, or are there other
+   fundamental issues I should investigate?
+
+B) STRATEGIC APPROACH
+   The analysis recommends starting with Tier 1 (CSS + module audit) before
+   considering Tier 3 (complete architecture rebuild). Do you agree with this
+   conservative approach, or should we pursue more aggressive changes?
+
+C) RISK MANAGEMENT
+   What's the risk of desktop regression with proposed changes? Should we 
+   implement a separate mobile build pipeline or try to maintain unified codebase?
+
+D) ALTERNATIVE SOLUTIONS
+   Are there implementation approaches or tools I haven't considered that could
+   solve this more efficiently?
+
+================================================================================
+                              SUPPORTING MATERIALS
+================================================================================
+
+Available for review:
+- `mobile-compatibility-analysis.md` - Complete analysis and implementation plan
+- `mobile-debug-results.md` - Detailed investigation results  
+- 6 test files demonstrating component-level iOS compatibility
+- `iOS-Testing-Guide.txt` - Testing methodology documentation
+
+Test results summary:
+✅ ES6 modules work individually
+✅ Touch events (multi-touch detected)  
+✅ Audio system (context, unlock, playback)
+✅ CSS rendering (90% compatibility)
+❌ Main app (complete failure - black screen)
+❌ CSS @layer support (expected limitation)
+❌ Complex audio theme loading (timeout)
+
+================================================================================
+                              DECISION FRAMEWORK
+================================================================================
+
+Please provide guidance on:
+
+1. IMPLEMENTATION PRIORITY
+   [ ] Tier 1: CSS simplification + module audit (6-9 hours)
+   [ ] Tier 2: Audio simplification + progressive enhancement (14-20 hours)  
+   [ ] Tier 3: Module replacement + build pipeline (36-44 hours)
+   [ ] Alternative approach: [specify]
+
+2. RISK ASSESSMENT
+   [ ] Low risk: Targeted fixes to existing architecture
+   [ ] Medium risk: Significant but controlled architecture changes
+   [ ] High risk: Fundamental rebuild required
+   [ ] Assessment: [explain reasoning]
+
+3. SUCCESS PROBABILITY
+   Based on test results showing component compatibility:
+   [ ] High (>80%): iOS compatibility achievable with current architecture
+   [ ] Medium (50-80%): Requires moderate architecture changes
+   [ ] Low (<50%): Needs fundamental rebuild
+   [ ] Estimate: [provide reasoning]
+
+4. RECOMMENDED NEXT STEPS
+   [ ] Proceed with Tier 1 implementation
+   [ ] Gather additional diagnostic information
+   [ ] Prototype alternative architecture
+   [ ] Other: [specify approach]
+
+================================================================================
+
+EXPECTED OUTCOME:
+Strategic implementation plan with senior developer validation, risk assessment,
+and clear next steps for mobile compatibility restoration.
+
+TIMELINE EXPECTATION:
+Based on your assessment, what's a realistic timeline for restoring iOS 
+functionality while maintaining desktop compatibility?

@@ -2,7 +2,7 @@
    Utilities: Screen Positioning Fix
    ========================================================================== */
 
-@layer utilities {
+/* @layer - iOS compatibility: removed layer wrapper */
     /* Extend app container for proper positioning context */
     .app-container {
         position: relative;
@@ -84,4 +84,4 @@
         opacity: 0;
         pointer-events: none;
     }
-}
+/* End section */

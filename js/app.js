@@ -12,6 +12,7 @@ import BriefingScreen from './briefing-screen.js';
 import CountdownScreen from './countdown-screen.js';
 import CreditsScreen from './credits-screen.js';
 import DeclinedScreen from './declined-screen.js';
+import IOSPolyfills from './ios-polyfills.js';
 
 class App {
     constructor() {
@@ -314,17 +315,23 @@ class App {
     }
 }
 
-// Initialize app when DOM is ready
+// Initialize app when DOM is ready - iOS compatibility: reduced global pollution
 if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', () => {
-        window.app = new App();
-        window.appState = window.app.state; // Global state access
-        window.AudioEngine = AudioEngine;   // Global audio access
-        window.app.init();
+        const app = new App();
+        // Only expose app globally for debugging - remove AudioEngine global
+        if (window.location.search.includes('debug')) {
+            window.app = app;
+            window.appState = app.state;
+        }
+        app.init();
     });
 } else {
-    window.app = new App();
-    window.appState = window.app.state; // Global state access
-    window.AudioEngine = AudioEngine;   // Global audio access
-    window.app.init();
+    const app = new App();
+    // Only expose app globally for debugging - remove AudioEngine global
+    if (window.location.search.includes('debug')) {
+        window.app = app;
+        window.appState = app.state;
+    }
+    app.init();
 }

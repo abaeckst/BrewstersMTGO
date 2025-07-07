@@ -2,7 +2,7 @@
    Screens: Boot Sequence
    ========================================================================== */
 
-@layer screens {
+/* @layer screens - iOS compatibility: removed layer wrapper */
     /* Full-screen terminal experience for boot sequence */
     .boot-screen-fullscreen {
         padding: 0;
@@ -80,4 +80,4 @@
             line-height: 1.5;
         }
     }
-}
+/* End boot screen section */
