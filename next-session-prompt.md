@@ -1,73 +1,57 @@
-# Next Session Starter: iOS Mobile Debugging
+# Next Session: Deep iOS Safari Investigation
 
-## Quick Context
-The Brewster's MTGO Mission Terminal spy-thriller web app is fully functional on desktop but **still not working on iPhone devices** despite extensive mobile compatibility work in the previous session.
+## **URGENT: iOS COMPATIBILITY DEEP INVESTIGATION**
 
-## Current Status
-- ✅ **Desktop**: Fully functional at https://abaeckst.github.io/BrewstersMTGO
-- ❌ **iPhone**: Not loading/functioning on actual iOS devices
-- ✅ **Compatibility Layer**: Extensive iOS fixes implemented but not verified
+The app has undergone comprehensive architectural fixes but still fails to load on iOS devices. All major identified issues have been resolved:
+- ✅ CSS @layer system removed (23 files updated)
+- ✅ Dual loading conflicts eliminated (feature detection implemented)
+- ✅ Circular dependencies resolved (AudioEngine centralized)
+- ✅ Global variable pollution reduced
+- ✅ Desktop functionality verified working
 
-## What Was Already Done (Previous Session)
-1. **Touch Event Fixes**: Fixed passive listener conflicts, added comprehensive touch handlers
-2. **iOS Audio Context**: Added unlockAudioContext() method and iOS-specific initialization  
-3. **Safe Area Support**: iPhone notch and home indicator compatibility
-4. **Form Input Fixes**: Prevented iOS zoom, webkit appearance fixes
-5. **iOS Polyfills**: Comprehensive iOS detection and compatibility layer
-6. **Desktop Restoration**: Fixed desktop regression caused by mobile fixes
+## **TASK: Perform deep iOS Safari investigation to identify remaining blockers**
 
-## Files to Review
-- `/docs/mobile-compatibility-work-log.md` - Complete work log
-- `/ios-testing-checklist.md` - Comprehensive testing checklist
-- `/js/ios-polyfills.js` - iOS compatibility layer
-- `/css/utilities/ios-mobile.css` - iOS-specific styles
+### **INVESTIGATION PRIORITIES:**
 
-## Immediate Next Steps
-Your primary task is to **debug why the app is still not working on actual iPhone devices**. Here's the recommended approach:
+1. **Safari Remote Debugging** (CRITICAL - START HERE)
+   - Connect iPhone to Mac, enable Safari Web Inspector
+   - Access real iOS Safari console to see actual errors
+   - Document all JavaScript errors, module loading failures, network issues
 
-### 1. **Enable Safari Remote Debugging** (CRITICAL)
-```
-iPhone: Settings → Safari → Advanced → Web Inspector: ON
-Mac: Safari → Develop → [iPhone] → [Page Name]
-```
-This will show actual JavaScript errors and loading issues on the iPhone.
+2. **Feature Detection Testing**
+   - Verify ES6 module detection logic works correctly on iOS
+   - Test if `'noModule' in script` returns expected values
+   - Check if feature detection is routing to correct initialization system
 
-### 2. **Check for Fundamental Issues**
-- ES6 module loading failures on iOS Safari
-- CORS/security restrictions with local server
-- JavaScript errors preventing app initialization
-- Network connectivity issues
+3. **Minimal Reproducible Test**
+   - Create ultra-simple iOS test page to isolate fundamental issues
+   - Test basic: HTML loading, CSS loading, JavaScript execution, ES6 modules
+   - Progressive complexity testing to identify exact failure point
 
-### 3. **Create Minimal Test**
-If the full app doesn't work, create a minimal test page to isolate the issue:
-```html
-<!DOCTYPE html>
-<html>
-<head>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-</head>
-<body>
-    <h1>iOS Test</h1>
-    <button onclick="alert('Touch works!')">Test Touch</button>
-    <script>console.log('JavaScript loaded');</script>
-</body>
-</html>
-```
+4. **iOS Version Testing**
+   - Test across different iOS versions to identify version-specific failures
+   - Check Safari version compatibility with ES6 modules
+   - Document which iOS versions work vs fail
 
-### 4. **Try HTTPS**
-Some iOS features require HTTPS. Try:
-```bash
-npx ngrok http 8000
-# Use the https:// URL on iPhone
-```
+5. **Audio Context Investigation**
+   - Test if iOS audio restrictions are blocking entire app startup
+   - Create audio-free test version to isolate if audio is the blocker
+   - Verify iOS audio context unlock flow
 
-### 5. **Check iOS Version Compatibility**
-- Verify iOS Safari version supports ES6 modules
-- Check if babel transpilation is needed
-- Test on different iOS versions if possible
+6. **Network Analysis**
+   - Check if HTTPS certificate, CORS, or loading issues affect iOS Safari
+   - Test localhost vs GitHub Pages behavior
+   - Analyze network requests in Safari Web Inspector
 
-## Session Goal
-**Identify and fix the root cause preventing the app from working on iPhone devices.** The extensive compatibility work is done - now we need to debug the actual deployment/loading issues.
+### **EXPECTED OUTCOME:**
+Identify exact iOS failure point and implement targeted fix.
 
-## Use This Prompt
-"I need to debug why Brewster's MTGO Mission Terminal isn't working on iPhone devices. The app works perfectly on desktop, and I've implemented extensive iOS compatibility fixes, but it's still not functional on actual iPhones. I need you to help me set up Safari remote debugging and identify the root cause of the iOS loading/functionality issues. Start by reviewing the mobile compatibility work log in `/docs/mobile-compatibility-work-log.md` and then guide me through debugging the actual iPhone problems."
+### **TOOLS NEEDED:**
+iPhone connected to Mac with Safari Web Inspector enabled.
+
+### **START WITH:**
+Safari remote debugging to see actual iOS console errors - this will reveal the true root cause.
+
+---
+
+**Current Status**: All theoretical architectural issues have been fixed. The problem is now likely device/browser-specific and requires direct iOS debugging to identify.
