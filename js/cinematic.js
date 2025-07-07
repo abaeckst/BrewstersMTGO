@@ -3,15 +3,12 @@
  * Handles all animations and visual effects
  */
 
-import { MissionScreen } from './mission-screen.js';
-
 export class CinematicEngine {
     constructor() {
         this.animations = new Map();
         this.isPaused = false;
         this.transitions = new Map();
         this.currentAnimation = null;
-        this.missionScreen = new MissionScreen();
         this.setupMobileDetection();
     }
     
@@ -163,9 +160,8 @@ export class CinematicEngine {
         }
         await this.delay(800);
         
-        // Stage 4: Initialize mission screen controller for the rest
-        console.log('🎯 Initializing MissionScreen controller...');
-        await this.missionScreen.init();
+        // Stage 4: Mission screen controller will be initialized by main app state system
+        console.log('🎯 Mission screen cinematic reveal complete - controller will be initialized by app state system');
         
         console.log('✅ Mission screen cinematic reveal complete');
     }
@@ -926,8 +922,8 @@ export class CinematicEngine {
         await this.delay(1000);
         
         // Trigger transition to mission state (skipping sound test for now)
-        if (window.app) {
-            window.app.transitionTo('mission');
+        if (window.app && window.app.state) {
+            await window.app.state.transition(window.app.state.states.MISSION, window.app.cinematic);
         }
     }
     

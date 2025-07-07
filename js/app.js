@@ -8,6 +8,7 @@ import { CinematicEngine } from './cinematic.js';
 import { AudioEngine } from './audio-engine.js';
 import { viewport } from './viewport.js';
 import WakeScreen from './wake-screen.js';
+import { MissionScreen } from './mission-screen.js';
 import BriefingScreen from './briefing-screen.js';
 import CountdownScreen from './countdown-screen.js';
 import CreditsScreen from './credits-screen.js';
@@ -24,6 +25,7 @@ class App {
         
         // Initialize screen controllers
         this.wakeScreen = new WakeScreen();
+        this.missionScreen = new MissionScreen();
         this.briefingScreen = new BriefingScreen();
         this.countdownScreen = new CountdownScreen();
         this.creditsScreen = new CreditsScreen();
@@ -281,6 +283,13 @@ class App {
                 console.log('🔌 Initializing boot sequence...');
                 setTimeout(() => {
                     this.startBootSequence();
+                }, 500); // Small delay for screen transition
+                break;
+                
+            case this.state.states.MISSION:
+                console.log('🎯 Initializing mission screen...');
+                setTimeout(() => {
+                    this.missionScreen.init();
                 }, 500); // Small delay for screen transition
                 break;
                 
