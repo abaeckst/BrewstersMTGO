@@ -8,6 +8,7 @@ export const AudioEngine = {
     loaded: false,
     unlocked: false,
     volume: 0.75,
+    hasUserInteracted: false,
     
     // Ambient system
     ambientOscillators: [],
@@ -130,8 +131,15 @@ export const AudioEngine = {
             // Setup mobile audio unlock
             this.setupMobileUnlock();
             
-            // iOS-safe preloading with timeout
-            console.log('📥 Starting audio preload...');
+            // MOBILE FIX: Skip preloading on mobile - will load during user interaction
+            if (this.isMobile() && !this.hasUserInteracted) {
+                console.log('📱 Mobile detected - skipping preload until user interaction');
+                console.log('📱 Audio files will load when user first interacts with app');
+                return true;
+            }
+            
+            // Desktop: preload normally
+            console.log('💻 Desktop/Post-interaction - starting audio preload...');
             const preloadSuccess = await this.preloadSoundsWithTimeout();
             console.log('📥 Preload result:', preloadSuccess);
             
@@ -386,6 +394,34 @@ export const AudioEngine = {
     // Legacy method for backward compatibility
     async preloadSounds() {
         return this.preloadSoundsWithTimeout();
+    },
+    
+    // MOBILE FIX: Force load audio files after user interaction
+    async loadAudioAfterInteraction() {
+        if (this.hasUserInteracted) {
+            console.log('📱 Audio already loaded after interaction');
+            return true;
+        }
+        
+        console.log('📱 Loading audio files after user interaction...');
+        this.hasUserInteracted = true;
+        
+        try {
+            // Ensure context is unlocked
+            if (this.context && this.context.state === 'suspended') {
+                await this.context.resume();
+                console.log('📱 Audio context resumed after interaction');
+            }
+            
+            // Now load the actual audio files
+            const loadSuccess = await this.preloadSoundsWithTimeout();
+            console.log('📱 Audio loading after interaction result:', loadSuccess);
+            
+            return loadSuccess;
+        } catch (error) {
+            console.error('📱 Audio loading after interaction failed:', error);
+            return false;
+        }
     },
     
     // Play sound with fallback to generated audio

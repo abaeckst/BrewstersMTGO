@@ -139,6 +139,9 @@ export class WakeScreen {
         this.isActivating = true;
         console.log('💤 Wake interaction detected, starting activation...', event.type);
 
+        // MOBILE FIX: Load audio files during user interaction (critical for iOS)
+        await this.loadAudioAfterInteraction();
+
         // Initialize audio context on first user interaction (critical for iOS)
         if (window.AudioEngine && !window.AudioEngine.unlocked) {
             await window.AudioEngine.unlockAudioContext();
@@ -307,6 +310,27 @@ export class WakeScreen {
      */
     delay(ms) {
         return new Promise(resolve => setTimeout(resolve, ms));
+    }
+
+    /**
+     * MOBILE FIX: Load audio files after user interaction
+     */
+    async loadAudioAfterInteraction() {
+        console.log('📱 Attempting to load audio after user interaction...');
+        
+        if (window.AudioEngine && window.AudioEngine.loadAudioAfterInteraction) {
+            try {
+                const success = await window.AudioEngine.loadAudioAfterInteraction();
+                console.log('📱 Audio loading result:', success);
+                return success;
+            } catch (error) {
+                console.error('📱 Audio loading failed:', error);
+                return false;
+            }
+        } else {
+            console.log('📱 AudioEngine or loadAudioAfterInteraction method not available');
+            return false;
+        }
     }
 
     /**
