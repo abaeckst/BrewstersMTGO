@@ -136,6 +136,8 @@ export const AudioEngine = {
             if (this.isMobile() && !this.hasUserInteracted) {
                 console.log('📱 Mobile detected - skipping preload until user interaction');
                 console.log('📱 Audio files will load when user first interacts with app');
+                this.loaded = true; // Mark as loaded so methods are available
+                console.log('✅ V2 Audio Engine initialized (mobile mode)');
                 return true;
             }
             
