@@ -152,17 +152,18 @@ export class WakeScreen {
             });
         }
 
-        // PROGRESSIVE AUDIO: Preload Mission Impossible theme during wake interaction
+        // PROGRESSIVE AUDIO: Only preload Mission Impossible theme on desktop
         if (audioEngine && audioEngine.preloadAndPrime) {
-            audioEngine.preloadAndPrime('missionThemeFull').then(success => {
-                if (success) {
-                    console.log('📱 Mission theme successfully preloaded during wake');
-                } else {
-                    console.warn('📱 Mission theme preload failed during wake (will retry later)');
-                }
-            }).catch(error => {
-                console.warn('📱 Mission theme preload error during wake:', error);
-            });
+            const isMobile = /Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+            if (!isMobile) {
+                audioEngine.preloadAndPrime('missionThemeFull').then(success => {
+                    if (success) {
+                        console.log('🖥️ Mission theme successfully preloaded during wake (desktop)');
+                    }
+                }).catch(error => {
+                    console.warn('🖥️ Mission theme preload error during wake:', error);
+                });
+            }
         }
 
         // Audio feedback - immediate beep to confirm interaction

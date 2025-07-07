@@ -31,7 +31,7 @@ MISSIONS COMPLETED: 173
 COMMAND HAS SELECTED YOU FOR ONE FINAL ASSIGNMENT.
 OPERATION: GOBLIN SURPRISE
 
-YOU HAVE EARNED THE RIGHT TO CHOOSE YOUR FINAL MISSION:`;
+YOU HAVE EARNED THE RIGHT TO ACCEPT YOUR FINAL MISSION:`;
     }
     
     /**
@@ -529,18 +529,19 @@ YOU HAVE EARNED THE RIGHT TO CHOOSE YOUR FINAL MISSION:`;
         if (accepted) {
             AudioEngine.play('success');
             
-            // PROGRESSIVE AUDIO: Prime Mission Impossible theme on mission acceptance
+            // PROGRESSIVE AUDIO: Only prime Mission Impossible theme on desktop
             if (AudioEngine.preloadAndPrime) {
-                console.log('📱 Priming Mission theme after mission acceptance...');
-                AudioEngine.preloadAndPrime('missionThemeFull').then(success => {
-                    if (success) {
-                        console.log('📱 Mission theme successfully primed after acceptance');
-                    } else {
-                        console.warn('📱 Mission theme priming failed after acceptance');
-                    }
-                }).catch(error => {
-                    console.warn('📱 Mission theme priming error after acceptance:', error);
-                });
+                const isMobile = /Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+                if (!isMobile) {
+                    console.log('🖥️ Priming Mission theme after mission acceptance (desktop)');
+                    AudioEngine.preloadAndPrime('missionThemeFull').then(success => {
+                        if (success) {
+                            console.log('🖥️ Mission theme successfully primed after acceptance');
+                        }
+                    }).catch(error => {
+                        console.warn('🖥️ Mission theme priming error after acceptance:', error);
+                    });
+                }
             }
         } else {
             AudioEngine.play('disconnect');

@@ -432,6 +432,22 @@ export const AudioEngine = {
     async play(soundKey, options = {}) {
         console.log(`🎵 Playing sound: ${soundKey}`, options);
         
+        // MOBILE DISABLE: Skip Mission Impossible theme on mobile devices
+        if (soundKey === 'missionThemeFull') {
+            const isMobile = this.isIOS() || /Android/i.test(navigator.userAgent);
+            if (isMobile) {
+                console.log('📱 Skipping Mission Impossible theme on mobile device');
+                // Return a mock audio element to maintain compatibility
+                return { 
+                    play: () => Promise.resolve(),
+                    pause: () => {},
+                    addEventListener: () => {},
+                    currentTime: 0,
+                    volume: 1
+                };
+            }
+        }
+        
         if (!this.loaded) {
             console.log('🔊 Audio engine not loaded - attempting to play generated sound anyway');
             // Try generated sound even if not loaded

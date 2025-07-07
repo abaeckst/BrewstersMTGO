@@ -78,6 +78,9 @@ class CountdownScreen {
         this.audioTriggered = false;
         this.phase = 'initializing';
         
+        // Get agent name and update congratulations message
+        this.setupAgentName();
+        
         // Reset all stage visibility
         this.resetStageVisibility();
         
@@ -94,6 +97,19 @@ class CountdownScreen {
             element.classList.remove('countdown-stage-reveal');
             element.classList.add('countdown-stage-hidden');
         });
+    }
+    
+    setupAgentName() {
+        // Get agent name from localStorage, fallback to 'OPERATIVE'
+        const agentName = localStorage.getItem('agentName') || 'OPERATIVE';
+        
+        // Update congratulations message with agent name
+        if (this.elements.congratulationsMessage) {
+            const originalText = this.elements.congratulationsMessage.textContent;
+            const updatedText = originalText.replace('{{AGENT_NAME}}', agentName);
+            this.elements.congratulationsMessage.textContent = updatedText;
+            console.log(`🏷️ Updated countdown message for agent: ${agentName}`);
+        }
     }
     
     async startCinematicSequence() {
@@ -178,85 +194,35 @@ class CountdownScreen {
         
         // Play Mission Impossible theme when "NOW" appears (with looping)
         if (!this.audioTriggered) {
-            console.log('🎵 About to play Mission Impossible theme...');
-            console.log('📱 Mobile Debug Info:', JSON.stringify(AudioEngine.getMobileDebugInfo(), null, 2));
-            console.log('🔊 Audio Engine Status:', JSON.stringify(AudioEngine.getStatus(), null, 2));
-            
-            // Check if audio engine is properly loaded
-            if (!AudioEngine.loaded) {
-                console.warn('⚠️ Audio engine not loaded - attempting to initialize');
-                try {
-                    await AudioEngine.init();
-                    console.log('✅ Audio engine initialized successfully');
-                } catch (error) {
-                    console.error('❌ Audio engine initialization failed:', error);
-                }
-            }
-            
-            // Check for mobile-specific audio context issues
-            if (AudioEngine.context && AudioEngine.context.state === 'suspended') {
-                console.warn('⚠️ Audio context suspended - attempting to unlock');
-                try {
-                    await AudioEngine.unlockAudioContext();
-                    console.log('✅ Audio context unlocked successfully');
-                } catch (error) {
-                    console.error('❌ Audio context unlock failed:', error);
-                }
-            }
-            
-            // Check if missionThemeFull exists in sounds
-            const soundExists = AudioEngine.sounds && AudioEngine.sounds.missionThemeFull;
-            console.log('🎵 Mission theme sound exists:', !!soundExists);
-            if (soundExists) {
-                console.log('🎵 Mission theme config:', JSON.stringify(AudioEngine.sounds.missionThemeFull, null, 2));
-            }
-            
-            // Check if we're on mobile and need different handling
+            // Check if we're on mobile - skip theme entirely
             const isMobile = /Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-            console.log('📱 Is mobile device:', isMobile);
-            console.log('📱 Is iOS:', AudioEngine.isIOS());
             
-            try {
-                // For mobile devices, use enhanced iOS-aware playback
-                const isMobile = /Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-                if (isMobile) {
-                    console.log('📱 Mobile detected - using enhanced iOS-aware playback');
-                    // Add a brief delay to allow any pending audio context operations
-                    await this.delay(100);
-                }
-                
-                // Use enhanced playback method if available (handles primed audio)
-                const audioElement = AudioEngine.playWithIOSFallback ? 
-                    await AudioEngine.playWithIOSFallback('missionThemeFull', { loop: true }) :
-                    await AudioEngine.play('missionThemeFull', { loop: true });
+            if (isMobile) {
+                console.log('📱 Mobile device detected - skipping Mission Impossible theme');
                 this.audioTriggered = true;
-                
-                if (audioElement) {
-                    console.log('✅ Mission Impossible theme started successfully');
-                    console.log('🎵 Audio element:', audioElement);
-                    console.log('🎵 Audio element type:', typeof audioElement);
+            } else {
+                console.log('🎵 Desktop detected - playing Mission Impossible theme');
+            }
+            
+            if (!isMobile) {
+                try {
+                    console.log('🎵 Playing Mission Impossible theme on desktop...');
                     
-                    // For mobile devices, add additional event listeners
-                    if (isMobile && audioElement.addEventListener) {
-                        audioElement.addEventListener('play', () => {
-                            console.log('🎵 Audio started playing');
-                        });
-                        audioElement.addEventListener('pause', () => {
-                            console.log('⏸️ Audio paused');
-                        });
-                        audioElement.addEventListener('ended', () => {
-                            console.log('🏁 Audio ended');
-                        });
-                        audioElement.addEventListener('error', (e) => {
-                            console.error('❌ Audio error:', e);
-                        });
+                    // Use enhanced playback method if available (handles primed audio)
+                    const audioElement = AudioEngine.playWithIOSFallback ? 
+                        await AudioEngine.playWithIOSFallback('missionThemeFull', { loop: true }) :
+                        await AudioEngine.play('missionThemeFull', { loop: true });
+                    this.audioTriggered = true;
+                    
+                    if (audioElement) {
+                        console.log('✅ Mission Impossible theme started successfully');
+                    } else {
+                        console.warn('⚠️ Mission Impossible theme failed to start - no audio element returned');
                     }
-                } else {
-                    console.warn('⚠️ Mission Impossible theme failed to start - no audio element returned');
+                } catch (error) {
+                    console.error('❌ Mission Impossible theme playback failed:', error);
+                    this.audioTriggered = true; // Still mark as triggered to prevent retries
                 }
-            } catch (error) {
-                console.error('❌ Mission Impossible theme playback failed:', error);
-                this.audioTriggered = true; // Still mark as triggered to prevent retries
             }
         }
         
@@ -335,9 +301,16 @@ class CountdownScreen {
         element.textContent = '';
         element.classList.add('typing-cursor');
         
-        // Character-by-character reveal
+        // Character-by-character reveal with typing sounds
         for (let i = 0; i < text.length; i++) {
             element.textContent += text[i];
+            
+            // Play typing sound for visible characters (not spaces)
+            if (text[i] !== ' ' && AudioEngine && AudioEngine.play) {
+                // Use a lower volume for typing sounds to not overwhelm
+                AudioEngine.play('typingSound', { volume: 0.15 });
+            }
+            
             await this.delay(50); // Terminal print speed
         }
         

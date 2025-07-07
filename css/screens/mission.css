@@ -237,16 +237,17 @@
 
     /* Specific Button Styling */
     .decline-button {
-        border-color: var(--color-warning);
+        border-color: var(--color-danger);
+        color: var(--color-danger);
     }
 
     .decline-button:hover {
-        border-color: var(--color-warning);
-        box-shadow: 0 0 20px var(--color-warning);
+        border-color: var(--color-danger);
+        box-shadow: 0 0 20px var(--color-danger);
     }
 
     .decline-button .button-label {
-        color: var(--color-warning);
+        color: var(--color-danger);
     }
 
     .accept-button {

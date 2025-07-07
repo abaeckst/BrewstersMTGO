@@ -133,18 +133,19 @@ class BriefingScreen {
         this.elements.acceptButton.style.background = 'linear-gradient(45deg, #00aa00, #00ff00)';
         this.elements.acceptButton.style.boxShadow = '0 0 30px rgba(0, 255, 0, 0.8)';
         
-        // PROGRESSIVE AUDIO: Final mission theme preparation before countdown
+        // PROGRESSIVE AUDIO: Only prepare Mission Impossible theme on desktop
         if (AudioEngine.preloadAndPrime) {
-            console.log('📱 Final Mission theme preparation before countdown...');
-            AudioEngine.preloadAndPrime('missionThemeFull').then(success => {
-                if (success) {
-                    console.log('📱 Mission theme final preparation successful');
-                } else {
-                    console.warn('📱 Mission theme final preparation failed (will use fallback)');
-                }
-            }).catch(error => {
-                console.warn('📱 Mission theme final preparation error:', error);
-            });
+            const isMobile = /Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+            if (!isMobile) {
+                console.log('🖥️ Final Mission theme preparation before countdown (desktop)');
+                AudioEngine.preloadAndPrime('missionThemeFull').then(success => {
+                    if (success) {
+                        console.log('🖥️ Mission theme final preparation successful');
+                    }
+                }).catch(error => {
+                    console.warn('🖥️ Mission theme final preparation error:', error);
+                });
+            }
         }
         
         // Transition to countdown after brief delay
