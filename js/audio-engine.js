@@ -422,8 +422,9 @@ export const AudioEngine = {
             
             return loadSuccess;
         } catch (error) {
-            console.error('📱 Audio loading after interaction failed:', error);
-            return false;
+            console.warn('📱 Audio loading after interaction failed (continuing anyway):', error);
+            // Return true so wake sequence continues even if audio fails
+            return true;
         }
     },
     

@@ -139,13 +139,17 @@ export class WakeScreen {
         this.isActivating = true;
         console.log('💤 Wake interaction detected, starting activation...', event.type);
 
-        // MOBILE FIX: Load audio files during user interaction (critical for iOS)
-        await this.loadAudioAfterInteraction();
+        // MOBILE FIX: Load audio files during user interaction (critical for iOS) - non-blocking
+        this.loadAudioAfterInteraction().catch(error => {
+            console.warn('📱 Audio loading failed but continuing wake sequence:', error);
+        });
 
-        // Initialize audio context on first user interaction (critical for iOS)
+        // Initialize audio context on first user interaction (critical for iOS) - non-blocking
         const audioEngine = window.app?.audio;
         if (audioEngine && !audioEngine.unlocked) {
-            await audioEngine.unlockAudioContext();
+            audioEngine.unlockAudioContext().catch(error => {
+                console.warn('📱 Audio unlock failed but continuing wake sequence:', error);
+            });
         }
 
         // Audio feedback - immediate beep to confirm interaction
@@ -185,10 +189,12 @@ export class WakeScreen {
         this.isActivating = true;
         console.log('💤 Wake interaction detected (passive), starting activation...', event.type);
 
-        // Initialize audio context on first user interaction (critical for iOS)
+        // Initialize audio context on first user interaction (critical for iOS) - non-blocking
         const audioEngine = window.app?.audio;
         if (audioEngine && !audioEngine.unlocked) {
-            await audioEngine.unlockAudioContext();
+            audioEngine.unlockAudioContext().catch(error => {
+                console.warn('📱 Audio unlock failed but continuing wake sequence:', error);
+            });
         }
 
         // Audio feedback - immediate beep to confirm interaction
