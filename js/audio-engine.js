@@ -1005,6 +1005,12 @@ export const AudioEngine = {
                (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
     },
     
+    // Mobile detection helper
+    isMobile() {
+        return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || 
+               window.innerWidth <= 768;
+    },
+    
     // Comprehensive mobile debugging
     getMobileDebugInfo() {
         const info = {
